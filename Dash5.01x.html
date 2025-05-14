@@ -1,0 +1,4632 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+   <meta name="theme-color" content="#000000">
+    <meta name="viewport" 
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>DASH5.01.1</title>   
+<script src="https://cdn.jsdelivr.net/npm/smoothscroll-for-websites@1.4.10/SmoothScroll.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/1.13.7/css/dataTables.tailwindcss.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/rowgroup/1.1.4/css/rowGroup.dataTables.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/select/1.3.3/css/select.dataTables.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/scroller/2.4.0/css/scroller.dataTables.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/fixedheader/4.0.1/css/fixedHeader.dataTables.min.css" rel="stylesheet">
+<link href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css" rel="stylesheet">
+<link href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css" rel="stylesheet">
+<style id="critical-css">
+body {
+    background: linear-gradient(45deg, #2c3036 0%, #3e3e40 100%);
+    margin: 0; padding: 0; height: 100vh; width: 100vw; overflow-x: hidden;
+}
+html { scroll-behavior: smooth; }
+.button {
+    border: .1em solid transparent; border-radius: .5em; background-color: #010101;
+    box-shadow: .0625em .0625em .0625em rgba(255, 255, 255, .6); padding: 10px 20px; 
+    cursor: pointer; transition: background-color 0.3s ease;
+}
+.button:hover { background-color: #3b82f6; color: #fff; }
+.chart-box { height: 400px; width: 100%; margin-bottom: 1rem; }
+.bg-white { margin-bottom: 1rem; }
+.p-6 { padding: 1rem; }
+table {
+    width: 100%; border-collapse: collapse; border: .2em solid #4a4a4a;
+}
+.dataTables_wrapper { width: 100%; overflow-x: auto; }
+table.dataTable thead th {
+    background-color: #2a2a2a; color: #ffffff; font-weight: 600; padding: 12px; 
+    border-bottom: 2px solid #4a4a4a; border-right: 1px solid #4a4a4a;
+}
+table.dataTable tbody td {
+    background-color: #ffffff; padding: 10px; border-top: 1px solid #e0e0e0; 
+    border-right: 1px solid #e0e0e0;
+}
+table.dataTable tbody tr:last-child td { border-bottom: 1px solid #e0e0e0; }
+table.dataTable tbody td:last-child, table.dataTable thead th:last-child { border-right: none; }
+table.dataTable tbody tr:hover { background-color: #f0f9ff; }
+.fuel-summary { border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; }
+.dt-buttons .dt-button {
+    background-color: #4A90E2; color: white; border-radius: 4px; padding: 8px 16px; 
+    font-size: 14px; font-weight: bold; border: none; margin: 3px; 
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.dt-buttons .dt-button:hover { background-color: #357ABD; color: #FFF; }
+.dt-button-collection { background-color: #FFF; border: 1px solid #CCC; }
+.dt-button-collection .dt-button { background-color: #F5F5F5; color: #333; }
+.dt-button-collection .dt-button:hover { background-color: #E0E0E0; color: #000; }
+#total-import-time {
+    background-color: red; color: white; border-radius: 4px; padding: 5px 10px;
+}
+#map { height: 420px; width: 100%; border-radius: 8px; }
+@media (max-width: 760px) {
+    .chart-box { height: 420px; }
+    table.dataTable { font-size: 0.9em; }
+    table.dataTable tbody td, table.dataTable thead th { padding: 4px; }
+    .button { padding: 8px 16px; }
+}
+@media (min-width: 761px) { .table-responsive { overflow-x: auto; } }
+.table-wrapper { display: flex; flex-wrap: wrap; margin: 0 -0.5rem; }
+.table-container {
+    width: 100%; padding: 0 0.5rem; margin-bottom: 1rem;
+}
+@media (min-width: 760px) { .table-container { width: 50%; } }
+.table-container table { width: 100%; table-layout: fixed; }
+.table-container th, .table-container td {
+    word-wrap: break-word; overflow-wrap: break-word;
+}
+.bg-white.rounded-md.shadow-lg.overflow-hidden button:hover { color: #3b82f6; }
+.ex-buttons, .ex-button, .dataTables_length, .dataTables_filter, .dataTables_info, .dataTables_paginate {
+    font-size: 11px; box-shadow: inset 1px 1px 2px 0px rgba(255,255,255,.5);
+}
+select, input[type="text"] {
+    background-color: rgba(255, 255, 255, 0.1); border: 1px solid rgba(0, 255, 255, 0.3); 
+    color: #e0e0e0; transition: all 0.3s ease;
+}
+select:focus, input[type="text"]:focus {
+    background-color: rgba(255, 255, 255, 0.2); border-color: #00ffff; 
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+input:checked + .slider { background-color: #2563eb; }
+input:checked + .slider:before { transform: translateX(20px); }
+</style>
+</head>
+<script>
+class PerformanceOptimizer {
+    constructor() {
+        this.storage = window.localStorage;
+        this.cacheVersion = '1.0.1';
+        this.CACHE_EXPIRATION = 24 * 60 * 60 * 1000;
+    }
+
+    saveToCache(key, data) {
+        try {
+            this.storage.setItem(key, JSON.stringify({version: this.cacheVersion, timestamp: Date.now(), data}));
+        } catch (error) {
+            console.error('Błąd zapisu cache:', error);
+            if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+                this.clearOldestCacheEntries();
+                this.saveToCache(key, data);
+            }
+        }
+    }
+
+    getFromCache(key) {
+        try {
+            const parsed = JSON.parse(this.storage.getItem(key) || '{}');
+            return parsed.version === this.cacheVersion && (Date.now() - parsed.timestamp) < this.CACHE_EXPIRATION ? parsed.data : null;
+        } catch (error) {
+            console.error('Błąd odczytu cache:', error);
+            return null;
+        }
+    }
+
+    clearOldestCacheEntries() {
+        Object.keys(this.storage)
+            .map(key => ({key, timestamp: JSON.parse(this.storage.getItem(key)).timestamp}))
+            .sort((a, b) => a.timestamp - b.timestamp)
+            .slice(0, 3)
+            .forEach(entry => this.storage.removeItem(entry.key));
+    }
+
+    preloadCriticalResources() {
+        const styles = this.getFromCache('additionalStyles') || `.accordion{transition:all .3s ease;will-change:transform,opacity}.fullscreen-btn{position:fixed;top:10px;right:10px;z-index:1000}`;
+        if (!this.getFromCache('additionalStyles')) this.saveToCache('additionalStyles', styles);
+        const styleTag = document.createElement('style');
+        styleTag.textContent = styles;
+        document.head.appendChild(styleTag);
+    }
+
+    lazyLoadImages() {
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                        img.classList.add('loaded');
+                        observer.unobserve(img);
+                    }
+                });
+            }, {rootMargin: '100px 0px', threshold: 0.01});
+
+            document.querySelectorAll('img[data-src]').forEach(img => {
+                img.style.opacity = '0';
+                img.addEventListener('load', () => img.style.opacity = '1');
+                observer.observe(img);
+            });
+        } else {
+            document.querySelectorAll('img[data-src]').forEach(img => {
+                img.src = img.dataset.src;
+                img.removeAttribute('data-src');
+            });
+        }
+    }
+
+    deferNonCriticalScripts() {
+        document.querySelectorAll('script[data-defer]').forEach(script => {
+            const newScript = document.createElement('script');
+            newScript.src = script.dataset.defer;
+            newScript.defer = true;
+            document.body.appendChild(newScript);
+        });
+    }
+
+    init() {
+        this.preloadCriticalResources();
+        this.lazyLoadImages();
+        this.deferNonCriticalScripts();
+    }
+}
+
+function toggleAccordion(button) {
+    const closeOthers = document.getElementById('closeOthersCheckbox')?.checked;
+    const content = button.nextElementSibling;
+    if (content) content.classList.toggle('hidden');
+    const icon = button.querySelector('i:last-child');
+    if (icon) icon.classList.toggle('rotate-180');
+    navigator.vibrate && setTimeout(() => navigator.vibrate(5), 0);
+
+    if (closeOthers && content && !content.classList.contains('hidden')) {
+        document.querySelectorAll('.accordion-container').forEach(acc => {
+            if (!acc.contains(button)) {
+                const accButton = acc.querySelector('button');
+                const accContent = accButton.nextElementSibling;
+                const accIcon = accButton.querySelector('i:last-child');
+                accContent?.classList.add('hidden');
+                accIcon?.classList.remove('rotate-180');
+            }
+        });
+    }
+}
+
+function toggleFullScreen() {
+    const doc = document;
+    const docEl = doc.documentElement;
+    const requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullscreen || docEl.msRequestFullscreen;
+    const exitFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+    
+    if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+        requestFullScreen.call(docEl);
+    } else {
+        exitFullScreen.call(doc);
+    }
+}
+
+function createFullScreenButton() {
+    const btn = document.createElement('button');
+    btn.innerHTML = '⛶';
+    btn.className = 'fixed top-4 right-4 z-50 w-10 h-10 bg-gray-800/70 border border-gray-600/30 rounded-md backdrop-blur-sm hover:bg-gray-700/80 transition-all duration-300 shadow-inner active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)] active:transform active:translate-y-0.5 text-gray-300 hover:text-white';
+    btn.setAttribute('aria-label', 'Przełącz tryb pełnoekranowy');
+    btn.addEventListener('click', toggleFullScreen);
+    document.body.appendChild(btn);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    new PerformanceOptimizer().init();
+    createFullScreenButton();
+    document.querySelector('.accordion-container button i.fa-chart-line')?.closest('button')?.click();
+    SmoothScroll({animationTime: 200, stepSize: 65, keyboardSupport: true, arrowScroll: 50, pulseAlgorithm: true, pulseScale: 4, pulseNormalize: 1, touchpadSupport: true});
+});
+
+document.addEventListener('touchstart', e => {
+    if (e.touches.length > 1 || (e.type === 'touchstart' && e.touches.length > 1) || e.detail === 2) {
+        e.preventDefault();
+    }
+}, {passive: false});
+
+function safeJSONParse(jsonString, defaultValue = null) {
+    try {
+        return JSON.parse(jsonString);
+    } catch (error) {
+        console.warn('Błąd parsowania JSON:', error);
+        return defaultValue;
+    }
+}
+
+function debounce(func, wait = 250) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+    };
+}
+
+function safeSaveToLocalStorage(key, data) {
+    try {
+        localStorage.setItem(key, JSON.stringify(data));
+    } catch (error) {
+        console.error('Błąd zapisu do localStorage:', error);
+        if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+            clearOldLocalStorageEntries();
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+    }
+}
+
+function clearOldLocalStorageEntries(maxEntries = 50) {
+    const entries = Object.keys(localStorage)
+        .map(key => ({key, timestamp: JSON.parse(localStorage.getItem(key)).timestamp || 0}))
+        .sort((a, b) => a.timestamp - b.timestamp);
+    entries.slice(0, entries.length - maxEntries).forEach(entry => localStorage.removeItem(entry.key));
+}
+
+function browserSupportCheck() {
+    return {
+        localStorage: !!window.localStorage,
+        sessionStorage: !!window.sessionStorage,
+        indexedDB: !!window.indexedDB,
+        serviceWorker: 'serviceWorker' in navigator,
+        webWorkers: !!window.Worker,
+        fullscreen: !!(document.fullscreenEnabled || document.mozFullScreenEnabled || 
+                       document.webkitFullscreenEnabled || document.msFullscreenEnabled)
+    };
+}
+
+console.log('Wsparcie przeglądarki:', browserSupportCheck());
+</script>
+<body class="w-full">
+    <div class="w-full px-0 py-0">
+        <!-- DROPZONE -->
+        <div class="mb-2">
+            <div class="dropzone-container mb-2">
+                <label for="file-input" id="dropzone" class="block border-2 border-dashed border-gray-300 rounded-md p-4 text-center cursor-pointer bg-white shadow hover:bg-blue-50 hover:border-blue-500 transition">
+                    <i class="fas fa-cloud-upload-alt text-blue-500 text-2xl mb-2"></i>
+                    <p class="text-gray-700 font-semibold">Kliknij lub przeciągnij i upuść pliki</p>
+                    <input type="file" id="file-input" class="hidden" multiple>
+                </label>
+                <p id="file-info" class="text-red-500 mt-2 text-sm"></p>
+            </div>
+            <!-- AKTUALNA GODZINA/DATA + PRZEŁĄCZNIK ZAMYKANIA -->
+            <div class="bg-white rounded-md shadow p-2 mb-2 flex flex-col space-y-2">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-3xl font-bold" id="aktualna-godzina" onclick="startAnimation();">00:00:00</h1>
+                </div>
+                <hr class="my-1" />
+                <div class="flex items-center text-xs justify-between">
+                    <div class="flex items-center">
+                        <p class="mr-2" id="nazwa-dnia"></p>
+                        <p class="mr-2" id="aktualna-data"></p>
+                        <p id="total-import-time" class="bg-red-500 text-white rounded px-2 py-1 flex items-center">
+                            <i class="fas fa-gas-pump mr-1"></i>DASH5.01.1
+                        </p>
+                    </div>
+                    <label class="flex items-center cursor-pointer">
+                        <div class="relative inline-block w-11 h-6">
+                            <input type="checkbox" id="closeOthersCheckbox" class="opacity-0 w-0 h-0" checked>
+                            <span class="slider absolute cursor-pointer inset-0 bg-gray-200 transition-all duration-300 rounded-full before:absolute before:content-[''] before:h-5 before:w-5 before:rounded-full before:bg-white before:transition-all before:duration-300 before:left-[2px] before:bottom-[2px] before:shadow-sm"></span>
+                        </div>
+                        <span class="ml-2 text-sm text-gray-600">Auto-zamykanie</span>
+                    </label>
+                </div>
+                <!-- Akordeon dla szczegółów -->
+                <div class="accordion-container">
+                    <button class="w-full px-2 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+                        <span><i class="fas fa-list-ul text-blue-500 mr-2"></i>Lista plików</span>
+                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                    </button>
+                    <div class="hidden p-0.5">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <p class="text-gray-700"></p>
+                            <ul class="list-disc pl-4">
+                                <ul id="file-list" class="list-disc pl-2"></ul>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+                <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+                    <span><i class="fas fa-chart-line text-blue-500 mr-2"></i>Analiza wydatków kart FLOTA</span>
+                    <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                </button>
+                <div class="hidden p-0.5">
+                    <div class="grid grid-cols-2 md:grid-cols-2 gap-2 mb-0 px-2 py-0">
+                        <div class="fuel-summary bg-green-50">
+                            <h3 class="text-lg font-bold mb-2 text-green-600">
+                                <i class="fas fa-gas-pump text-green-500 mr-2"></i>Benzyna
+                            </h3>
+                            <p class="text-sm">Okres: <span id="benzynaOkres" class="text-sm"></span></p>
+                            <p class="font-bold">Suma: <span id="benzynaSuma" class="font-bold text-green-600"></span></p>
+                        </div>
+                        <div class="fuel-summary bg-gray-50">
+                            <h3 class="text-lg font-semibold mb-2">
+                                <i class="fas fa-gas-pump text-blue-500 mr-2"></i>Olej napędowy
+                            </h3>
+                            <p class="text-sm">Okres: <span id="olejNapedowyOkres" class="text-sm"></span></p>
+                            <p class="font-bold">Suma: <span id="olejNapedowySuma" class="font-bold"></span></p>
+                        </div>
+                    </div>
+                    <div id="dashboard-row-1" class="mb-0">
+                        <div id="chart-container-0"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+                <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+                    <span><i class="fas fa-table text-blue-500 mr-2"></i>Zaimportowane dane</span>
+                    <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                </button>
+                <div class="hidden p-0.5">
+                    <h3 class="text-lg font-semibold mb-2">Wybierz kolumny:</h3>
+                    <select id="columnVisibility" multiple class="w-full border border-gray-300 rounded-md py-2 px-3 mb-2"></select>
+                    <div class="overflow-x-auto">
+                        <table id="example" class="w-full table-auto border-collapse border border-gray-300"></table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+                <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+                    <span><i class="fas fa-car text-blue-500 mr-2"></i>Podsumowanie i wykresy</span>
+                    <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                </button>
+                <div class="hidden p-0.5">
+                    <button id="generate-summary" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 mb-2">Wygeneruj</button>
+                    <div class="table-wrapper">
+                        <div id="summary-table-container" class="table-container"></div>
+                        <div id="summary2-table-container" class="table-container"></div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2 text-gray-700">Zlicz:</h3>
+                            <select class="w-full bg-blue-50 border border-blue-300 rounded py-2 px-3 focus:outline-none" id="select-column">
+                                <option value="Wartość netto">Wartość netto</option>
+                                <option value="Ilość">Ilość</option>
+                                <option value="activeCardsColumn">Liczba aktywnych kart</option>
+                            </select>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2 text-gray-700">Numer rejestracyjny</h3>
+                            <div class="flex items-center space-x-2">
+                                <select class="w-1/2 bg-green-50 border border-green-300 rounded py-2 px-3 focus:outline-none" id="select-registration-number">
+                                    <option>Wybierz numer</option>
+                                </select>
+                                <input type="text" class="w-1/2 bg-green-50 border border-green-300 rounded py-2 px-3 focus:outline-none" id="search-registration-number" placeholder="Wyszukaj">
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2 text-gray-700">Grupa</h3>
+                            <div class="flex items-center space-x-2">
+                                <select class="w-1/2 bg-purple-50 border border-purple-300 rounded py-2 px-3 focus:outline-none" id="select-group">
+                                    <option>Wybierz grupę</option>
+                                </select>
+                                <input type="text" class="w-1/2 bg-purple-50 border border-purple-300 rounded py-2 px-3 focus:outline-none" id="search-group" placeholder="Wyszukaj">
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2 text-gray-700">Numer karty</h3>
+                            <div class="flex items-center space-x-2">
+                                <select class="w-1/2 bg-orange-50 border border-orange-300 rounded py-2 px-3 focus:outline-none" id="select-card-number">
+                                    <option>Wybierz numer karty</option>
+                                </select>
+                                <input type="text" class="w-1/2 bg-purple-50 border border-purple-300 rounded py-2 px-3 focus:outline-none" id="search-card-number" placeholder="Wyszukaj">
+                            </div>
+                        </div>
+                    </div>
+                    <div id="chart-container-1"></div>
+                    <div id="chart-container-2"></div>
+                    <div id="chart-container-3"></div>
+                </div>
+            </div>
+
+            <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+                <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+                    <span><i class="fas fa-tachometer-alt text-blue-500 mr-2"></i>Podsumowanie paliwo - pojazd/miesiąc/Ilość/wartość/licznik</span>
+                    <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                </button>
+                <div class="hidden p-0.5">
+                    <button id="generateSummary3Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
+                    <div id="summary3-table-container"></div>
+                </div>
+            </div>
+
+            <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+                <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+                    <span><i class="fas fa-tachometer-alt text-blue-500 mr-2"></i>Wskazania licznika (podział na miesiące)</span>
+                    <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                </button>
+                <div class="hidden p-0.5">
+                    <button id="generateSummary4Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
+                    <div id="summary4-table-container"></div>
+                </div>
+            </div>
+
+            <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+                <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+                    <span><i class="fas fa-gas-pump text-blue-500 mr-2"></i>Zakupy wg stacji</span>
+                    <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                </button>
+                <div class="hidden p-0.5">
+                    <button id="generateSummary5Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
+                    <div id="summary5-table-container"></div>
+                </div>
+            </div>
+
+           <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+                <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+                    <span><i class="fas fa-calendar-week text-blue-500 mr-2"></i>Transakcje Weekend #6</span>
+                    <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                </button>
+                <div class="hidden p-0.5">
+                    <button id="generateSummary6Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">
+                        Wygeneruj
+                    </button>
+                    <div class="grid grid-cols-2 md:grid-cols-2 gap-2">
+    <!-- Sobota (Żółty akcent) -->
+    <div class="bg-yellow-100 border border-yellow-200 p-2 rounded">
+        <h3 class="text-lg font-bold mb-1 text-yellow-700">
+            <i class="fas fa-calendar-check text-yellow-500 mr-2"></i>Sobota
+        </h3>
+        <p class="font-bold">Suma: <span id="SaturdaySuma" class="font-bold text-yellow-700"></span></p>
+    </div>
+
+    <!-- Niedziela (Czerwony akcent) -->
+    <div class="bg-red-100 border border-red-200 p-2 rounded">
+        <h3 class="text-lg font-bold mb-1 text-red-700">
+            <i class="fas fa-calendar-times text-red-500 mr-2"></i>Niedziela
+        </h3>
+        <p class="font-bold">Suma: <span id="SundaySuma" class="font-bold text-red-700"></span></p>
+    </div>
+</div>
+<div id="month-selector-container" class="mb-4"></div>
+<div id="summary6-table-container" class="mt-2"></div>
+                </div>
+            </div>
+
+<div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+    <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+        <span><i class="fas fa-ellipsis-h text-blue-500 mr-2"></i>Inn..go #7</span>
+        <i class="fas fa-chevron-down transition-transform duration-300"></i>
+    </button>
+    <div class="hidden p-0.5">
+        <button id="generateSummary7Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
+        <div id="summary7-table-container"></div>
+    </div>
+</div>
+
+<div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+    <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+        <span><i class="fas fa-ellipsis-h text-blue-500 mr-2"></i>Inn..go #8</span>
+        <i class="fas fa-chevron-down transition-transform duration-300"></i>
+    </button>
+    <div class="hidden p-0.5">
+        <button id="generateSummary8Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
+        <div id="summary8-table-container"></div>
+    </div>
+</div>
+
+<div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+    <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+        <span><i class="fas fa-chart-pie text-blue-500 mr-2"></i>Statystyki produktów #9 #10</span>
+        <i class="fas fa-chevron-down transition-transform duration-300"></i>
+    </button>
+    <div class="hidden p-0.5">
+        <button id="generateSummary9Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
+        <div id="summary9-table-container"></div>
+        <div id="summary10-table-container"></div>
+    </div>
+</div>
+
+<div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+    <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+        <span><i class="fas fa-clipboard-list text-blue-500 mr-2"></i>Statystyki produktów wg pojazdu/#11 #12</span>
+        <i class="fas fa-chevron-down transition-transform duration-300"></i>
+    </button>
+    <div class="hidden p-0.5">
+        <button id="generateSummary11Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
+        <div id="summary11-table-container"></div>
+        <div id="summary12-table-container"></div>
+    </div>
+</div>
+
+<div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+    <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+        <span><i class="fas fa-burn text-blue-500 mr-2"></i>Spalanie</span>
+        <i class="fas fa-chevron-down transition-transform duration-300"></i>
+    </button>
+    <div class="hidden p-0.5">
+        <button id="generateSummary13Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
+        <div id="summary13-table-container"></div>
+    </div>
+</div>
+
+<div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+    <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+        <span><i class="fas fa-burn text-blue-500 mr-2"></i>Średnia cena</span>
+        <i class="fas fa-chevron-down transition-transform duration-300"></i>
+    </button>
+    <div class="hidden p-0.5">
+        <button id="generateSummary14Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
+        <div id="summary14-table-container"></div>
+    </div>
+</div>
+<div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+    <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+        <span><i class="fas fa-burn text-blue-500 mr-2"></i>Różnice</span>
+        <i class="fas fa-chevron-down transition-transform duration-300"></i>
+    </button>
+    <div class="hidden p-0.5">
+        <button id="generateSummary15Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
+        <div id="summary15-table-container"></div>
+    </div>
+</div>
+
+            <!-- Dodatkowy akordeon dla innych funkcjonalności -->
+            <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+                <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+                    <span><i class="fas fa-cog text-blue-500 mr-2"></i>Ustawienia</span>
+                    <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                </button>
+                <div class="hidden p-0.5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <div class="settings-option p-2">
+                            <h4 class="font-semibold mb-1">Planowane opcje</h4>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" class="form-checkbox">
+                                <span>Planowane</span>
+                            </label>
+                        </div>
+                        <div class="settings-option p-2">
+                            <h4 class="font-semibold mb-1">Planowane</h4>
+                            <select class="w-full border rounded p-1">
+                                <option>Planowane1</option>
+                                <option>Planowane2</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+<!-- Przyciski generowania -->
+<div class="w-full px-2 py-2">
+    <button id="generateAllTablesButton" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300">Gen all</button>
+</div>
+
+<!-- jQuery (niezbędne jako podstawa dla wielu innych bibliotek) -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<!-- Popper.js (zależność dla Bootstrap) -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<!-- DataTables -->
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.tailwindcss.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.dataTables.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.colVis.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/rowgroup/1.1.4/js/dataTables.rowGroup.min.js"></script>
+<script src="https://cdn.datatables.net/staterestore/1.3.0/js/dataTables.stateRestore.js"></script>
+<script src="https://cdn.datatables.net/scroller/2.4.0/js/dataTables.scroller.min.js"></script>
+<script src="https://cdn.datatables.net/fixedheader/4.0.1/js/dataTables.fixedHeader.min.js"></script>
+<script src="https://cdn.datatables.net/plug-ins/1.13.7/pagination/extjs.js"></script>
+<script src="https://cdn.datatables.net/plug-ins/1.13.7/dataRender/ellipsis.js"></script>
+
+<!-- Highcharts -->
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/offline-exporting.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/highcharts-3d.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/modules/stock.js"></script>
+<script src="https://code.highcharts.com/modules/xrange.js"></script>
+<script src="https://code.highcharts.com/modules/drilldown.js"></script>
+<script src="https://code.highcharts.com/themes/gray.js"></script>
+
+<!-- Eksport do Excel i PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<!-- Biblioteka dźwięku -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+<!-- jQuery Sparklines -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sparklines/2.1.2/jquery.sparkline.min.js"></script>
+<!-- Leaflet (mapy) -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
+<script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js"></script>
+<!-- SmoothScroll -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/smoothscroll/1.4.10/SmoothScroll.min.js"></script>
+<!-- Chroma.js -->
+<script src="https://cdn.jsdelivr.net/npm/chroma-js@2.1.1/chroma.min.js"></script>
+
+<script>
+
+// Prevent zooming
+document.addEventListener('dblclick', preventDefault);
+document.addEventListener('gesturestart', preventDefault);
+function preventDefault(event) {
+    if (!event.target.closest('.no-zoom')) event.preventDefault();
+}
+
+// Global variables
+let mainTable, summaryTable, summary2Table;
+let jsonData = [];
+let selectedGroup = '';
+let selectedColumn = '';
+let valueColumn = 'Wartość netto';
+let selectedRegistrationNumber = '';
+let selectedCardNumber = '';
+let useRowGrouping = true; 
+const cardNumbersWithDescriptions = {};
+const uniqueRegistrationNumbers = new Set();
+const uniqueGroups = new Set();
+const activeCardsColumn = 'Nr karty';
+
+// Group mapping
+const groupMapping = {
+    '01': 'Olej napędowy', '02': 'Olej napędowy', '03': 'Benzyna', '05': 'Benzyna',
+    '06': 'LPG', '08': 'Bioester', '11': 'Oleje silnikowe', '12': 'Płyny eksploatacyjne',
+    '13': 'Oleje i smary przemysłowe', '14': 'Produkty naftowe', '20': 'Usługi myjni',
+    '21': 'Usługi inne', '24': 'Energia elektryczna', '29': 'Autokosmetyki',
+    '30': 'Artykuły motoryzacyjne', '35': 'Opłaty parkingowe', '36': 'Autostrady',
+    '41': 'Autostrady', '49': 'Autostrady', '50': 'Artykuły konsumenckie',
+    '51': 'Artykuły spożywcze', '52': 'Napoje', '53': 'Artykuły tytoniowe',
+    '54': 'Alkohole', '80': 'Opłata za karty', '81': 'AdBlue', '86': 'Usługa webserwisu',
+    'Części do norm czasowych': 'Materiały', 'Części do obsługi technicznej': 'Materiały',
+    'Część': 'Materiały', 'Felga': 'Materiały', 'Opona letnia': 'Materiały',
+    'Opona zimowa': 'Materiały', 'Normy czasowe': 'Usługi', 'Obsługa techniczna': 'Usługi',
+    'Przechowanie opon': 'Usługi', 'Usługa oponiarska': 'Usługi', 'Usługa warsztatowa': 'Usługi',
+    'Usługa inna': 'Usługi', 'Usługa kurierska': 'Usługi',
+    'oplata serwisowa - najem dlugoterminowy VWFS': 'Najem długoterminowy - opłata serwisowa',
+    'opłata serwisowa - najem długoterminowy VWFS': 'Najem długoterminowy - opłata serwisowa',
+    'opłata serwisowa - najem długoterminowy': 'Najem długoterminowy - opłata serwisowa',
+    'oplata serwisowa - najem dlugoterminowy': 'Najem długoterminowy - opłata serwisowa',
+    'czynsz finansowy - najem dlugoterminowy VWFS': 'Najem długoterminowy - czynsz',
+    'czynsz finansowy - najem długoterminowy VWFS': 'Najem długoterminowy - czynsz',
+    'czynsz finansowy - najem dlugoterminowy': 'Najem długoterminowy - czynsz',
+    'czynsz finansowy - najem długoterminowy': 'Najem długoterminowy - czynsz'
+};
+
+let columnIndices = {};
+
+$(document).ready(() => {
+    const files = [];
+    let totalImportTime = 0;
+    let importedFileCount = 0;
+    const $fileInput = $('#file-input');
+    const $fileList = $('#file-list');
+    const $totalImportTime = $("#total-import-time");
+    const dropzone = $('#dropzone');
+
+    // File drag and drop handling
+    dropzone.on('click', () => $fileInput.click());
+    $fileInput.on('change', (e) => handleFiles(e.target.files));
+
+    ['dragover', 'dragleave', 'drop'].forEach(eventType => {
+        dropzone.on(eventType, handleDragEvent);
+    });
+
+    function handleDragEvent(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.toggleClass('dragging', e.type === 'dragover');
+        if (e.type === 'drop') handleFiles(e.originalEvent.dataTransfer.files);
+    }
+
+    function handleFiles(selectedFiles) {
+        const newFiles = Array.from(selectedFiles).filter(validateFile);
+        if (newFiles.length === 0) return;
+
+        renderFileList(newFiles);
+        processFiles(newFiles);
+    }
+
+    function validateFile(file) {
+        const fileType = file.name.split('.').pop().toLowerCase();
+        if (!['xls', 'xlsx', 'csv'].includes(fileType)) {
+            alert('Nieprawidłowy format pliku. Proszę wczytać plik typu xls, xlsx lub csv.');
+            return false;
+        }
+        if (files.some(importedFile => importedFile.name === file.name)) {
+            return false;
+        }
+        return true;
+    }
+
+    function renderFileList(newFiles) {
+        const fragment = document.createDocumentFragment();
+        newFiles.forEach((file) => {
+            files.push(file);
+            const li = document.createElement('li');
+            li.className = 'list-group-item';
+            li.innerHTML = `${file.name} <span class="import-time"></span> 
+                            <button class='btn btn-danger btn-sm remove-file' data-index='${files.length}'>Usuń</button>`;
+            fragment.appendChild(li);
+        });
+        $fileList.append(fragment);
+    }
+
+    function processFiles(newFiles) {
+        Promise.all(newFiles.map((file, index) => readAndRenderDataAsync(file, index + 1)))
+            .then(() => {
+                console.log("Wszystkie pliki zostały przetworzone.");
+                updateImportSummary();
+            })
+            .catch(error => alert(`Wystąpił błąd podczas przetwarzania plików: ${error.message}`));
+    }
+
+    async function detectFileEncoding(arrayBuffer) {
+        const uint8Array = new Uint8Array(arrayBuffer);
+        if (uint8Array.length >= 3 && 
+            uint8Array[0] === 0xEF && 
+            uint8Array[1] === 0xBB && 
+            uint8Array[2] === 0xBF) {
+            return 'UTF-8-BOM';
+        }
+
+        const textDecoder = new TextDecoder('utf-8', { fatal: false });
+        const content = textDecoder.decode(uint8Array.slice(0, Math.min(1024, uint8Array.length)));
+        
+        if (/[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/.test(content)) {
+            return 'UTF-8';
+        }
+
+        try {
+            const windows1250Decoder = new TextDecoder('windows-1250', { fatal: true });
+            windows1250Decoder.decode(uint8Array.slice(0, Math.min(1024, uint8Array.length)));
+            return 'WINDOWS-1250';
+        } catch (e) {
+            return 'UTF-8';
+        }
+    }
+
+    const readAsArrayBufferAsync = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.onerror = e => reject(e);
+        reader.readAsArrayBuffer(file);
+    });
+
+    async function readAndRenderDataAsync(file, index) {
+        const startTime = performance.now();
+        try {
+            const arrayBuffer = await readAsArrayBufferAsync(file);
+            const encoding = await detectFileEncoding(arrayBuffer);
+            
+            if (file.name.toLowerCase().endsWith('.csv')) {
+                const decoder = new TextDecoder(encoding.replace('-BOM', ''));
+                let csvContent = decoder.decode(arrayBuffer);
+                
+                if (encoding === 'UTF-8-BOM') {
+                    csvContent = csvContent.replace(/^\uFEFF/, '');
+                }
+
+                const workbook = XLSX.read(csvContent, {
+                    type: 'string',
+                    raw: true,
+                    cellDates: true,
+                    dateNF: 'yyyy-mm-dd',
+                    encoding: encoding
+                });
+                
+                processWorkbook(workbook, index, startTime);
+            } else {
+                const workbook = XLSX.read(arrayBuffer, {
+                    type: 'array',
+                    cellDates: true,
+                    dateNF: 'yyyy-mm-dd'
+                });
+                
+                processWorkbook(workbook, index, startTime);
+            }
+        } catch (error) {
+            console.error("Błąd odczytu pliku:", error);
+            alert(`Wystąpił błąd podczas importu pliku: ${error.message}`);
+        }
+    }
+
+    function processWorkbook(workbook, index, startTime) {
+        const sheetName = workbook.SheetNames[0];
+        let newData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {
+            raw: false,
+            dateNF: 'yyyy-mm-dd',
+            header: 1,
+            defval: ''
+        });
+
+        newData = newData
+            .filter(row => row.some(value => value !== null && value !== undefined && value.toString().trim() !== ''))
+            .map(row => row.map(value => {
+                if (typeof value === 'string') {
+                    return value
+                        .replace(/\"\"/g, '"')
+                        .normalize('NFKC')
+                        .trim();
+                }
+                return value;
+            }));
+
+        const headersToChange = {
+            'NrFaktury': 'Nr karty',
+            'MiejsceKosztu': 'Miejscowość',
+            'Dział': 'Miejscowość',
+            'DataKosztu': 'Data realizacji',
+            'dataDokumentu': 'Data realizacji',
+            'Data utworzenia': 'Data realizacji',
+            'Tresc': 'Dane kosztowe',
+            'Opis': 'Dane kosztowe',
+            'ImportKodProduktu': 'Grupa prod',
+            'OpisRodzajuKosztu': 'Grupa prod',
+            'PozycjaOpis': 'Dane dodatkowe',
+            'Ilosc': 'Ilość',
+            'Ilość litrów': 'Ilość',
+            'ImportNrRejestracyjny': 'Nr rejestracyjny',
+            'Rejestracja': 'Nr rejestracyjny',
+            'Nazwa obiektu kosztowego': 'Nr rejestracyjny',
+            'StanLicznika': 'Licznik',
+            'Aktualny Przebieg': 'Licznik',
+            'Wartość netto fak': 'Wartość netto',
+            'NettoOpis': 'Wartość netto',
+            'Netto': 'Wartość netto',
+            'Nazwa': 'Nr rejestracyjny',
+            'Oddział': 'Miejscowość',
+            'Numer karty FLOTA': 'Nr karty',
+            'Numer karty': 'Nr karty',
+            'AktualnyPrzebieg': 'Licznik',
+            'Rodzaj': 'Grupa prod',
+            'Data pierwszej rejestracji': 'Data realizacji',
+            'Kwota zakupu': 'Wartość netto'
+        };
+
+        newData[0] = newData[0].map(header => {
+            const normalizedHeader = typeof header === 'string' 
+                ? header.normalize('NFKC').trim() 
+                : header;
+            return headersToChange[normalizedHeader] || normalizedHeader;
+        });
+
+        columnIndices = Object.fromEntries(newData[0].map((header, index) => [header, index]));
+
+        processNewData(newData, index);
+
+        const endTime = performance.now();
+        const importTime = ((endTime - startTime) / 1000).toFixed(2);
+        totalImportTime += parseFloat(importTime);
+        importedFileCount++;
+
+        $fileList.find(`li:nth-child(${index}) .import-time`).text(`(Czas importu: ${importTime}s)`);
+        updateImportSummary();
+    }
+
+    function updateImportSummary() {
+        $totalImportTime.text(`✔️Zaimportowano ${importedFileCount} ${importedFileCount === 1 ? 'plik' : 'pliki/ów'}: ${totalImportTime.toFixed(2)}s`);
+    }
+
+    function processNewData(newData, index) {
+        const surnameColumnIndex = columnIndices['Nazwisko'];
+        const registrationNumberColumnIndex = columnIndices['Nr rejestracyjny'];
+        const cardNumberIndex = columnIndices['Nr karty'];
+        const groupProdIndex = columnIndices['Grupa prod'];
+
+        if (jsonData.length === 0) {
+            jsonData = newData;
+        } else {
+            jsonData = jsonData.concat(newData.slice(1));
+        }
+
+        newData.slice(1).forEach(row => {
+            if (registrationNumberColumnIndex !== undefined) {
+                if (!row[registrationNumberColumnIndex] && surnameColumnIndex !== undefined) {
+                    row[registrationNumberColumnIndex] = row[surnameColumnIndex] || '';
+                }
+
+                if (row[registrationNumberColumnIndex]) {
+                    row[registrationNumberColumnIndex] = row[registrationNumberColumnIndex].toString().replace(/\s/g, '').toUpperCase();
+                    uniqueRegistrationNumbers.add(row[registrationNumberColumnIndex]);
+                }
+            }
+
+            if (cardNumberIndex !== undefined && groupProdIndex !== undefined) {
+                const cardNumber = row[cardNumberIndex];
+                const cardDescription = row[registrationNumberColumnIndex];
+                if (cardNumber) {
+                    cardNumbersWithDescriptions[cardNumber.toString().toUpperCase()] = cardDescription;
+                }
+            }
+
+            if (groupProdIndex !== undefined) {
+                const originalGroup = row[groupProdIndex];
+                let newGroup = originalGroup;
+                const groupMappings = {
+                    '401-115-01-1': 'Paliwo',
+                    '402-211-03-1': 'Usługi monitoring GPS',
+                    '401-116-01-1': 'Materiały części',
+                    '401-116-02-1': 'Materiały opony',
+                    '401-199-1': 'Materiały pozostałe',
+                    '401-116-03-1': 'Materiały części',
+                    '402-211-04-1': 'Usługi przeglądy',
+                    '402-211-05-1': 'Usługi myjnia',
+                    '403-302-05-1': 'Autostrady',
+                    '762-03-03-2': 'Szkody',
+                    '762-03-03-1': 'Szkody',
+                    '403-302-99-1': 'Podatki i opłaty',
+                    '402-211-02-1': 'Usługi opon',
+                    '402-211-02-2': 'Usługi opon',
+                    '402-211-01-1': 'Usługi',
+                    '402-299-1': 'Usługi',
+                    '248-02-0': 'Najem długoterminowy - czynsz',
+                    '406-605-': 'Ubezpieczenia',
+                    '080-01-01': 'Zakupy Inwestycyjne nowe',
+                    '080-01-02': 'Zakupy Inwestycyjne używane',
+                    '406-601-99': 'Reklama',
+                    '247-01-0100568': 'Kaucje',
+                    '403-301-02': 'Podatki i opłaty',
+                    '402-211-02-2': 'Podatki i opłaty',
+                    '402-201-99-1': 'Najem inne'
+                };
+
+                for (const [key, value] of Object.entries(groupMappings)) {
+                    if (originalGroup.includes(key)) {
+                        newGroup = value;
+                        break;
+                    }
+                }
+
+                newGroup = groupMapping[originalGroup] || newGroup;
+                row[groupProdIndex] = newGroup;
+                uniqueGroups.add(newGroup);
+            }
+        });
+
+        renderMainTable();
+        updateUILists();
+    }
+
+    const renderMainTable = () => {
+    const data = jsonData.slice(1);
+    if (!mainTable) {
+        createMainTable(jsonData);
+    } else {
+        mainTable.clear().rows.add(data).draw();
+    }
+};
+
+const createMainTable = jsonData => {
+    // Initialize column indices
+    jsonData[0].forEach((col, index) => {
+        columnIndices[col] = index;
+    });
+
+    // Add UI controls before table initialization
+    addRowGroupingToggle();
+    addRowGroupSelect(jsonData[0]);
+
+    const hiddenColumns = [
+        'MPK', 'Nazwa produktu', 'Rodzaj pojazdu', 'EAN', 
+        'Data księgowania', 'Pozycja faktury', 'Wartość fak', 
+        'Cena za litr', 'Stawka vat', 'Wartość vat fak', 
+        'Wartość netto - stacja', 'Wartość VAT - stacja', 
+        'Wartość brutto - stacja', 'CenaSprzedazySrednia', 
+        'IdFloty', 'Cena_załącznik'
+    ];
+
+    mainTable = $('#example').DataTable({
+        data: jsonData.slice(1),
+        columns: jsonData[0].map((col, index) => ({
+            title: col,
+            visible: !hiddenColumns.includes(col),
+            render: (data, type) => renderTableCell(data, type, col),
+            className: isColumnEditable(col) ? 'editable' : '',
+        })),
+        stateSave: true,
+        processing: true,
+        deferRender: true,
+        scrollX: true,
+        scroller: { 
+            loadingIndicator: true, 
+            displayBuffer: 10 
+        },
+        dom: '<"ex-buttons"Bf>lrtip',
+        buttons: getTableButtons(),
+        colReorder: true,
+        responsive: true,
+        ordering: true,
+        pageLength: 10,
+        lengthMenu: [10, 25, 50, 100],
+        searching: true,
+        scrollY: 450,
+        drawCallback: updateTableFooter,
+        footerCallback: updateTableFooter,
+        initComplete: function(settings, json) {
+            updateColumnSelect();
+            initializeEditing();
+        },
+        rowGroup: {
+            dataSrc: function(row) {
+                const columnIndex = parseInt($('#rowGroupSelect').val());
+                return row[columnIndex];
+            },
+            enable: useRowGrouping
+        },
+        order: []
+    });
+
+    initializeRowGrouping();
+};
+
+const getTableButtons = () => {
+    return [
+        {
+            extend: 'collection',
+            text: 'Export',
+            className: 'ex-buttons',
+            buttons: [
+                { 
+                    extend: 'csv', 
+                    charset: 'UTF-8', 
+                    bom: true, 
+                    exportOptions: { columns: ':visible' } 
+                },
+                { 
+                    extend: 'excel', 
+                    title: null, 
+                    exportOptions: { columns: ':visible' } 
+                },
+                {
+                    extend: 'pdfHtml5',
+                    orientation: 'landscape',
+                    pageSize: 'A4',
+                    title: 'List PDF',
+                    exportOptions: { columns: ':visible' },
+                    customize: doc => {
+                        doc.styles.title = { 
+                            color: 'blue', 
+                            fontSize: '25', 
+                            bold: true 
+                        };
+                        doc.content[1].table.widths = 
+                            Array(doc.content[1].table.body[0].length + 1)
+                                .join('*').split('');
+                    }
+                }
+            ]
+        },
+        {
+            text: 'Zapisz zmiany',
+            action: function () {
+                saveChanges();
+            }
+        }
+    ];
+};
+
+const isColumnEditable = (columnName) => {
+    const editableColumns = [
+        'Nr rejestracyjny',
+        'Ilość',
+        'Imię',
+        'Dane kosztowe',
+        'Dane dodatkowe',
+        'Nazwisko',
+        'Licznik',
+        'Wartość netto',
+        'Grupa prod'
+    ];
+    return editableColumns.includes(columnName);
+};
+
+const initializeEditing = () => {
+    $('#example').on('click', 'td.editable', function(e) {
+        const cell = mainTable.cell(this);
+        const columnName = mainTable.column(this).header().textContent;
+        const originalValue = cell.data();
+        
+        if ($(this).find('input, select').length === 0) {
+            const input = createEditInput(columnName, originalValue);
+            $(this).html(input);
+            input.focus();
+
+            input.on('blur keyup', function(e) {
+                if (e.type === 'blur' || (e.type === 'keyup' && e.key === 'Enter')) {
+                    const newValue = validateAndFormatValue($(this).val(), columnName, originalValue);
+                    cell.data(newValue).draw();
+                    markCellAsEdited(cell.node());
+                }
+                if (e.type === 'keyup' && e.key === 'Escape') {
+                    cell.data(originalValue).draw();
+                }
+            });
+        }
+    });
+};
+
+const createEditInput = (columnName, value) => {
+    let input;
+    
+    switch(columnName) {
+        case 'Grupa prod':
+            input = $('<select>')
+                .append([
+                    'Olej napędowy', 
+                    'Benzyna', 
+                    'Autostrady', 
+                    'AdBlue', 
+                    'Oleje silnikowe', 
+                    'LPG', 
+                    'Energia elektryczna'
+                ].map(option => 
+                    $('<option>').val(option).text(option)
+                ));
+            input.val(value);
+            break;
+            
+        case 'Ilość':
+        case 'Wartość netto':
+            input = $('<input>')
+                .attr('type', 'number')
+                .attr('step', '0.01')
+                .val(value);
+            break;
+            
+        default:
+            input = $('<input>')
+                .attr('type', 'text')
+                .val(value);
+    }
+    
+    return input.addClass('form-control');
+};
+
+const validateAndFormatValue = (value, columnName, originalValue) => {
+    switch(columnName) {
+        case 'Ilość':
+        case 'Wartość netto':
+            const numValue = parseFloat(value);
+            return isNaN(numValue) ? originalValue : numValue.toFixed(2);
+            
+        case 'Nr rejestracyjny':
+            return value.toUpperCase();
+            
+        default:
+            return value;
+    }
+};
+
+const markCellAsEdited = (cell) => {
+    $(cell).addClass('edited');
+};
+
+const saveChanges = () => {
+    const editedData = [];
+    mainTable.$('td.edited').each(function() {
+        const row = mainTable.row(this).data();
+        const columnName = mainTable.column(this).header().textContent;
+        const newValue = mainTable.cell(this).data();
+        
+        editedData.push({
+            rowData: row,
+            column: columnName,
+            newValue: newValue
+        });
+    });
+    
+    console.log('Zapisane zmiany:', editedData);
+    mainTable.$('td.edited').removeClass('edited');
+};
+
+const addStyles = () => {
+    const style = document.createElement('style');
+    style.textContent = `
+        .editable {
+            cursor: pointer;
+            position: relative;
+        }
+        .editable:hover::after {
+            content: "✎";
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.5;
+        }
+        .edited {
+            background-color: #fff3cd !important;
+        }
+        .form-control {
+            width: 100%;
+            padding: 4px;
+            box-sizing: border-box;
+        }
+        #rowGroupingToggleContainer {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #rowGroupSelect {
+            margin-bottom: 10px;
+        }
+    `;
+    document.head.appendChild(style);
+};
+
+const addRowGroupingToggle = () => {
+    const toggleHtml = `
+        <div id="rowGroupingToggleContainer">
+            <label style="display: flex; align-items: center; cursor: pointer;">
+                <input type="checkbox" id="rowGroupingToggle" ${useRowGrouping ? 'checked' : ''} style="margin-right: 10px;">
+                <span>Włącz grupowanie wierszy</span>
+            </label>
+        </div>
+    `;
+    
+    $('#example').before(toggleHtml);
+
+    $('#rowGroupingToggle').on('change', function() {
+        useRowGrouping = this.checked;
+        if (mainTable) {
+            mainTable.rowGroup().enable(useRowGrouping).draw();
+        }
+    });
+};
+
+const addRowGroupSelect = (columns) => {
+    const selectHtml = `
+        <div>
+            <label for="rowGroupSelect">Grupuj dane wg:</label>
+            <select id="rowGroupSelect"></select>
+        </div>
+    `;
+    
+    $('#example').before(selectHtml);
+
+    const $rowGroupSelect = $('#rowGroupSelect');
+    columns.forEach((col, index) => {
+        $rowGroupSelect.append($('<option></option>').val(index).text(col));
+    });
+
+    const defaultGroupColumn = columns.indexOf('Nr rejestracyjny');
+    if (defaultGroupColumn !== -1) {
+        $rowGroupSelect.val(defaultGroupColumn);
+    }
+};
+
+const initializeRowGrouping = () => {
+    $('#rowGroupSelect').on('change', function() {
+        const selectedColumn = parseInt($(this).val());
+        mainTable.order([selectedColumn, 'asc'])
+            .rowGroup()
+            .dataSrc(function(row) {
+                return row[selectedColumn];
+            })
+            .draw();
+    });
+
+    $('#rowGroupSelect').trigger('change');
+};
+
+const renderTableCell = (data, type, col) => {
+    if (data == null) return '';
+    if (type === 'export' || type === 'sort' || type === 'filter') return data;
+
+    switch (col) {
+        case 'Data realizacji':
+            const date = new Date(data);
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        case 'Nr karty':
+            return data.toString().replace(/\B(?=(\d{4})+(?!\d))/g, ' ');
+        case 'Wartość netto':
+            return parseFloat(data).toFixed(2);
+        case 'Grupa prod':
+            const colors = {
+                'Olej napędowy': { bg: '#FFE5B2', color: '#4D3000' },
+                'Benzyna': { bg: '#FF9E9E', color: '#8B0000' },
+                'Autostrady': { bg: '#90EE90', color: '#006400' },
+                'AdBlue': { bg: '#ADD8E6', color: '#00008B' },
+                'Oleje silnikowe': { bg: '#D3D3D3', color: '#2F4F4F' },
+                'LPG': { bg: '#98FB98', color: '#006400' },
+                'Usługi': { bg: '#ADD8E6', color: '#00008B' },
+                'Materiały': { bg: '#FFE4B5', color: '#8B4513' },
+                'Energia elektryczna': { bg: '#87CEEB', color: '#00008B' }
+            };
+            const style = colors[data] || { bg: '#e0e0e0', color: '#757575' };
+            return `<span style="background-color: ${style.bg}; color: ${style.color}; display: inline-block; width: 100%; padding: 2px 5px; border-radius: 3px;">${data}</span>`;
+        default:
+            return data;
+    }
+};
+
+const updateTableFooter = function() {
+    const api = this.api();
+    if (columnIndices['Wartość netto'] !== undefined) {
+        const colIndex = columnIndices['Wartość netto'];
+        const sum = api.column(colIndex, { page: 'current' })
+            .data()
+            .reduce((a, b) => a + parseFloat(b), 0);
+        $(api.column(colIndex).footer()).html('Suma: ' + sum.toFixed(2));
+    }
+    $('.dataTables_scrollBody thead tr').css({ visibility: 'collapse' });
+};
+
+const updateColumnSelect = () => {
+    const $select = $('#columnVisibility');
+    if (!$select.length || !mainTable) return;
+
+    $select.empty();
+    
+    jsonData[0].forEach((col, index) => {
+        const $option = $('<option></option>')
+            .val(index)
+            .text(col)
+            .prop('selected', mainTable.column(index).visible());
+        $select.append($option);
+    });
+
+    $select.off('change').on('change', function() {
+        const columnsToHide = [];
+        const columnsToShow = [];
+
+        $('option', this).each(function() {
+            const columnIndex = $(this).val();
+            ($(this).is(':selected') ? columnsToShow : columnsToHide).push(columnIndex);
+        });
+
+        mainTable.columns(columnsToHide).visible(false, false);
+        mainTable.columns(columnsToShow).visible(true, false);
+        mainTable.columns.adjust().draw(false);
+    });
+};
+
+// Initialize styles on load
+addStyles();
+
+function updateUILists() {
+    updateSelectOptions('#groupSelect', Array.from(uniqueGroups));
+    updateSelectOptions('#registrationNumberSelect', Array.from(uniqueRegistrationNumbers));
+    updateSelectOptions('#cardNumberSelect', Object.keys(cardNumbersWithDescriptions));
+}
+
+function updateSelectOptions(selectId, options) {
+    const $select = $(selectId);
+    $select.empty().append('<option value="">Wszystkie</option>');
+    options.forEach(option => {
+        $select.append($('<option></option>').val(option).text(option));
+    });
+}
+
+    $("#generate-summary").on('click', () => {
+        generateSummaryTable();
+        generateSummary2Table();
+        renderCharts();
+    });
+
+    function generateSummaryTable() {
+        const mainTableData = mainTable.rows().data().toArray();
+        const summaryData = mainTableData.reduce((summary, row) => {
+            const group = row[columnIndices['Grupa prod']];
+            const quantity = parseFloat(row[columnIndices['Ilość']]) || 0;
+            const netValue = parseFloat(row[columnIndices['Wartość netto']]);
+            if (!isNaN(quantity) && !isNaN(netValue)) {
+                if (!summary[group]) summary[group] = { 'Ilość': 0, 'Wartość netto': 0 };
+                summary[group]['Ilość'] += quantity;
+                summary[group]['Wartość netto'] += netValue;
+            }
+            return summary;
+        }, {});
+
+        const summaryTable = $('<table class="table table-striped summary-table"></table>');
+        summaryTable.append('<thead><tr><th>Produkt</th><th>Ilość</th><th>Wartość netto</th></tr></thead>');
+        let tableBody = '<tbody>';
+        Object.entries(summaryData)
+            .sort((a, b) => b[1]['Wartość netto'] - a[1]['Wartość netto'])
+            .forEach(([group, value]) => {
+                tableBody += `<tr><td>${group}</td><td>${value['Ilość'].toFixed(2)}</td><td>${value['Wartość netto'].toFixed(2)}</td></tr>`;
+            });
+        summaryTable.append(tableBody + '</tbody>');
+        $("#summary-table-container").html(summaryTable);
+
+        initializeDataTable("#summary-table-container table", {
+            ordering: false,
+            order: [[2, 'desc']]
+        });
+    }
+
+    function generateSummary2Table() {
+        const mainTableData = mainTable.rows().data().toArray();
+        const summary2Data = {};
+        mainTableData.forEach(row => {
+            const rowRegistrationNumber = row[columnIndices['Nr rejestracyjny']];
+            const rowCardNumber = row[columnIndices['Nr karty']];
+            if ((selectedRegistrationNumber === '' || rowRegistrationNumber === selectedRegistrationNumber) &&
+                (selectedCardNumber === '' || rowCardNumber === selectedCardNumber)) {
+                const date = row[columnIndices['Data realizacji']];
+                const value = parseFloat(row[columnIndices[valueColumn]]);
+                const group = row[columnIndices['Grupa prod']];
+                if (!isNaN(value) && date && (selectedGroup === '' || group === selectedGroup || selectedGroup === 'Wszystkie grupy')) {
+                    const year = new Date(date).getFullYear();
+                    const month = new Date(date).getMonth() + 1;
+                    if (!summary2Data[month]) summary2Data[month] = {};
+                    if (!summary2Data[month][year]) summary2Data[month][year] = { 'value': 0, 'activeCardsCount': new Set() };
+                    if (valueColumn === activeCardsColumn) {
+                        summary2Data[month][year]['activeCardsCount'].add(row[columnIndices[activeCardsColumn]]);
+                    } else {
+                        summary2Data[month][year]['value'] += value;
+                    }
+                }
+            }
+        });
+
+        const uniqueYears = Array.from(new Set(mainTableData.map(row => new Date(row[columnIndices['Data realizacji']]).getFullYear()))).sort((a, b) => a - b);
+        const coloringData = uniqueYears.reduce((acc, year) => {
+            const yearValues = Array(12).fill(0).map((_, month) => {
+                const monthData = summary2Data[month + 1]?.[year];
+                return monthData ? (valueColumn !== activeCardsColumn ? monthData['value'] : monthData['activeCardsCount'].size) : 0;
+            });
+            acc[year] = findExtremesIndices(yearValues);
+            return acc;
+        }, {});
+
+        const summary2Table = $('<table class="table table-striped summary2-table"></table>');
+        summary2Table.append(`<thead><tr><th>Miesiąc</th>${uniqueYears.map(year => `<th>${year}</th>`).join('')}</tr></thead>`);
+
+        let tableBody = '<tbody>';
+        for (let month = 1; month <= 12; month++) {
+            tableBody += `<tr><td>${getMonthName(month)}</td>`;
+            uniqueYears.forEach(year => {
+                const monthData = summary2Data[month]?.[year];
+                const value = monthData ? (valueColumn !== activeCardsColumn ? monthData['value'].toFixed(2) : monthData['activeCardsCount'].size.toFixed(0)) : '0';
+                let cellStyle = '';
+                if (coloringData[year].highest.has(month - 1)) {
+                    cellStyle = ' style="color: red;"';
+                } else if (coloringData[year].lowest.has(month - 1)) {
+                    cellStyle = ' style="color: green;"';
+                }
+                tableBody += `<td${cellStyle}>${value}</td>`;
+            });
+            tableBody += '</tr>';
+        }
+        summary2Table.append(tableBody + '</tbody>');
+        $("#summary2-table-container").html(summary2Table);
+
+        initializeDataTable("#summary2-table-container table", { ordering: false });
+    }
+
+    function initializeDataTable(selector, additionalOptions = {}) {
+        const dataTable = $(selector);
+        if ($.fn.dataTable.isDataTable(dataTable)) {
+            dataTable.DataTable().destroy();
+        }
+        dataTable.DataTable({
+            dom: '<"ex-buttons"Bf>lrtip',
+            buttons: [
+                {
+                    extend: 'collection',
+                    text: 'Export',
+                    className: 'ex-buttons',
+                    buttons: [
+                        { extend: 'csv', charset: 'UTF-8', bom: true },
+                        { extend: 'excel', title: null },
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'A4',
+                            title: 'List PDF',
+                            customize: function(doc) {
+                                doc.styles.title = { color: 'blue', fontSize: '25', bold: true };
+                                doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                            }
+                        }
+                    ]
+                }
+            ],
+            paging: false,
+            searching: false,
+            info: false,
+            ...additionalOptions
+        });
+    }
+
+    const getMonthName = monthNumber => ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"][monthNumber - 1];
+
+    function findExtremesIndices(values) {
+        const sortedIndices = values.map((v, i) => [v, i]).sort((a, b) => a[0] - b[0]);
+        const lowestIndices = sortedIndices.slice(0, 4).map(v => v[1]);
+        const highestIndices = sortedIndices.slice(-4).map(v => v[1]);
+        return { lowest: new Set(lowestIndices), highest: new Set(highestIndices) };
+    }
+
+    function updateUILists() {
+        const updateList = (searchId, selectId, dataSource, optionFormatter) => {
+            const searchTerm = $(`#${searchId}`).val().toUpperCase();
+            const options = ['<option value="">Wszystkie</option>'];
+            Array.from(dataSource)
+                .filter(item => {
+                    if (typeof item === 'string') {
+                        return item.toUpperCase().includes(searchTerm);
+                    } else if (typeof item === 'object') {
+                        return item.number.toUpperCase().includes(searchTerm) ||
+                            item.description.toUpperCase().includes(searchTerm);
+                    }
+                    return false;
+                })
+                .sort((a, b) => {
+                    if (typeof a === 'string') return a.localeCompare(b);
+                    return a.number.localeCompare(b.number);
+                })
+                .forEach(item => {
+                    options.push(optionFormatter(item));
+                });
+            $(`#${selectId}`).html(options.join(''));
+        };
+
+        updateList('search-registration-number', 'select-registration-number', uniqueRegistrationNumbers,
+            number => `<option value="${number}">${number}</option>`);
+        updateList('search-group', 'select-group', uniqueGroups,
+            group => `<option value="${group}">${group}</option>`);
+        updateList('search-card-number', 'select-card-number',
+            Object.entries(cardNumbersWithDescriptions).map(([number, description]) => ({ number, description })),
+            item => `<option value="${item.number}">${item.number} - ${item.description}</option>`);
+    }
+
+    ['registration-number', 'group', 'card-number'].forEach(item => {
+        $(`#search-${item}`).on('input', () => updateUILists());
+    });
+
+    $("#select-column, #select-group, #select-registration-number, #select-card-number").on("change", function() {
+        selectedColumn = $("#select-column").val();
+        valueColumn = selectedColumn === 'activeCardsColumn' ? activeCardsColumn : selectedColumn;
+        selectedGroup = $("#select-group").val();
+        selectedRegistrationNumber = $("#select-registration-number").val();
+        selectedCardNumber = $("#select-card-number").val();
+        generateSummary2Table();
+        renderCharts();
+    });
+
+    function renderCharts() {
+        if (!mainTable || !$.fn.DataTable.isDataTable(mainTable)) {
+            console.error("Tabela mainTable nie jest zainicjowana lub nie zawiera danych.");
+            return;
+        }
+                
+        const mainTableData = mainTable.rows().data().toArray();
+        const filteredData = mainTableData.filter(row =>
+            (selectedRegistrationNumber === '' || row[columnIndices['Nr rejestracyjny']] === selectedRegistrationNumber) &&
+            (selectedGroup === '' || row[columnIndices['Grupa prod']] === selectedGroup || selectedGroup === 'Wszystkie grupy') &&
+            (selectedCardNumber === '' || row[columnIndices['Nr karty']] === selectedCardNumber)
+        );
+
+        if (filteredData.length === 0) {
+            console.error("Brak danych do wygenerowania wykresu.");
+            return;
+        }
+
+        const seriesData = new Map();
+        const allMonths = new Set();
+
+        filteredData.forEach(row => {
+            const date = new Date(row[columnIndices['Data realizacji']]);
+            const value = parseFloat(row[columnIndices[valueColumn]]);
+            const group = row[columnIndices['Grupa prod']];
+            const cardNumber = row[columnIndices['Nr karty']];
+
+            if (!isNaN(value) && date) {
+                const year = date.getFullYear();
+                const month = date.getMonth();
+                const category = `${year}-${('0' + (month + 1)).slice(-2)}`;
+                allMonths.add(category);
+
+                if (!seriesData.has(group)) seriesData.set(group, new Map());
+                if (!seriesData.get(group).has(category)) seriesData.get(group).set(category, { value: 0, activeCardsCount: new Set() });
+
+                if (valueColumn === activeCardsColumn) {
+                    seriesData.get(group).get(category).activeCardsCount.add(cardNumber);
+                } else {
+                    seriesData.get(group).get(category).value += value;
+                }
+            }
+        });
+
+        const chartData = Array.from(seriesData).map(([group, groupData]) => ({
+            name: group,
+            data: Array.from(allMonths).sort().map(category => {
+                const value = groupData.has(category)
+                    ? (valueColumn !== activeCardsColumn
+                        ? groupData.get(category).value
+                        : groupData.get(category).activeCardsCount.size)
+                    : 0;
+                return [Date.parse(category), parseFloat(value.toFixed(2))];
+            })
+        }));
+
+        const chartTitle = `${valueColumn} - ${selectedGroup || 'Wszystkie grupy'} - ${selectedCardNumber ? (cardNumbersWithDescriptions[selectedCardNumber.toUpperCase()] || selectedCardNumber) : (selectedRegistrationNumber || 'Wszystkie auta')}`;
+
+        const chartOptions = {
+            chart: {
+                backgroundColor: Highcharts.theme?.chart?.backgroundColor ?? 'transparent',
+                animation: { duration: 1000 },
+                height: null,
+                zoomType: 'xy'
+            },
+            title: { text: chartTitle, style: Highcharts.theme?.title?.style },
+            credits: { enabled: false },
+            xAxis: {
+                type: 'datetime',
+                labels: {
+                    formatter: function() { return Highcharts.dateFormat('%Y-%m', this.value); },
+                    style: { color: '#ffffff', fontSize: '10px' }
+                },
+                dateTimeLabelFormats: { month: '%b' }
+            },
+            yAxis: {
+                title: { text: valueColumn, style: { color: '#a3ff12' } },
+                labels: { style: { fontSize: '12px', color: '#ffffff' } }
+            },
+            tooltip: { shared: true, crosshairs: true },
+            series: chartData,
+            rangeSelector: {
+                enabled: true,
+                buttons: [
+                    { type: 'year', count: 1, text: '1 rok' },
+                    { type: 'year', count: 2, text: '2 lata' },
+                    { type: 'all', text: 'Cały okres' }
+                ],
+                buttonTheme: { width: 70 }
+            },
+            scrollbar: { enabled: true }
+        };
+
+        ['chart-container-1', 'chart-container-2', 'chart-container-3'].forEach((containerId) => {
+            const specificOptions = {
+                'chart-container-1': { chart: { type: 'column' }, plotOptions: { column: { pointPadding: 0.3, groupPadding: 0.7, pointWidth: 14 } } },
+                'chart-container-2': { chart: { type: 'bar' }, plotOptions: { bar: { pointWidth: 11, stacking: 'normal' } } },
+                'chart-container-3': { chart: { type: 'areaspline' }, plotOptions: { areaspline: { pointWidth: 9, fillOpacity: 0.5, zIndex: 0 } } }
+            }[containerId];
+
+            Highcharts.chart(containerId, { ...chartOptions, ...specificOptions });
+        });
+    }
+
+    function applyTheme() {
+    // Load custom font for enhanced typography
+    Highcharts.createElement('link', {
+        href: 'https://fonts.cdnfonts.com/css/front-page-supplement',
+        rel: 'stylesheet',
+        type: 'text/css'
+    }, null, document.getElementsByTagName('head')[0]);
+
+    // Define modern color palette with improved accessibility and visual hierarchy
+    Highcharts.theme = {
+    colors: [
+        '#FFCC02', // Złoty żółty
+        '#223FD7', // Intensywny niebieski
+        '#FE1544', // Soczysta czerwień
+        '#06FE45', // Jasna zieleń
+        '#BCE214', // Żółto-zielony limonkowy
+        '#8B49D1', // Fioletowy amarant
+        '#07E6B7', // Turkus
+        '#049FFF', // Nasycony błękit
+        '#F30DF3', // Róż neonowy
+        '#EDFE02'  // Jaskrawa cytryna
+    ],
+        chart: {
+            backgroundColor: {
+                linearGradient: { x1: 0, y1: 0, x2: 1, y2: 1 },
+                stops: [
+                    [0, '#2c3036'], // Slate 800
+                    [1, '#3e3e40']  // Slate 900
+                ]
+            },
+            style: {
+                fontFamily: 'Inter, system-ui, sans-serif'
+            },
+            plotBorderColor: '#475569' // Slate 600
+        },
+        title: {
+            style: {
+                color: '#F1F5F9', // Slate 100
+                textTransform: 'none',
+                fontSize: '1.25rem',
+                fontWeight: '550'
+            }
+        },
+        subtitle: {
+            style: {
+                color: '#CBD5E1', // Slate 300
+                textTransform: 'none'
+            }
+        },
+        xAxis: {
+            gridLineColor: '#334155', // Slate 700
+            labels: {
+                style: {
+                    color: '#CBD5E1' // Slate 300
+                }
+            },
+            lineColor: '#475569', // Slate 600
+            minorGridLineColor: '#1E293B', // Slate 800
+            tickColor: '#475569', // Slate 600
+            title: {
+                style: {
+                    color: '#E2E8F0' // Slate 200
+                }
+            }
+        },
+        yAxis: {
+            gridLineColor: '#334155', // Slate 700
+            labels: {
+                style: {
+                    color: '#CBD5E1' // Slate 300
+                }
+            },
+            lineColor: '#475569', // Slate 600
+            minorGridLineColor: '#1E293B', // Slate 800
+            tickColor: '#475569', // Slate 600
+            title: {
+                style: {
+                    color: '#E2E8F0' // Slate 200
+                }
+            }
+        },
+        tooltip: {
+            backgroundColor: 'rgba(15, 23, 42, 0.95)', // Slate 900 with opacity
+            style: {
+                color: '#F8FAFC' // Slate 50
+            },
+            borderWidth: 0,
+            borderRadius: 8,
+            shadow: true,
+            animation: true
+        },
+        plotOptions: {
+            series: {
+                dataLabels: {
+                    color: '#E2E8F0', // Slate 200
+                    style: {
+                        textOutline: '1px contrast'
+                    }
+                },
+                marker: {
+                    lineColor: '#1E293B' // Slate 800
+                }
+            }
+        },
+        legend: {
+            backgroundColor: 'transparent',
+            itemStyle: {
+                color: '#E2E8F0', // Slate 200
+                fontWeight: '470'
+            },
+            itemHoverStyle: {
+                color: '#F8FAFC' // Slate 50
+            },
+            itemHiddenStyle: {
+                color: '#64748B' // Slate 500
+            }
+        },
+        credits: {
+            style: {
+                color: '#64748B' // Slate 500
+            }
+        },
+        drilldown: {
+            activeAxisLabelStyle: {
+                color: '#F1F5F9' // Slate 100
+            },
+            activeDataLabelStyle: {
+                color: '#F1F5F9' // Slate 100
+            }
+        },
+        navigation: {
+            buttonOptions: {
+                symbolStroke: '#E2E8F0', // Slate 200
+                theme: {
+                    fill: '#334155' // Slate 700
+                }
+            }
+        }
+    };
+
+    // Apply the custom theme to all charts
+    Highcharts.setOptions(Highcharts.theme);
+}
+
+// Initialize theme and render charts
+applyTheme();
+renderCharts();
+});
+
+function generateSummary3Table() {
+    const mainTableData = mainTable.rows().data().toArray();
+    const summary3Data = new Map();
+    const indices = {
+        group: jsonData[0].indexOf('Grupa prod'),
+        regNumber: jsonData[0].indexOf('Nr rejestracyjny'),
+        date: jsonData[0].indexOf('Data realizacji'),
+        liters: jsonData[0].indexOf('Ilość'),
+        netValue: jsonData[0].indexOf('Wartość netto'),
+        counter: jsonData[0].indexOf('Licznik')
+    };
+
+    const months = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"];
+
+    mainTableData.forEach(row => {
+        const group = row[indices.group];
+        if (group !== 'Olej napędowy' && group !== 'Benzyna') return;
+
+        const date = new Date(row[indices.date]);
+        if (!date) return;
+
+        const liters = parseFloat(row[indices.liters]);
+        const netValue = parseFloat(row[indices.netValue]);
+        const counterValue = parseFloat(row[indices.counter]);
+        if (isNaN(liters) || isNaN(netValue) || isNaN(counterValue)) return;
+
+        const key = `${row[indices.regNumber]}_${date.getFullYear()}_${date.getMonth() + 1}`;
+        let entry = summary3Data.get(key);
+        if (!entry) {
+            entry = {
+                RegistrationNumber: row[indices.regNumber],
+                Month: date.getMonth() + 1,
+                Year: date.getFullYear(),
+                TotalLiters: 0,
+                TotalNetValue: 0,
+                MaxCounterValue: -1
+            };
+            summary3Data.set(key, entry);
+        }
+        entry.TotalLiters += liters;
+        entry.TotalNetValue += netValue;
+        entry.MaxCounterValue = Math.max(entry.MaxCounterValue, counterValue);
+    });
+
+    const tableData = Array.from(summary3Data.values()).map(entry => [
+        entry.RegistrationNumber,
+        months[entry.Month - 1],
+        entry.Year,
+        entry.TotalLiters.toFixed(2),
+        entry.TotalNetValue.toFixed(2),
+        entry.MaxCounterValue
+    ]);
+
+    if ($.fn.dataTable.isDataTable("#summary3-table")) {
+        $("#summary3-table").DataTable().destroy();
+    }
+
+    $("#summary3-table-container").html('<table id="summary3-table" class="table table-striped"></table>');
+
+    $("#summary3-table").DataTable({
+        data: tableData,
+        columns: [
+            { title: "Rejestracja" },
+            { title: "Miesiąc" },
+            { title: "Rok" },
+            { title: "∑ litry" },
+            { title: "∑ netto" },
+            { title: "⊃ licznik" }
+        ],
+        dom: '<"ex-buttons"Bf>lrtip',
+        buttons: [
+            {
+                extend: 'collection',
+                text: 'Export',
+                className: 'ex-buttons',
+                buttons: [
+                    { extend: 'csv', charset: 'UTF-8', bom: true },
+                    { extend: 'excel', title: null },
+                    {
+                        extend: 'pdfHtml5',
+                        orientation: 'landscape',
+                        pageSize: 'A4',
+                        title: 'List PDF',
+                        customize: doc => {
+                            doc.styles.title = {
+                                color: 'blue',
+                                fontSize: '25',
+                                bold: true
+                            };
+                        },
+                    },
+                ],
+            }
+        ],
+        paging: true,
+        pageLength: 10,
+        searching: true,
+        info: false,
+        order: [[2, 'desc'], [1, 'desc']]
+    });
+}
+
+
+function generateSummary4Table() {
+    const mainTableData = mainTable.rows().data().toArray();
+    const summary4Data = {};
+
+    mainTableData.forEach(row => {
+        const registrationNumber = row[jsonData[0].indexOf('Nr rejestracyjny')];
+        const date = row[jsonData[0].indexOf('Data realizacji')];
+        const productGroup = row[jsonData[0].indexOf('Grupa prod')];
+        const counterValue = parseFloat(row[jsonData[0].indexOf('Licznik')]);
+
+        if (registrationNumber && date && productGroup && !isNaN(counterValue) && counterValue >= 400) {
+            const year = new Date(date).getFullYear();
+            const month = new Date(date).getMonth() + 1;
+
+            summary4Data[registrationNumber] ??= {};
+            summary4Data[registrationNumber][year] ??= {
+                'Rok': year,
+                'CounterValues': Array.from({ length: 12 }, () => [])
+            };
+
+            summary4Data[registrationNumber][year]['CounterValues'][month - 1].push(counterValue);
+        }
+    });
+
+    const getValidCounterValue = (currentValues, previousMonthValue, nextMonthValue) => {
+        if (currentValues.length === 0) return { value: '', corrected: false, color: '' };
+        if (currentValues.length === 1 && !previousMonthValue && !nextMonthValue) return { value: currentValues[0], corrected: false, color: '' };
+
+        currentValues.sort((a, b) => a - b);
+
+        const removeExtraDigits = (value, referenceValue) => {
+            while (value > referenceValue * 10) {
+                value = Math.floor(value / 10);
+            }
+            return value;
+        };
+
+        const isReasonableValue = (value, referenceValue) => {
+            const lowerBound = referenceValue * 0.5;
+            const upperBound = referenceValue * 1.5;
+            return value >= lowerBound && value <= upperBound;
+        };
+
+        // Ignorowanie wartości wyraźnie odbiegających od sąsiadów
+        const validValues = currentValues.filter(value => {
+            if (previousMonthValue && nextMonthValue) {
+                const avgValue = (previousMonthValue + nextMonthValue) / 2;
+                return isReasonableValue(value, avgValue);
+            }
+            if (previousMonthValue) return isReasonableValue(value, previousMonthValue);
+            if (nextMonthValue) return isReasonableValue(value, nextMonthValue);
+            return true;
+        });
+
+        if (validValues.length === 0) {
+            return { value: previousMonthValue || nextMonthValue || '', corrected: true, color: 'purple' };
+        }
+
+        let validValue;
+        if (previousMonthValue && nextMonthValue) {
+            const avgValue = (previousMonthValue + nextMonthValue) / 2;
+            validValue = validValues.reduce((a, b) => Math.abs(b - avgValue) < Math.abs(a - avgValue) ? b : a);
+            return { value: validValue, corrected: validValue !== Math.max(...currentValues), color: 'red' };
+        } else if (previousMonthValue) {
+            validValue = validValues.filter(v => v >= previousMonthValue && v <= previousMonthValue * 1.5).pop() || validValues[0];
+            return { value: validValue, corrected: validValue !== Math.max(...currentValues), color: 'orange' };
+        } else if (nextMonthValue) {
+            validValue = validValues.filter(v => v <= nextMonthValue).pop() || validValues[0];
+            return { value: validValue, corrected: validValue !== Math.max(...currentValues), color: 'purple' };
+        } else {
+            validValue = validValues[Math.floor(validValues.length / 2)];
+            return { value: validValue, corrected: validValue !== Math.max(...currentValues), color: 'green' };
+        }
+    };
+
+    const summary4Table = $('<table class="table table-striped summary4-table"></table>');
+    const tableHeader = '<thead><tr><th>Rejestracja</th><th>Rok</th><th>Sty</th><th>Lut</th><th>Mar</th><th>Kwi</th><th>Maj</th><th>Cze</th><th>Lip</th><th>Sie</th><th>Wrz</th><th>Paź</th><th>Lis</th><th>Gru</th><th>Przebieg</th></tr></thead>';
+    summary4Table.append(tableHeader);
+
+    let tableBody = '<tbody>';
+    Object.keys(summary4Data).forEach(registrationNumber => {
+        let previousYearDecemberValue = null;
+
+        Object.keys(summary4Data[registrationNumber]).forEach((year, yearIndex, yearsArray) => {
+            tableBody += '<tr>';
+            tableBody += `<td>${registrationNumber}</td><td>${year}</td>`;
+
+            let previousMonthValue = previousYearDecemberValue;
+            let monthlyValues = [];
+
+            for (let month = 1; month <= 12; month++) {
+                const currentValues = summary4Data[registrationNumber][year]['CounterValues'][month - 1];
+
+                let nextMonthValue = null;
+                if (month < 12) {
+                    nextMonthValue = summary4Data[registrationNumber][year]['CounterValues'][month]?.[0] || null;
+                } else if (yearIndex < yearsArray.length - 1) {
+                    nextMonthValue = summary4Data[registrationNumber][yearsArray[yearIndex + 1]]['CounterValues'][0]?.[0] || null;
+                }
+
+                const { value: validCounterValue, corrected, color } = getValidCounterValue(currentValues, previousMonthValue, nextMonthValue);
+                const cellStyle = corrected ? `style="color: ${color};"` : '';
+                tableBody += `<td ${cellStyle}>${validCounterValue}</td>`;
+
+                if (validCounterValue !== '') {
+                    previousMonthValue = validCounterValue;
+                    monthlyValues.push(validCounterValue);
+                }
+            }
+
+            const mileage = monthlyValues.length > 0
+                ? Math.max(0, monthlyValues[monthlyValues.length - 1] - (previousYearDecemberValue || monthlyValues[0]))
+                : '';
+
+            tableBody += `<td>${mileage}</td></tr>`;
+            previousYearDecemberValue = monthlyValues[monthlyValues.length - 1];
+        });
+    });
+    tableBody += '</tbody>';
+    summary4Table.append(tableBody);
+
+    $("#summary4-table-container").html(summary4Table);
+
+    if ($.fn.dataTable.isDataTable("#summary4-table-container table")) {
+        $("#summary4-table-container table").DataTable().destroy();
+    }
+
+    $("#summary4-table-container table").DataTable({
+        dom: '<"ex-buttons"Bf>lrtip',
+        buttons: [
+            {
+                extend: 'collection',
+                text: 'Export',
+                className: 'ex-buttons',
+                buttons: [
+                    { extend: 'csv', charset: 'UTF-8', bom: true, filename: `Podsumowanie_${new Date().toISOString().replace(/[:\.]/g, '-')}_4` },
+                    { extend: 'excel', title: null },
+                    {
+                        extend: 'pdfHtml5',
+                        orientation: 'landscape',
+                        pageSize: 'A4',
+                        title: 'Podsumowanie 4',
+                        customize: doc => {
+                            doc.styles.title = { color: 'blue', fontSize: '25', bold: true };
+                        }
+                    }
+                ]
+            }
+        ],
+        paging: true,
+        pageLength: 10,
+        searching: true,
+        info: false,
+        order: [[1, 'asc']]
+    });
+}
+
+const L = window.L;
+
+let map;
+let markers = [];
+let ortofotomapLayer;
+
+function filterByYear(year) {
+    const table = $("#summary5-table-container table").DataTable();
+    $.fn.dataTable.ext.search = [];
+    if (year !== 'all') {
+        $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+            return data[3] == year;
+        });
+    }
+    table.draw();
+    updateMap();
+}
+
+function clearYearFilter() {
+    $.fn.dataTable.ext.search = [];
+}
+
+function generateSummary5Table() {
+    if (!mainTable || !$.fn.DataTable.isDataTable(mainTable)) {
+        console.error("mainTable nie jest zainicjalizowane.");
+        return;
+    }
+
+    const mainTableData = mainTable.rows().data().toArray();
+    const stationNumberIndex = jsonData[0].indexOf('Nr stacji');
+    const locationIndex = jsonData[0].indexOf('Miejscowość');
+    const stationTypeIndex = jsonData[0].indexOf('Typ Stacji');
+    const dateIndex = jsonData[0].indexOf('Data realizacji');
+    const netValueIndex = jsonData[0].indexOf('Wartość netto');
+    const quantityIndex = jsonData[0].indexOf('Ilość');
+
+    const summary5Data = {};
+
+    for (const row of mainTableData) {
+        const stationNumber = row[stationNumberIndex];
+        const location = row[locationIndex];
+        const stationType = row[stationTypeIndex];
+        const date = row[dateIndex];
+        const netValue = parseFloat(row[netValueIndex]);
+        const quantity = parseFloat(row[quantityIndex]);
+
+        if (stationNumber && location && stationType && date && !isNaN(netValue) && !isNaN(quantity)) {
+            const year = new Date(date).getFullYear();
+            const month = new Date(date).getMonth();
+
+            summary5Data[stationNumber] ??= {};
+            summary5Data[stationNumber][year] ??= {
+                'Rok': year,
+                'Miejscowość': location,
+                'Typ': stationType,
+                'SumaNettoFak': new Array(12).fill(0),
+                'SumaIlość': new Array(12).fill(0),
+                'IlośćTransakcji': new Array(12).fill(0),
+                'SumaNetto': 0,
+                'SumaIlośćTotal': 0,
+                'SumaTransakcjiTotal': 0,
+            };
+
+            summary5Data[stationNumber][year]['SumaNettoFak'][month] += netValue;
+            summary5Data[stationNumber][year]['SumaIlość'][month] += quantity;
+            summary5Data[stationNumber][year]['IlośćTransakcji'][month]++;
+            summary5Data[stationNumber][year]['SumaNetto'] += netValue;
+            summary5Data[stationNumber][year]['SumaIlośćTotal'] += quantity;
+            summary5Data[stationNumber][year]['SumaTransakcjiTotal']++;
+        }
+    }
+
+    const sortedYears = [...new Set(Object.values(summary5Data).flatMap(station => Object.keys(station)))].sort((a, b) => b - a);
+
+    const sortedSummaryData = {};
+
+    for (const year of sortedYears) {
+        const stationsData = Object.entries(summary5Data)
+            .map(([stationNumber, stationData]) => ({
+                stationNumber,
+                ...stationData[year]
+            }))
+            .filter(station => station.SumaNetto || station.SumaIlośćTotal);
+
+        stationsData.sort((a, b) => b.SumaNetto - a.SumaNetto);
+        sortedSummaryData[year] = stationsData;
+    }
+
+    $("#year-buttons").remove();
+    $("#data-type-buttons").remove();
+
+    const yearButtons = $('<div id="year-buttons" class="mb-3"></div>');
+    yearButtons.append('<button class="btn btn-secondary mr-2" onclick="clearYearFilter(); $(\'#summary5-table-container table\').DataTable().draw();">Wszystkie lata</button>');
+    sortedYears.forEach(year => {
+        yearButtons.append(`<button class="btn btn-secondary mr-2" onclick="filterByYear(${year})">${year}</button>`);
+    });
+    $("#summary5-table-container").before(yearButtons);
+
+    const dataTypeButtons = $('<div id="data-type-buttons" class="mb-3"></div>');
+    dataTypeButtons.append('<button class="btn btn-primary mr-2" onclick="changeDataType(\'netto\')">Wartość netto</button>');
+    dataTypeButtons.append('<button class="btn btn-primary mr-2" onclick="changeDataType(\'ilosc\')">Ilość</button>');
+    dataTypeButtons.append('<button class="btn btn-primary mr-2" onclick="changeDataType(\'transakcje\')">Ilość transakcji</button>');
+    $("#summary5-table-container").before(dataTypeButtons);
+
+    const summary5Table = $('<table class="table table-striped summary5-table"></table>');
+    const tableHeader = '<thead><tr><th>Stacja</th><th>Miejscowość</th><th>Typ</th><th>Rok</th><th>Sty</th><th>Lut</th><th>Mar</th><th>Kwi</th><th>Maj</th><th>Cze</th><th>Lip</th><th>Sie</th><th>Wrz</th><th>Paź</th><th>Lis</th><th>Gru</th><th>Suma</th></tr></thead>';
+    summary5Table.append(tableHeader);
+
+    let tableBody = '<tbody>';
+    for (const year of sortedYears) {
+        const yearData = sortedSummaryData[year];
+        const top50Stations = new Set(yearData.slice(0, 50).map(station => station.stationNumber));
+        
+        for (const stationData of yearData) {
+            const { stationNumber, Miejscowość, Typ, SumaNettoFak, SumaIlość, IlośćTransakcji, SumaNetto, SumaIlośćTotal, SumaTransakcjiTotal } = stationData;
+            const isTop50 = top50Stations.has(stationNumber);
+            const rowStyle = isTop50 ? ' style="background-color: #90EE90;"' : '';
+            
+            tableBody += `<tr data-year="${year}"${rowStyle}>`;
+            tableBody += `<td>${stationNumber}</td>`;
+            tableBody += `<td>${Miejscowość}</td>`;
+            tableBody += `<td>${Typ}</td>`;
+            tableBody += `<td>${year}</td>`;
+            for (let month = 0; month < 12; month++) {
+                tableBody += `<td data-netto="${SumaNettoFak[month].toFixed(2)}" data-ilosc="${SumaIlość[month].toFixed(2)}" data-transakcje="${IlośćTransakcji[month]}">${SumaNettoFak[month].toFixed(2)}</td>`;
+            }
+            tableBody += `<td data-netto="${SumaNetto.toFixed(2)}" data-ilosc="${SumaIlośćTotal.toFixed(2)}" data-transakcje="${SumaTransakcjiTotal}">${SumaNetto.toFixed(2)}</td>`;
+            tableBody += '</tr>';
+        }
+    }
+    tableBody += '</tbody>';
+    summary5Table.append(tableBody);
+
+    $("#summary5-table-container").html(summary5Table);
+
+    if ($.fn.dataTable.isDataTable("#summary5-table-container table")) {
+        $("#summary5-table-container table").DataTable().destroy();
+    }
+
+    clearYearFilter();
+
+    $("#summary5-table-container table").DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'collection',
+                text: 'Eksportuj',
+                className: 'ex-buttons',
+                buttons: [
+                    { extend: 'csv', charset: 'UTF-8', bom: true },
+                    { extend: 'excel', title: null },
+                    {
+                        extend: 'pdfHtml5',
+                        orientation: 'landscape',
+                        pageSize: 'A4',
+                        title: 'Lista stacji',
+                        customize: function (doc) {
+                            doc.styles.title = {
+                                color: 'blue',
+                                fontSize: '25',
+                                bold: true
+                            };
+                        },
+                    },
+                ],
+            }
+        ],
+        paging: true,
+        pageLength: 50,
+        searching: true,
+        info: false,
+        order: [],
+        drawCallback: function() {
+            updateMap();
+        },
+        createdRow: function(row, data, dataIndex) {
+            const table = this.api();
+            const visibleData = table.rows({ search: 'applied' }).data().toArray();
+            const sortedData = [...visibleData].sort((a, b) => parseFloat(b[b.length - 1]) - parseFloat(a[a.length - 1]));
+            const top50Stations = new Set(sortedData.slice(0, 50).map(row => row[0]));
+            
+            if (top50Stations.has(data[0])) {
+                $(row).css('background-color', '#90EE90');
+            }
+        }
+    });
+
+    if (!map) {
+        $("#summary5-table-container").after('<div id="map" style="height: 400px; margin-top: 20px;"></div>');
+        initMap();
+    }
+
+    updateMap();
+    styleButtons();
+}
+
+function styleButtons() {
+    const buttons = document.querySelectorAll('#year-buttons button, #data-type-buttons button');
+    buttons.forEach(button => {
+        button.style.backgroundColor = '#4f46e5';
+        button.style.color = 'white';
+        button.style.padding = '6px 14px';
+        button.style.border = 'none';
+        button.style.borderRadius = '8px';
+        button.style.cursor = 'pointer';
+        button.style.marginRight = '10px';
+        button.style.transition = 'background-color 0.3s';
+
+        button.addEventListener('mouseover', () => {
+            button.style.backgroundColor = '#4338ca';
+        });
+
+        button.addEventListener('mouseout', () => {
+            button.style.backgroundColor = '#4f46e5';
+        });
+    });
+}
+
+function changeDataType(type) {
+    const table = $("#summary5-table-container table").DataTable();
+    const rows = table.rows().nodes();
+
+    $(rows).find('td:nth-child(n+5)').each(function() {
+        const cell = $(this);
+        const value = cell.data(type);
+        if (type === 'transakcje') {
+            cell.text(Math.round(value));
+        } else {
+            cell.text(parseFloat(value).toFixed(2));
+        }
+    });
+}
+
+function initMap() {
+    map = L.map('map', {
+        crs: L.CRS.EPSG3857,
+        maxZoom: 22,
+        fullscreenControl: true
+    }).setView([52.069, 19.480], 6);
+
+    const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19
+    });
+
+    const ortofotomapLayerHighRes = L.tileLayer.wms('https://mapy.geoportal.gov.pl/wss/service/PZGIK/ORTO/WMS/HighResolution', {
+        layers: 'Raster',
+        format: 'image/png',
+        transparent: true,
+        version: '1.3.0',
+        crs: L.CRS.EPSG3857,
+        attribution: "© <a href='https://geoportal.gov.pl/'>Geoportal</a>",
+        maxZoom: 22
+    });
+
+    const baseMaps = {
+        "OpenStreetMap": osmLayer,
+        "Ortofotomapa High Res": ortofotomapLayerHighRes
+    };
+
+    osmLayer.addTo(map);
+    L.control.layers(baseMaps).addTo(map);
+
+    L.easyButton('fa-camera', function() {
+        if (map.hasLayer(ortofotomapLayerHighRes)) {
+            map.removeLayer(ortofotomapLayerHighRes);
+        } else {
+            map.addLayer(ortofotomapLayerHighRes);
+        }
+    }, 'Przełącz ortofotomapę').addTo(map);
+}
+
+const geocodeCache = new Map();
+
+async function geocodeAddress(address) {
+    if (geocodeCache.has(address)) {
+        return geocodeCache.get(address);
+    }
+
+    try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&countrycodes=pl`);
+        const data = await response.json();
+    
+        if (data.length > 0) {
+            const coords = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+            geocodeCache.set(address, coords);
+            return coords;
+        }
+    } catch (error) {
+        console.error(`Błąd geokodowania adresu ${address}:`, error);
+    }
+    
+    return null;
+}
+
+async function updateMap() {
+    const table = $("#summary5-table-container table").DataTable();
+    const visibleRows = table.rows({ search: 'applied' }).data();
+
+    markers.forEach(marker => map.removeLayer(marker));
+    markers = [];
+
+    const sortedRows = Array.from(visibleRows)
+        .sort((a, b) => parseFloat(b[b.length - 1]) - parseFloat(a[a.length - 1]))
+        .slice(0, 50);
+
+    for (let row of sortedRows) {
+        const stationNumber = row[0];
+        const location = row[1];
+        const value = parseFloat(row[row.length - 1]);
+
+        const coords = await geocodeAddress(location);
+
+        if (coords) {
+            const marker = L.marker(coords).addTo(map);
+            marker.bindPopup(`<b>Stacja: ${stationNumber}</b><br>Miejscowość: ${location}<br>Wartość: ${value.toFixed(2)} PLN`);
+            markers.push(marker);
+        }
+    }
+
+    if (markers.length > 0) {
+        const group = L.featureGroup(markers);
+        map.fitBounds(group.getBounds());
+    }
+}
+
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+$('#summary5-table-container table').on('search.dt', debounce(function() {
+    updateMap();
+}, 300));
+
+$(document).ready(function() {
+    generateSummary5Table();
+});
+
+const monthNames = ["Sty", "Lut", "Mar", "Kwi", "Maj", "Cze", "Lip", "Sie", "Wrz", "Paź", "Lis", "Gru"];
+
+function generateSummary6Table() {
+    const mainTableData = mainTable.rows().data().toArray();
+    let summary6Data = [];
+    let availableMonths = new Set(); // Zbiór dostępnych miesięcy
+
+    // Zbieranie dostępnych miesięcy
+    mainTableData.forEach(row => {
+        const date = row[jsonData[0].indexOf('Data realizacji')];
+        if (date) {
+            const dateObj = new Date(date);
+            const monthYear = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}`;
+            availableMonths.add(monthYear);
+        }
+    });
+
+    // Tworzenie selecta z miesiącami
+    const monthSelect = $('<select id="monthSelector" class="form-select mb-3">');
+    monthSelect.append('<option value="">Wszystkie miesiące</option>');
+    
+    // Sortowanie miesięcy
+    const sortedMonths = Array.from(availableMonths).sort().reverse();
+    
+    sortedMonths.forEach(monthYear => {
+        const [year, month] = monthYear.split('-');
+        const monthName = monthNames[parseInt(month) - 1];
+        monthSelect.append(`<option value="${monthYear}">${monthName} ${year}</option>`);
+    });
+
+    // Dodanie selecta do kontenera
+    $("#month-selector-container").html(monthSelect);
+
+    // Style CSS
+    const customStyles = `
+        <style>
+            tr.bold-red-text td {
+                font-weight: bold;
+                color: #ff0000;
+            }
+            table { 
+                width: 100%; 
+            } 
+        </style>
+    `;
+    $('head').append(customStyles);
+
+    function updateTable(selectedMonth = '') {
+        let filteredData = [];
+        let saturdaySum = 0;
+        let sundaySum = 0;
+
+        for (const row of mainTableData) {
+            const registrationNumber = row[jsonData[0].indexOf('Nr rejestracyjny')];
+            const date = row[jsonData[0].indexOf('Data realizacji')];
+            const liters = parseFloat(row[jsonData[0].indexOf('Ilość')]);
+            const netValue = parseFloat(row[jsonData[0].indexOf('Wartość netto')]);
+            const productGroup = row[jsonData[0].indexOf('Grupa prod')];
+
+            if (registrationNumber && date && !isNaN(liters) && !isNaN(netValue) && 
+                productGroup !== 'Usługa webserwisu' && productGroup !== 'Opłata za karty') {
+                
+                const dateObj = new Date(date);
+                const rowMonthYear = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}`;
+                
+                if (selectedMonth && rowMonthYear !== selectedMonth) continue;
+
+                const dayOfWeek = dateObj.getDay();
+
+                if (dayOfWeek === 0 || dayOfWeek === 6) {
+                    const dayNames = ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'];
+                    const dayName = dayNames[dayOfWeek];
+
+                    if (dayOfWeek === 6) {
+                        saturdaySum += netValue;
+                    } else if (dayOfWeek === 0) {
+                        sundaySum += netValue;
+                    }
+
+                    const year = dateObj.getFullYear();
+                    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                    const day = String(dateObj.getDate()).padStart(2, '0');
+                    const correctedFormattedDate = `${year}-${month}-${day}`;
+
+                    filteredData.push({
+                        'Rejestracja': registrationNumber,
+                        'Data': correctedFormattedDate,
+                        'Ilość': liters,
+                        'Netto': netValue,
+                        'Produkt': productGroup,
+                        'Dzień': dayName
+                    });
+                }
+            }
+        }
+
+        // Aktualizacja sum
+        $('#SaturdaySuma').text(saturdaySum.toFixed(2) + ' PLN');
+        $('#SundaySuma').text(sundaySum.toFixed(2) + ' PLN');
+
+        // Generowanie tabeli
+        const summary6Table = $('<table class="table table-striped summary6-table"></table>');
+        const tableHeader = '<thead><tr><th>Rejestracja</th><th>Data</th><th>Ilość</th><th>Netto</th><th>Produkt</th><th>Dzień</th></tr></thead>';
+        summary6Table.append(tableHeader);
+
+        let tableBody = '<tbody>';
+        for (const row of filteredData) {
+            const rowClass = row['Dzień'] === 'Niedziela' ? 'bold-red-text' : '';
+            tableBody += `<tr class="${rowClass}">`;
+            tableBody += `<td>${row['Rejestracja']}</td>`;
+            tableBody += `<td>${row['Data']}</td>`;
+            tableBody += `<td>${row['Ilość'].toFixed(2)}</td>`;
+            tableBody += `<td>${row['Netto'].toFixed(2)}</td>`;
+            tableBody += `<td>${row['Produkt']}</td>`;
+            tableBody += `<td>${row['Dzień']}</td>`;
+            tableBody += '</tr>';
+        }
+        tableBody += '</tbody>';
+        summary6Table.append(tableBody);
+
+        $("#summary6-table-container").html(summary6Table);
+
+        if ($.fn.dataTable.isDataTable("#summary6-table-container table")) {
+            $("#summary6-table-container table").DataTable().destroy();
+        }
+
+        $("#summary6-table-container table").DataTable({
+            dom: '<"ex-buttons"Bf>lrtip',
+            buttons: {
+                buttons: [
+                    {
+                        extend: 'collection',
+                        text: 'Export',
+                        className: 'ex-buttons',
+                        buttons: [
+                            {
+                                extend: 'csv',
+                                charset: 'UTF-8',
+                                bom: true,
+                            },
+                            { extend: 'excel', title: null },
+                            {
+                                extend: 'pdfHtml5',
+                                orientation: 'portrait',
+                                pageSize: 'A4',
+                                title: 'Summary6',
+                                customize: function (doc) {
+                                    doc.styles.title = {
+                                        color: 'blue',
+                                        fontSize: '25',
+                                        bold: true
+                                    };
+                                    doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                                },
+                            },
+                        ],
+                    }
+                ],
+            },
+            paging: true,
+            pageLength: 10,
+            searching: true,
+            info: false,
+            createdRow: function(row, data, dataIndex) {
+                if (data[5] === 'Niedziela') {
+                    $(row).addClass('bold-red-text');
+                }
+            }
+        });
+    }
+
+    // Inicjalne załadowanie tabeli
+    updateTable();
+
+    // Obsługa zmiany miesiąca
+    $('#monthSelector').on('change', function() {
+        updateTable($(this).val());
+    });
+}
+
+function generateSummary7Table() {
+    const mainTableData = mainTable.rows().data().toArray();
+    const summary7Data = {};
+
+    for (const row of mainTableData) {
+        const costData = row[jsonData[0].indexOf('Dane kosztowe')] || '';
+        const cardNumber = row[jsonData[0].indexOf('Nr karty')];
+        const registrationNumber = row[jsonData[0].indexOf('Nr rejestracyjny')];
+        const liters = parseFloat(row[jsonData[0].indexOf('Ilość')]);
+        const netValue = parseFloat(row[jsonData[0].indexOf('Wartość netto')]);
+        const productGroup = row[jsonData[0].indexOf('Grupa prod')];
+        const date = new Date(row[jsonData[0].indexOf('Data realizacji')]);
+
+        if (!isNaN(liters) && !isNaN(netValue) && cardNumber && registrationNumber && productGroup && date) {
+            const year = date.getFullYear();
+            const month = date.getMonth();
+
+            const groupKey = costData || `wg Nr rejestracyjnego: ${registrationNumber}`;
+            const dataKey = `${year}|${productGroup}|${cardNumber}|${registrationNumber}`;
+
+            summary7Data[groupKey] = summary7Data[groupKey] || {};
+            summary7Data[groupKey][dataKey] = summary7Data[groupKey][dataKey] || Array(12).fill().map(() => ({ 'Ilość': 0, 'Wartość netto': 0 }));
+
+            summary7Data[groupKey][dataKey][month]['Ilość'] += liters;
+            summary7Data[groupKey][dataKey][month]['Wartość netto'] += netValue;
+        }
+    }
+
+    const summary7Table = $('<table class="table table-striped summary7-table"></table>');
+    const tableHeader = '<thead><tr><th>Dane kosztowe</th><th>Rok</th><th>Produkt</th><th>Nr karty</th><th>Nr rejestracyjny</th>' +
+        monthNames.map(month => `<th>${month}</th>`).join('') + '<th>Suma</th></tr></thead>';
+    summary7Table.append(tableHeader);
+
+    let tableBody = '<tbody>';
+    for (const [groupKey, groupEntries] of Object.entries(summary7Data)) {
+        for (const [dataKey, monthData] of Object.entries(groupEntries)) {
+            const [year, productGroup, cardNumber, registrationNumber] = dataKey.split('|');
+            let rowSum = { 'Ilość': 0, 'Wartość netto': 0 };
+
+            tableBody += `<tr>`;
+            tableBody += `<td>${groupKey}</td>`;
+            tableBody += `<td>${year}</td>`;
+            tableBody += `<td>${productGroup}</td>`;
+            tableBody += `<td>${cardNumber}</td>`;
+            tableBody += `<td>${registrationNumber}</td>`;
+            
+            for (let month = 0; month < 12; month++) {
+                rowSum['Ilość'] += monthData[month]['Ilość'];
+                rowSum['Wartość netto'] += monthData[month]['Wartość netto'];
+                tableBody += `<td data-amount="${monthData[month]['Ilość'].toFixed(2)}" data-value="${monthData[month]['Wartość netto'].toFixed(2)}">
+                    ${monthData[month]['Ilość'].toFixed(2)}
+                </td>`;
+            }
+            tableBody += `<td data-amount="${rowSum['Ilość'].toFixed(2)}" data-value="${rowSum['Wartość netto'].toFixed(2)}">
+                ${rowSum['Ilość'].toFixed(2)}
+            </td>`;
+            tableBody += `</tr>`;
+        }
+    }
+    tableBody += '</tbody>';
+    summary7Table.append(tableBody);
+
+    $("#summary7-table-container").html(summary7Table);
+
+    // Dodaj przełącznik
+    const switchHtml = `
+        <div class="switch-container" style="margin-bottom: 10px;">
+            <label class="switch">
+                <input type="checkbox" id="dataSwitch">
+                <span class="slider"></span>
+            </label>
+            <span id="switchLabel">Ilość</span>
+        </div>
+    `;
+    $("#summary7-table-container").prepend(switchHtml);
+
+    // Obsługa przełącznika
+    $("#dataSwitch").change(function() {
+        const isChecked = $(this).is(":checked");
+        const label = isChecked ? "Wartość netto" : "Ilość";
+        $("#switchLabel").text(label);
+        
+        $(".summary7-table td").each(function() {
+            const amount = $(this).data('amount');
+            const value = $(this).data('value');
+            if (amount !== undefined && value !== undefined) {
+                $(this).text(isChecked ? value : amount);
+            }
+        });
+    });
+
+    if ($.fn.dataTable.isDataTable("#summary7-table-container table")) {
+        $("#summary7-table-container table").DataTable().destroy();
+    }
+
+    $("#summary7-table-container table").DataTable({
+        dom: '<"ex-buttons"Bf>lrtip',
+        buttons: {
+            buttons: [
+                {
+                    extend: 'collection',
+                    text: 'Export',
+                    className: 'ex-buttons',
+                    buttons: [
+                        {
+                            extend: 'csv',
+                            charset: 'UTF-8',
+                            bom: true,
+                        },
+                        { extend: 'excel', title: null },
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'A4',
+                            title: 'Summary 7',
+                            customize: function (doc) {
+                                doc.styles.title = {
+                                    color: 'blue',
+                                    fontSize: '25',
+                                    bold: true
+                                };
+                            },
+                        },
+                    ],
+                }
+            ],
+        },
+        paging: true,
+        pageLength: 10,
+        searching: true,
+        info: false,
+        order: [[0, 'asc'], [1, 'asc'], [2, 'asc'], [3, 'asc'], [4, 'asc']],
+        rowGroup: {
+            dataSrc: 0,
+            startRender: function (rows, group) {
+                return $('<tr/>').append(
+                    $('<td/>').attr('colspan', 18).append(
+                        $('<strong/>').text(group)
+                    )
+                );
+            }
+        }
+    });
+}
+
+function generateSummary8Table() {
+    const mainTableData = mainTable.rows().data().toArray();
+    const summary8Data = {};
+
+    for (const row of mainTableData) {
+        const costData = row[jsonData[0].indexOf('Dane kosztowe')] || 'Na';
+        const netValue = parseFloat(row[jsonData[0].indexOf('Wartość netto')]);
+        const prodGroup = row[jsonData[0].indexOf('Grupa prod')] || 'NaN';
+
+        if (!isNaN(netValue)) {
+            summary8Data[costData] = summary8Data[costData] || {
+                totalNetValue: 0,
+                prodGroups: {}
+            };
+
+            summary8Data[costData].totalNetValue += netValue;
+            summary8Data[costData].prodGroups[prodGroup] = (summary8Data[costData].prodGroups[prodGroup] || 0) + netValue;
+        }
+    }
+
+    const summary8Table = $('<table class="table table-striped summary8-table"></table>');
+    const tableHeader = '<thead><tr><th>Dane kosztowe</th><th>Produkt</th><th>Suma netto</th></tr></thead>';
+    summary8Table.append(tableHeader);
+
+    let tableBody = '<tbody>';
+    for (const [costData, costDataInfo] of Object.entries(summary8Data)) {
+        for (const [prodGroup, netValue] of Object.entries(costDataInfo.prodGroups)) {
+            tableBody += '<tr>';
+            tableBody += `<td>${costData}</td>`;
+            tableBody += `<td>${prodGroup}</td>`;
+            tableBody += `<td>${netValue.toFixed(2)}</td>`;
+            tableBody += '</tr>';
+        }
+
+        tableBody += '<tr style="background-color: #ffcccc;">';
+        tableBody += `<td>${costData}</td>`;
+        tableBody += '<td>Suma</td>';
+        tableBody += `<td style="color: red;">${costDataInfo.totalNetValue.toFixed(2)}</td>`;
+        tableBody += '</tr>';
+    }
+    tableBody += '</tbody>';
+    summary8Table.append(tableBody);
+
+    $("#summary8-table-container").html(summary8Table);
+
+    if ($.fn.dataTable.isDataTable("#summary8-table-container table")) {
+        $("#summary8-table-container table").DataTable().destroy();
+    }
+
+    $("#summary8-table-container table").DataTable({
+        dom: '<"ex-buttons"Bf>lrtip',
+        buttons: {
+            buttons: [
+                {
+                    extend: 'collection',
+                    text: 'Export',
+                    className: 'ex-buttons',
+                    buttons: [
+                        {
+                            extend: 'csv',
+                            charset: 'UTF-8',
+                            bom: true,
+                        },
+                        { extend: 'excel', title: null },
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'A4',
+                            title: 'Summary 8',
+                            customize: function (doc) {
+                                doc.styles.title = {
+                                    color: 'blue',
+                                    fontSize: '25',
+                                    bold: true
+                                };
+                            },
+                        },
+                    ],
+                }
+            ],
+        },
+        paging: true,
+        pageLength: 10,
+        searching: true,
+        info: false,
+        order: [[0, 'asc']]
+    });
+}
+
+// Constants
+const COLUMNS = new Map([
+    ['REGISTRATION_NUMBER', 'Nr rejestracyjny'],
+    ['PRODUCT_GROUP', 'Grupa prod'],
+    ['NET_VALUE', 'Wartość netto'],
+    ['QUANTITY', 'Ilość'],
+    ['DATE', 'Data realizacji']
+]);
+
+const MONTH_NAMES = ["Sty", "Lut", "Mar", "Kwi", "Maj", "Cze", "Lip", "Sie", "Wrz", "Paź", "Lis", "Gru"];
+
+// Utility functions
+function getShortMonthName(month) {
+    return MONTH_NAMES[month - 1];
+}
+
+function processData(mainTableData, valueColumn, includeRegistrationNumber = false) {
+    const summaryData = new Map();
+
+    const columnIndexes = new Map([
+        ['regNumber', jsonData[0].indexOf(COLUMNS.get('REGISTRATION_NUMBER'))],
+        ['group', jsonData[0].indexOf(COLUMNS.get('PRODUCT_GROUP'))],
+        ['value', jsonData[0].indexOf(valueColumn)],
+        ['date', jsonData[0].indexOf(COLUMNS.get('DATE'))]
+    ]);
+
+    for (const row of mainTableData) {
+        const value = parseFloat(row[columnIndexes.get('value')]);
+        if (isNaN(value)) continue;
+
+        const key = includeRegistrationNumber ? row[columnIndexes.get('regNumber')] : row[columnIndexes.get('group')];
+        const group = row[columnIndexes.get('group')];
+        const [year, month] = row[columnIndexes.get('date')].split('-');
+
+        let keyData = summaryData.get(key);
+        if (!keyData) {
+            keyData = new Map();
+            summaryData.set(key, keyData);
+        }
+
+        if (includeRegistrationNumber) {
+            let groupData = keyData.get(group);
+            if (!groupData) {
+                groupData = new Map();
+                keyData.set(group, groupData);
+            }
+
+            let yearData = groupData.get(year);
+            if (!yearData) {
+                yearData = new Float64Array(13);
+                groupData.set(year, yearData);
+            }
+
+            yearData[parseInt(month)] += value;
+            yearData[0] += value; // Total for the year
+        } else {
+            let yearData = keyData.get(year);
+            if (!yearData) {
+                yearData = new Float64Array(13);
+                keyData.set(year, yearData);
+            }
+
+            yearData[parseInt(month)] += value;
+            yearData[0] += value; // Total for the year
+        }
+    }
+
+    return summaryData;
+}
+
+function generateSummaryTables(tableType1, tableType2) {
+    const mainTableData = mainTable.rows().data().toArray();
+    const includeRegistrationNumber = tableType1 === 11 || tableType1 === 12;
+    const valueColumn1 = (tableType1 === 9 || tableType1 === 11) ? COLUMNS.get('NET_VALUE') : COLUMNS.get('QUANTITY');
+    const valueColumn2 = (tableType2 === 9 || tableType2 === 11) ? COLUMNS.get('NET_VALUE') : COLUMNS.get('QUANTITY');
+
+    const summaryData1 = processData(mainTableData, valueColumn1, includeRegistrationNumber);
+    const summaryData2 = processData(mainTableData, valueColumn2, includeRegistrationNumber);
+
+    const tableId1 = `summary${tableType1}-table`;
+    const tableId2 = `summary${tableType2}-table`;
+
+    createSummaryTable(tableId1, summaryData1, includeRegistrationNumber, valueColumn1);
+    createSummaryTable(tableId2, summaryData2, includeRegistrationNumber, valueColumn2);
+
+    addSingleFilterSet(tableId1, tableId2, includeRegistrationNumber);
+}
+
+function createSummaryTable(tableId, summaryData, includeRegistrationNumber, valueColumn) {
+    const tableContainer = document.getElementById(`${tableId}-container`);
+    const table = document.createElement('table');
+    table.id = tableId;
+    table.className = 'table table-striped';
+
+    // Generate table header
+    const headerRow = includeRegistrationNumber 
+        ? ['Rejestracja', 'Produkt', 'Rok', ...MONTH_NAMES, 'Suma']
+        : ['Produkt', 'Rok', ...MONTH_NAMES, 'Suma'];
+    const thead = document.createElement('thead');
+    thead.innerHTML = `<tr>${headerRow.map(text => `<th>${text}</th>`).join('')}</tr>`;
+    table.appendChild(thead);
+
+    // Generate table body
+    const tbody = document.createElement('tbody');
+    const rows = [];
+
+    for (const [key, data] of summaryData) {
+        if (includeRegistrationNumber) {
+            for (const [group, yearData] of data) {
+                for (const [year, monthData] of yearData) {
+                    const rowData = [key, group, year];
+                    for (let month = 1; month <= 12; month++) {
+                        rowData.push(monthData[month].toFixed(2));
+                    }
+                    rowData.push(monthData[0].toFixed(2)); // Year total
+                    rows.push(rowData);
+                }
+            }
+        } else {
+            for (const [year, monthData] of data) {
+                const rowData = [key, year];
+                for (let month = 1; month <= 12; month++) {
+                    rowData.push(monthData[month].toFixed(2));
+                }
+                rowData.push(monthData[0].toFixed(2)); // Year total
+                rows.push(rowData);
+            }
+        }
+    }
+
+    // Sort rows
+    rows.sort((a, b) => {
+        const yearIndex = includeRegistrationNumber ? 2 : 1;
+        const yearDiff = b[yearIndex] - a[yearIndex];
+        if (yearDiff !== 0) return yearDiff;
+        return parseFloat(b[b.length - 1]) - parseFloat(a[a.length - 1]);
+    });
+
+    // Append sorted rows to tbody
+    tbody.innerHTML = rows.map(rowData => `<tr>${rowData.map(data => `<td>${data}</td>`).join('')}</tr>`).join('');
+    table.appendChild(tbody);
+
+    tableContainer.innerHTML = '';
+    tableContainer.appendChild(table);
+
+    // Initialize DataTable
+    if ($.fn.dataTable.isDataTable(`#${tableId}`)) {
+        $(`#${tableId}`).DataTable().destroy();
+    }
+
+    $(`#${tableId}`).DataTable({
+        dom: '<"ex-buttons"Bf>lrtip',
+        buttons: {
+            buttons: [
+                {
+                    extend: 'collection',
+                    text: 'Export',
+                    className: 'ex-buttons',
+                    buttons: [
+                        {
+                            extend: 'csv',
+                            charset: 'UTF-8',
+                            bom: true,
+                            filename: `Podsumowanie_${new Date().toISOString().replace(/[:\.]/g, '-')}_${tableId.replace('summary', '').replace('-table', '')}`,
+                        },
+                        { extend: 'excel', title: null },
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'A4',
+                            title: `Koszty${valueColumn === COLUMNS.get('NET_VALUE') ? 'Wartość' : 'Ilość'}${tableId.replace('summary', '').replace('-table', '')}`,
+                            customize: function (doc) {
+                                doc.styles.title = {
+                                    color: 'blue',
+                                    fontSize: '25',
+                                    bold: true
+                                };
+                            },
+                        },
+                    ],
+                }
+            ],
+        },
+        paging: true,
+        pageLength: 12,
+        searching: true,
+        info: false,
+        ordering: true,
+        responsive: true,
+        orderCellsTop: true,
+        columnDefs: [
+            { type: 'date-pl', targets: includeRegistrationNumber ? 2 : 1 }
+        ],
+        order: [], // Disable initial sorting
+        language: {
+            search: "_INPUT_",
+            searchPlaceholder: "Wyszukaj...",
+            paginate: {
+                next: "Następna",
+                previous: "Poprzednia"
+            }
+        }
+    });
+}
+
+function addSingleFilterSet(tableId1, tableId2, includeRegistrationNumber) {
+    const filterContainerId = `summary-filters-${includeRegistrationNumber ? '11-12' : '9-10'}`;
+    const existingContainer = document.getElementById(filterContainerId);
+    if (existingContainer) existingContainer.remove();
+
+    const filterContainer = document.createElement('div');
+    filterContainer.id = filterContainerId;
+    filterContainer.className = 'mb-5 flex flex-wrap gap-2';
+
+    const columns = includeRegistrationNumber 
+        ? ['Rejestracja', 'Produkt', 'Rok']
+        : ['Produkt', 'Rok'];
+
+    columns.forEach(column => {
+        const select = document.createElement('select');
+        select.id = `${filterContainerId}-${column.toLowerCase().replace(' ', '-')}`;
+        select.className = 'bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-all duration-300';
+        select.innerHTML = `<option value="">Wszystkie ${column}</option>`;
+        filterContainer.appendChild(select);
+    });
+
+    document.querySelector(`#${tableId1}-container`).insertAdjacentElement('beforebegin', filterContainer);
+
+    updateFilterOptions(tableId1, tableId2, columns);
+
+    columns.forEach((column, index) => {
+        const select = document.getElementById(`${filterContainerId}-${column.toLowerCase().replace(' ', '-')}`);
+        select.addEventListener('change', function() {
+            const val = $.fn.dataTable.util.escapeRegex(this.value);
+            $(`#${tableId1}`).DataTable().column(index).search(val ? `^${val}$` : '', true, false).draw();
+            $(`#${tableId2}`).DataTable().column(index).search(val ? `^${val}$` : '', true, false).draw();
+        });
+    });
+}
+
+function updateFilterOptions(tableId1, tableId2, columns) {
+    const includeRegistrationNumber = columns.length === 3;
+    const filterContainerId = `summary-filters-${includeRegistrationNumber ? '11-12' : '9-10'}`;
+
+    columns.forEach((column, index) => {
+        const uniqueValues = new Set();
+        document.querySelectorAll(`#${tableId1} tbody tr, #${tableId2} tbody tr`).forEach(row => {
+            uniqueValues.add(row.cells[index].textContent);
+        });
+
+        const select = document.getElementById(`${filterContainerId}-${column.toLowerCase().replace(' ', '-')}`);
+        select.innerHTML = `<option value="">Wszystkie ${column}</option>`;
+        Array.from(uniqueValues).sort().forEach(value => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = value;
+            select.appendChild(option);
+        });
+    });
+}
+
+function generateSummary13Table() {
+    const container = $('#summary13-table-container');
+    container.empty();
+
+    const commonClass = 'bg-indigo-500 text-white py-1 px-2 rounded-md hover:bg-indigo-700 transition-all duration-300 text-sm';
+
+    const createFilterElement = (type, id, placeholder = '') => {
+        const element = $(`<${type}>`, {
+            id: `summary13-${id}`,
+            class: commonClass,
+            placeholder: placeholder
+        });
+        if (type === 'select') {
+            element.append('<option value="">Wszystkie ' + placeholder + '</option>');
+        }
+        return element;
+    };
+
+    const filtersDiv = $('<div>', { id: 'summary13-filters', class: 'mb-5 flex flex-wrap gap-2' });
+    const registrationSearchInput = createFilterElement('input', 'registration-search', "Szukaj Nr rejestracyjny (użyj ';' aby rozdzielić numery)");
+    const registrationFilterSelect = createFilterElement('select', 'registration-filter', 'numery rejestracyjne');
+    const yearFilterSelect = createFilterElement('select', 'year-filter', 'lata');
+
+    const createDateInput = (id, placeholder) => {
+        const wrapper = $('<div>', { class: 'relative' });
+        const input = createFilterElement('input', id, placeholder).attr('type', 'date');
+        const icon = $('<span>', {
+            class: 'absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 pointer-events-none'
+        }).html('<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 4h10M5 11h14M5 16h14M5 21h14"/></svg>');
+        return wrapper.append(icon, input);
+    };
+
+    const dateFromWrapper = createDateInput('date-from', 'Data od');
+    const dateToWrapper = createDateInput('date-to', 'Data do');
+
+    const toggleColumnsBtn = $('<button>', {
+        id: 'toggle-columns-btn',
+        class: `${commonClass} ml-2`,
+        text: 'Ukryj kolumny'
+    });
+
+    filtersDiv.append(
+        registrationSearchInput,
+        registrationFilterSelect,
+        yearFilterSelect,
+        dateFromWrapper,
+        dateToWrapper,
+        $('<div>', { class: 'w-full' }),
+        toggleColumnsBtn
+    );
+
+    container.append(filtersDiv);
+
+    const columnsCheckboxesDiv = $('<div>', {
+        id: 'columns-checkboxes',
+        class: 'mt-2',
+        css: { display: 'none', background: '#f9f9f9', padding: '10px', border: '1px solid #ccc' }
+    });
+    container.append(columnsCheckboxesDiv);
+
+    const tableElement = $('<table>', {
+        id: 'Summary13Table',
+        class: 'display',
+        style: 'width:100%'
+    });
+    container.append(tableElement);
+
+    const fuelGroups = ['Olej napędowy', 'Benzyna', 'LPG'];
+    const data = jsonData.slice(1)
+        .filter(row => fuelGroups.includes(row[columnIndices['Grupa prod']]))
+        .sort((a, b) => {
+            const dateA = new Date(a[columnIndices['Data realizacji']]);
+            const dateB = new Date(b[columnIndices['Data realizacji']]);
+            return dateA - dateB || a[columnIndices['Nr rejestracyjny']].localeCompare(b[columnIndices['Nr rejestracyjny']]);
+        });
+
+    const summary13Data = [];
+    const vehicleData = {};
+    const yearlyConsumption = {};
+    const invalidOdometerEntries = [];
+
+    const processRow = (row) => {
+        const regNumber = row[columnIndices['Nr rejestracyjny']];
+        const date = new Date(row[columnIndices['Data realizacji']]);
+        const year = date.getFullYear();
+        const group = row[columnIndices['Grupa prod']];
+        const quantity = parseFloat(row[columnIndices['Ilość']].replace(',', '.'));
+        const odometer = row[columnIndices['Licznik']] ? parseInt(row[columnIndices['Licznik']].replace(/\D/g, '')) : null;
+        const netValue = parseFloat(row[columnIndices['Wartość netto']].replace(',', '.'));
+        const location = row[columnIndices['Miejscowość']];
+        const costData = row[columnIndices['Dane kosztowe']];
+
+        if (isNaN(quantity) || isNaN(date.getTime()) || isNaN(netValue)) return;
+
+        const rowData = [
+            regNumber, date.toISOString().split('T')[0], group, quantity.toFixed(2),
+            odometer !== null ? odometer : 'b.d.', 'b.d.', 'b.d.', 'b.d.',
+            false, 'b.d.', netValue.toFixed(2), location, false, false, false, costData
+        ];
+
+        if (odometer !== null && odometer !== 0) {
+            if (!vehicleData[regNumber]) {
+                vehicleData[regNumber] = { lastOdometer: odometer, lastDate: date };
+            } else {
+                const lastData = vehicleData[regNumber];
+                const odometerDiff = odometer - lastData.lastOdometer;
+                const daysDiff = (date - lastData.lastDate) / (1000 * 60 * 60 * 24);
+
+                if (odometerDiff > 0 && daysDiff > 0) {
+                    const consumption = (quantity / odometerDiff) * 100;
+                    if (!yearlyConsumption[regNumber]) yearlyConsumption[regNumber] = {};
+                    if (!yearlyConsumption[regNumber][year]) yearlyConsumption[regNumber][year] = [];
+                    yearlyConsumption[regNumber][year].push(consumption);
+                    rowData[5] = odometerDiff.toFixed(0);
+                    rowData[6] = consumption.toFixed(2);
+                }
+
+                vehicleData[regNumber] = { lastOdometer: odometer, lastDate: date };
+            }
+        } else {
+            invalidOdometerEntries.push({ rowData, regNumber, date, year, quantity });
+        }
+
+        summary13Data.push(rowData);
+    };
+
+    data.forEach(processRow);
+
+    const calculateAverageConsumption = (consumptions) => {
+        if (consumptions.length === 0) return null;
+        const avgConsumption = consumptions.reduce((a, b) => a + b, 0) / consumptions.length;
+        const nonAnomalousData = consumptions.filter(c => Math.abs((c - avgConsumption) / avgConsumption) <= 0.08);
+        return nonAnomalousData.length > 0 ? nonAnomalousData.reduce((a, b) => a + b, 0) / nonAnomalousData.length : avgConsumption;
+    };
+
+    Object.keys(yearlyConsumption).forEach(regNumber => {
+        Object.keys(yearlyConsumption[regNumber]).forEach(year => {
+            yearlyConsumption[regNumber][year] = {
+                avgConsumption: calculateAverageConsumption(yearlyConsumption[regNumber][year]),
+                consumptions: yearlyConsumption[regNumber][year]
+            };
+        });
+    });
+
+    invalidOdometerEntries.forEach(entry => {
+        const { rowData, regNumber, date, year, quantity } = entry;
+        const yearData = yearlyConsumption[regNumber] && yearlyConsumption[regNumber][year];
+
+        if (yearData && yearData.avgConsumption) {
+            const avgConsumption = yearData.avgConsumption;
+            const estimatedDistance = (quantity / avgConsumption) * 100;
+            rowData[5] = estimatedDistance.toFixed(0);
+            rowData[6] = avgConsumption.toFixed(2);
+
+            const lastValidOdometer = vehicleData[regNumber] ? vehicleData[regNumber].lastOdometer : null;
+            if (lastValidOdometer !== null) {
+                const correctedOdometer = lastValidOdometer + estimatedDistance;
+                rowData[4] = correctedOdometer.toFixed(0);
+                vehicleData[regNumber] = { lastOdometer: correctedOdometer, lastDate: date };
+                rowData[12] = true;
+            }
+
+            rowData[13] = true;
+            rowData[14] = true;
+
+            if (!yearlyConsumption[regNumber]) yearlyConsumption[regNumber] = {};
+            if (!yearlyConsumption[regNumber][year]) yearlyConsumption[regNumber][year] = { avgConsumption, consumptions: [] };
+            yearlyConsumption[regNumber][year].consumptions.push(avgConsumption);
+        }
+    });
+
+    summary13Data.forEach(row => {
+        const regNumber = row[0];
+        const rowDate = new Date(row[1]);
+        const year = rowDate.getFullYear();
+
+        const yearData = yearlyConsumption[regNumber] && yearlyConsumption[regNumber][year];
+        if (!yearData || !yearData.avgConsumption) {
+            row[7] = 'b.d.';
+            return;
+        }
+
+        const avgConsumption = yearData.avgConsumption;
+        row[7] = avgConsumption.toFixed(2);
+
+        const consumption = parseFloat(row[6]);
+        if (!isNaN(consumption) && !isNaN(avgConsumption)) {
+            const percentageDifference = ((consumption - avgConsumption) / avgConsumption) * 100;
+            row[8] = Math.abs(percentageDifference) > 8;
+
+            const distance = parseFloat(row[5]);
+            const actualFuelUsed = parseFloat(row[3]);
+            const expectedFuelUsed = (avgConsumption * distance) / 100;
+            row[9] = (actualFuelUsed - expectedFuelUsed).toFixed(2);
+        } else {
+            row[8] = false;
+            row[9] = 'b.d.';
+        }
+    });
+
+    const renderConsumption = (data, type, row) => {
+        if (type === 'display') {
+            const avgYearlyConsumption = parseFloat(row[7]);
+            const consumption = parseFloat(data);
+            if (!isNaN(consumption) && !isNaN(avgYearlyConsumption)) {
+                const percentageDifference = ((consumption - avgYearlyConsumption) / avgYearlyConsumption) * 100;
+                if (Math.abs(percentageDifference) > 8) {
+                    return `<span style="color: ${consumption > avgYearlyConsumption ? 'red' : 'green'}; font-weight: bold;">${data}</span>`;
+                } else if (row[14]) {
+                    return `<span style="color: purple; font-weight: bold;">${data}</span>`;
+                }
+            }
+        }
+        return data;
+    };
+
+    const renderDifference = (data, type) => {
+        const difference = parseFloat(data);
+        if (type === 'display' && !isNaN(difference)) {
+            const color = difference > 0 ? 'red' : 'green';
+            return `<span style="color: ${color}; font-weight: bold;">${difference.toFixed(2)}</span>`;
+        }
+        return data;
+    };
+
+    // Calculate total sums for each vehicle and year, considering date filtering
+    const totalSums = {};
+    summary13Data.forEach(row => {
+        const regNumber = row[0];
+        const rowDate = new Date(row[1]);
+        const year = rowDate.getFullYear();
+        const key = `${regNumber}-${year}`;
+
+        const dateFrom = $('#summary13-date-from').val();
+        const dateTo = $('#summary13-date-to').val();
+
+        if ((!dateFrom || rowDate >= new Date(dateFrom)) && (!dateTo || rowDate <= new Date(dateTo))) {
+            if (!totalSums[key]) {
+                totalSums[key] = {
+                    quantity: 0,
+                    distance: 0,
+                    difference: 0,
+                    netValue: 0
+                };
+            }
+            totalSums[key].quantity += parseFloat(row[3]) || 0;
+            totalSums[key].distance += parseFloat(row[5]) || 0;
+            totalSums[key].difference += parseFloat(row[9]) || 0;
+            totalSums[key].netValue += parseFloat(row[10]) || 0;
+        }
+    });
+
+    const table = $('#Summary13Table').DataTable({
+    data: summary13Data,
+    columns: [
+        { title: 'Nr rejestracyjny', data: 0 },
+        { title: 'Data realizacji', data: 1 },
+        { title: 'Grupa prod', data: 2 },
+        { title: 'Ilość', data: 3 },
+        { title: 'Licznik', data: 4, render: (data, type, row) => type === 'display' && row[12] ? `<span style="color: purple; font-weight: bold;">${data}</span>` : data },
+        { title: 'Dystans (km)', data: 5, render: (data, type, row) => type === 'display' && row[13] ? `<span style="color: purple; font-weight: bold;">${data}</span>` : data },
+        { title: 'Spalanie (l/100km)', data: 6, render: renderConsumption },
+        { title: 'Śr. r. (l/100 km)', data: 7 },
+        { title: 'Różnica (l)', data: 9, render: renderDifference },
+        { title: 'Wartość netto', data: 10 },
+        { title: 'Miejscowość', data: 11 },
+        { title: 'Dane kosztowe', data: 15 }
+    ],
+    dom: '<"ex-buttons"Bf>lrtip',
+    buttons: [
+        {
+            extend: 'collection',
+            text: 'Export',
+            buttons: [
+                'csv',
+                'excel',
+                {
+                    extend: 'pdfHtml5',
+                    text: 'PDF',
+                    orientation: 'landscape',
+                    pageSize: 'A4',
+                    exportOptions: { columns: ':visible' },
+                    customize: function (doc) {
+                        doc.defaultStyle.fontSize = 8;
+                        doc.styles.tableHeader.fontSize = 9;
+                        doc.content[1].table.widths = new Array(doc.content[1].table.body[0].length).fill('*');
+                    }
+                }
+            ]
+        }
+    ],
+    paging: true,
+    pageLength: 20,
+    searching: true,
+    info: false,
+    order: [[0, 'asc'], [1, 'asc']],
+    rowGroup: {
+        dataSrc: [0, function(row) {
+            return new Date(row[1]).getFullYear();
+        }],
+        startRender: function (rows, group, level) {
+            if (level === 0) {
+                // This is the vehicle registration number group
+                return $('<tr/>').append('<td colspan="12">' + group + '</td>');
+            } else if (level === 1) {
+                // This is the year group
+                const regNumber = rows.data()[0][0];
+                const year = group;
+                
+                // Oblicz sumy tylko dla widocznych wierszy
+                const visibleRows = rows.nodes().toArray().filter(node => $(node).is(':visible'));
+                const visibleData = visibleRows.map(node => table.row(node).data());
+                
+                const totals = visibleData.reduce((acc, row) => {
+                    return {
+                        quantity: acc.quantity + (parseFloat(row[3]) || 0),
+                        distance: acc.distance + (parseFloat(row[5]) || 0),
+                        difference: acc.difference + (parseFloat(row[9]) || 0),
+                        netValue: acc.netValue + (parseFloat(row[10]) || 0)
+                    };
+                }, { quantity: 0, distance: 0, difference: 0, netValue: 0 });
+
+                return $('<tr/>').append(
+                    `<td colspan="2"><strong>${regNumber} - ${year}</strong></td>` +
+                    `<td></td>` +
+                    `<td class="text-left">${totals.quantity.toFixed(2)}</td>` +
+                    `<td></td>` +
+                    `<td class="text-left">${isNaN(totals.distance) || totals.distance === 0 ? 'b.d.' : totals.distance.toFixed(0)}</td>` +
+                    `<td></td><td></td>` +
+                    `<td class="text-left">${isNaN(totals.difference) || totals.difference === 0 ? 'b.d.' : totals.difference.toFixed(2)}</td>` +
+                    `<td class="text-left">${totals.netValue.toFixed(2)}</td>` +
+                    `<td></td>` +
+                    `<td></td>`
+                );
+            }
+        }
+    },
+    initComplete: function () {
+        const api = this.api();
+        const columns = api.settings().init().columns;
+
+        const createCheckbox = (col, index) => {
+            if (col.title === 'Nr rejestracyjny') return '';
+            const checked = col.visible !== false ? 'checked' : '';
+            return `
+                <label class="flex items-center space-x-2 text-sm">
+                    <input type="checkbox" class="toggle-column" data-column-index="${index}" ${checked}>
+                    <span>${col.title}</span>
+                </label>
+            `;
+        };
+
+        const checkboxesHtml = columns.map(createCheckbox).join('');
+        columnsCheckboxesDiv.html(`<div class="flex flex-wrap gap-2">${checkboxesHtml}</div>`);
+
+        columnsCheckboxesDiv.find('.toggle-column').on('change', function () {
+            const column = api.column($(this).attr('data-column-index'));
+            column.visible(!column.visible());
+        });
+
+        toggleColumnsBtn.on('click', () => columnsCheckboxesDiv.toggle());
+    }
+});
+
+const uniqueRegistrations = [...new Set(summary13Data.map(row => row[0]))].sort();
+const uniqueYears = [...new Set(summary13Data.map(row => new Date(row[1]).getFullYear()))].sort();
+
+uniqueRegistrations.forEach(reg => {
+    registrationFilterSelect.append($('<option>', { value: reg, text: reg }));
+});
+
+uniqueYears.forEach(year => {
+    yearFilterSelect.append($('<option>', { value: year, text: year }));
+});
+
+registrationSearchInput.on('input', () => {
+    updateRegistrationFilter();
+    table.draw();
+});
+
+registrationFilterSelect.add(yearFilterSelect).add('#summary13-date-from').add('#summary13-date-to').on('change', () => table.draw());
+
+$.fn.dataTable.ext.search.push(
+    function (settings, data, dataIndex) {
+        if (settings.nTable.id !== 'Summary13Table') return true;
+
+        const selectedReg = registrationFilterSelect.val();
+        const searchReg = registrationSearchInput.val().toLowerCase();
+        const selectedYear = yearFilterSelect.val();
+        const dateFrom = $('#summary13-date-from').val();
+        const dateTo = $('#summary13-date-to').val();
+
+        const rowReg = data[0];
+        const rowDate = new Date(data[1]);
+        const rowYear = rowDate.getFullYear();
+
+        const passesRegFilter = !selectedReg || selectedReg === rowReg;
+        const passesSearchFilter = !searchReg || searchReg.split(';').some(partialReg => rowReg.toLowerCase().includes(partialReg.trim()));
+        const passesYearFilter = !selectedYear || rowYear == selectedYear;
+        const passesDateRangeFilter = (!dateFrom || rowDate >= new Date(dateFrom)) && (!dateTo || rowDate <= new Date(dateTo));
+
+        return passesRegFilter && passesSearchFilter && passesYearFilter && passesDateRangeFilter;
+    }
+);
+
+function updateRegistrationFilter() {
+    const searchValue = registrationSearchInput.val().toLowerCase();
+    const filteredRegistrations = uniqueRegistrations.filter(reg => reg.toLowerCase().includes(searchValue));
+
+    registrationFilterSelect.html('<option value="">Wszystkie numery rejestracyjne</option>');
+    filteredRegistrations.forEach(reg => {
+        registrationFilterSelect.append($('<option>', { value: reg, text: reg }));
+    });
+}
+}
+
+function generateAveragePriceSummary() {
+    const averagePrices = {};
+
+    // Iteracja po danych i obliczanie sum i ilości
+    jsonData.slice(1).forEach(row => {
+        const group = row[columnIndices['Grupa prod']];
+        const value = parseFloat(row[columnIndices['Wartość netto']]);
+        const quantity = parseFloat(row[columnIndices['Ilość']]);
+        const date = new Date(row[columnIndices['Data realizacji']]);
+
+        // Wyciągnięcie roku i miesiąca
+        const year = date.getFullYear();
+        const monthIndex = date.getMonth(); // Indeks miesiąca (0 - styczeń, 11 - grudzień)
+        const key = `${group} - ${year}`; // Unikalny klucz dla produktu i roku
+
+        // Filtrujemy tylko dla wybranych produktów
+        if (["Olej napędowy", "Benzyna", "LPG"].includes(group)) {
+            // Inicjalizacja obiektu dla danego klucza
+            if (!averagePrices[key]) {
+                averagePrices[key] = { months: Array(12).fill(null).map(() => ({ total: 0, quantity: 0 })) };
+            }
+
+            if (!isNaN(value) && !isNaN(quantity)) {
+                // Dodawanie wartości do odpowiedniego miesiąca
+                averagePrices[key].months[monthIndex].total += value;
+                averagePrices[key].months[monthIndex].quantity += quantity;
+            }
+        }
+    });
+
+    // Generowanie tabeli podsumowującej
+    let summaryHtml = '<table id="summary14Table" class="display"><thead><tr><th>Produkt</th><th>Rok</th>';
+
+    // Dodanie nagłówków dla skróconych miesięcy
+    const months = [
+        'Sty', 'Lut', 'Mar', 'Kwi', 'Maj', 'Cze',
+        'Lip', 'Sie', 'Wrz', 'Paź', 'Lis', 'Gru'
+    ];
+
+    months.forEach(month => {
+        summaryHtml += `<th>${month}</th>`;
+    });
+    summaryHtml += '</tr></thead><tbody>';
+
+    // Wypełnianie danych do tabeli
+    for (const [key, data] of Object.entries(averagePrices)) {
+        const [product, year] = key.split(' - ');
+        summaryHtml += `<tr><td>${product}</td><td>${year}</td>`;
+
+        // Wypełnienie wartości dla miesięcy
+        data.months.forEach(monthData => {
+            const averagePrice = monthData.quantity > 0 ? (monthData.total / monthData.quantity).toFixed(2) : 0;
+            summaryHtml += `<td>${averagePrice}</td>`;
+        });
+
+        summaryHtml += '</tr>';
+    }
+
+    summaryHtml += '</tbody></table>';
+
+    // Wstawianie tabeli do kontenera
+    document.getElementById('summary14-table-container').innerHTML = summaryHtml;
+
+    // Inicjalizacja DataTables z opcjami eksportu
+    $('#summary14Table').DataTable({
+        paging: false,
+        searching: false,
+        ordering: true,
+        responsive: true,
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'collection',
+                text: 'Export',
+                className: 'ex-buttons',
+                buttons: [
+                    {
+                        extend: 'csv',
+                        charset: 'UTF-8',
+                        bom: true,
+                        filename: `Podsumowanie_${new Date().toISOString().replace(/[:\.]/g, '-')}_14`,
+                    },
+                    { 
+                        extend: 'excel', 
+                        title: null 
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        orientation: 'landscape',
+                        pageSize: 'A4',
+                    }
+                ]
+            }
+        ]
+    });
+}
+
+let transactionCount = {};
+let correctRegistrationNumbers = {};
+
+// Funkcja do zliczania transakcji dla każdego Nr rejestracyjny dla danej karty
+function calculateTransactionCounts() {
+    transactionCount = {};
+    correctRegistrationNumbers = {};
+
+    jsonData.slice(1).forEach(row => {
+        const cardNumber = row[columnIndices['Nr karty']];
+        const registrationNumber = row[columnIndices['Nr rejestracyjny']];
+        
+        if (!transactionCount[cardNumber]) {
+            transactionCount[cardNumber] = {};
+        }
+
+        if (!transactionCount[cardNumber][registrationNumber]) {
+            transactionCount[cardNumber][registrationNumber] = 0;
+        }
+
+        transactionCount[cardNumber][registrationNumber]++;
+    });
+
+    // Ustalanie właściwego numeru rejestracyjnego
+    for (const cardNumber in transactionCount) {
+        const regNumbers = transactionCount[cardNumber];
+        let maxTransactions = 0;
+        let correctRegNumber = '';
+
+        for (const regNumber in regNumbers) {
+            if (regNumbers[regNumber] > maxTransactions) {
+                maxTransactions = regNumbers[regNumber];
+                correctRegNumber = regNumber;
+            }
+        }
+        correctRegistrationNumbers[cardNumber] = correctRegNumber;
+    }
+}
+
+// Funkcja do generowania zestawienia z pełnymi danymi
+function identifyRegistrationStatus() {
+    const summaryData = jsonData.slice(1).map(row => {
+        const cardNumber = row[columnIndices['Nr karty']];
+        const registrationNumber = row[columnIndices['Nr rejestracyjny']];
+        const dateRealization = formatDate(row[columnIndices['Data realizacji']]); // Formatuj datę
+        const quantity = row[columnIndices['Ilość']];
+        const netValue = row[columnIndices['Wartość netto']];
+        const groupProd = row[columnIndices['Grupa prod']];
+        const correctRegNumber = correctRegistrationNumbers[cardNumber];
+
+        return {
+            'Nr karty': cardNumber,
+            'Nr rejestracyjny': registrationNumber,
+            'Data realizacji': dateRealization,
+            'Ilość': quantity,
+            'Wartość netto': netValue,
+            'Grupa prod': groupProd,
+            'Status': registrationNumber === correctRegNumber ? 'Właściwy' : 'Inny',
+            'Właściwy Nr rejestracyjny': correctRegNumber
+        };
+    });
+
+    renderSummaryTable(summaryData);
+}
+
+// Funkcja formatująca datę do formatu YYYY-MM-DD
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    if (!isNaN(date.getTime())) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+    return dateString; // Zwraca oryginalny ciąg, jeśli nie można sparsować daty
+}
+
+// Funkcja renderująca tabelę z wynikami
+function renderSummaryTable(data) {
+    const tableId = 'summary15Table';
+    const containerId = 'summary15-table-container';
+    const container = $(`#${containerId}`);
+    container.empty();
+
+    // Dodaj unikalny przycisk filtrów dla tej tabeli
+    if ($(`#toggleFilters_${tableId}`).length === 0) {
+        $('#generateSummary15Button').after(`
+            <button id="toggleFilters_${tableId}" class="bg-gray-700 text-white py-2 px-4 rounded-md ml-3">
+                Pokaż filtry
+            </button>
+        `);
+    }
+
+    // Dodanie tabeli do kontenera
+    container.append(`<table id="${tableId}" class="display" width="100%"></table>`);
+
+    // Usunięcie istniejącej instancji tabeli, jeśli istnieje
+    if (typeof window.dataTables === 'undefined') {
+        window.dataTables = {};
+    }
+    
+    if (window.dataTables[tableId]) {
+        window.dataTables[tableId].destroy();
+    }
+
+    // Konfiguracja przycisków eksportu
+    const exportButtons = [
+        {
+            extend: 'excel',
+            text: 'Eksport do Excel',
+            className: 'bg-green-600 text-white py-2 px-4 rounded-md ml-3',
+            title: 'Zestawienie_danych',
+            exportOptions: {
+                columns: ':visible'
+            }
+        },
+        {
+            extend: 'csv',
+            text: 'Eksport do CSV',
+            className: 'bg-blue-600 text-white py-2 px-4 rounded-md ml-3',
+            title: 'Zestawienie_danych',
+            exportOptions: {
+                columns: ':visible'
+            }
+        },
+        {
+            extend: 'pdf',
+            text: 'Eksport do PDF',
+            className: 'bg-red-600 text-white py-2 px-4 rounded-md ml-3',
+            title: 'Zestawienie_danych',
+            exportOptions: {
+                columns: ':visible'
+            }
+        }
+    ];
+
+    // Generowanie tabeli
+    window.dataTables[tableId] = $(`#${tableId}`).DataTable({
+        data: data,
+        dom: 'Bfrtip',
+        buttons: exportButtons,
+        columns: [
+            { title: 'Nr karty', data: 'Nr karty', width: '10%' },
+            { 
+                title: 'Nr rejestracyjny', 
+                data: 'Nr rejestracyjny', 
+                width: '10%',
+                render: function(data, type, row) {
+                    if (row['Status'] === 'Inny') {
+                        return `<span style="color: red;">${data}</span>`;
+                    }
+                    return data;
+                }
+            },
+            { title: 'Data realizacji', data: 'Data realizacji', width: '15%' },
+            { title: 'Ilość', data: 'Ilość', width: '10%' },
+            { title: 'Wartość netto', data: 'Wartość netto', width: '15%' },
+            { title: 'Grupa prod', data: 'Grupa prod', width: '10%' },
+            { title: 'Status', data: 'Status', width: '10%' },
+            { title: 'Właściwy Nr rejestracyjny', data: 'Właściwy Nr rejestracyjny', width: '15%' }
+        ],
+        order: [[2, 'desc']],
+        language: {
+            paginate: {
+                first: "Pierwsza",
+                last: "Ostatnia",
+                next: "Następna",
+                previous: "Poprzednia"
+            },
+            search: "Szukaj:",
+            zeroRecords: "Nie znaleziono pasujących pozycji",
+            lengthMenu: "Pokaż _MENU_ wierszy",
+            info: "Wyświetlono _START_ do _END_ z _TOTAL_ wierszy",
+            infoEmpty: "Wyświetlono 0 do 0 z 0 wierszy",
+            infoFiltered: "(filtrowanie spośród _MAX_ wszystkich wierszy)",
+            buttons: {
+                excel: 'Eksport do Excel',
+                csv: 'Eksport do CSV',
+                pdf: 'Eksport do PDF'
+            }
+        },
+        info: false,
+        lengthChange: true,
+        lengthMenu: [[15, 25, 40, 100, -1], [15, 25, 40, 100, "Wszystkie"]],
+        initComplete: function() {
+            addFiltersToTable(tableId);
+        }
+    });
+
+    // Obsługa przycisku "Pokaż filtry"
+    $(`#toggleFilters_${tableId}`).off('click').on('click', function() {
+        $(`#${tableId} thead tr.filters`).toggle();
+    });
+}
+
+// Funkcja dodająca filtry do nagłówka tabeli
+function addFiltersToTable(tableId) {
+    const table = $(`#${tableId}`);
+    
+    // Dodaj wiersz filtrów do nagłówka tabeli
+    if ($(`#${tableId} thead tr.filters`).length === 0) {
+        table.find('thead').append(`<tr class="filters" style="display: none;"></tr>`);
+    }
+    
+    // Dodaj filtry dla każdej kolumny
+    table.find('thead th').each(function(index) {
+        const title = $(this).text();
+        const columnIndex = index;
+        
+        if (title === 'Data realizacji') {
+            $(`#${tableId} thead tr.filters`).append(`
+                <th>
+                    <div style="display: flex; gap: 4px;">
+                        <input type="date" 
+                            id="${tableId}_minDate_${columnIndex}" 
+                            class="filter-input" 
+                            style="width: 45%; background-color: #333; color: #fff; border: none; padding: 5px; border-radius: 4px;" 
+                            placeholder="Od" />
+                        <input type="date" 
+                            id="${tableId}_maxDate_${columnIndex}" 
+                            class="filter-input" 
+                            style="width: 45%; background-color: #333; color: #fff; border: none; padding: 5px; border-radius: 4px;" 
+                            placeholder="Do" />
+                    </div>
+                </th>
+            `);
+            
+            // Dodaj nasłuchiwanie zdarzeń dla filtrów daty
+            $(`#${tableId}_minDate_${columnIndex}, #${tableId}_maxDate_${columnIndex}`).on('change', function() {
+                filterByDateRange(tableId, columnIndex);
+            });
+        } else {
+            $(`#${tableId} thead tr.filters`).append(`
+                <th>
+                    <input type="text" 
+                        id="${tableId}_filter_${columnIndex}" 
+                        class="filter-input" 
+                        style="width: 100%; background-color: #333; color: #fff; border: none; padding: 5px; border-radius: 4px;" />
+                </th>
+            `);
+            
+            // Dodaj nasłuchiwanie zdarzeń dla filtrów tekstowych
+            $(`#${tableId}_filter_${columnIndex}`).on('keyup change', function() {
+                window.dataTables[tableId]
+                    .column(columnIndex)
+                    .search(this.value)
+                    .draw();
+            });
+        }
+    });
+}
+
+// Funkcja pomocnicza do parsowania daty
+function parseDate(dateStr) {
+    if (!dateStr) return null;
+    
+    const date = new Date(dateStr);
+    if (!isNaN(date.getTime())) {
+        date.setHours(0, 0, 0, 0);
+        return date;
+    }
+    return null;
+}
+
+// Funkcja filtrowania według zakresu dat
+function filterByDateRange(tableId, columnIndex) {
+    const minDateStr = $(`#${tableId}_minDate_${columnIndex}`).val();
+    const maxDateStr = $(`#${tableId}_maxDate_${columnIndex}`).val();
+    
+    const minDate = parseDate(minDateStr);
+    const maxDate = parseDate(maxDateStr);
+    
+    if (maxDate) {
+        maxDate.setHours(23, 59, 59, 999);
+    }
+
+    // Usuń poprzedni filtr dla tej tabeli
+    if (!window.dateFilters) {
+        window.dateFilters = {};
+    }
+    
+    if (window.dateFilters[tableId]) {
+        $.fn.dataTable.ext.search = $.fn.dataTable.ext.search.filter(func => 
+            func !== window.dateFilters[tableId]
+        );
+    }
+
+    // Dodaj nowy filtr tylko jeśli wybrano jakąś datę
+    if (minDate || maxDate) {
+        window.dateFilters[tableId] = function(settings, data, dataIndex) {
+            // Sprawdź, czy to odpowiednia tabela
+            if (settings.nTable.id !== tableId) return true;
+            
+            const dateStr = data[columnIndex];
+            let dateValue = parseDate(dateStr);
+            
+            if (!dateValue) return true;
+            
+            let valid = true;
+            if (minDate) {
+                valid = valid && dateValue >= minDate;
+            }
+            if (maxDate) {
+                valid = valid && dateValue <= maxDate;
+            }
+            return valid;
+        };
+        
+        $.fn.dataTable.ext.search.push(window.dateFilters[tableId]);
+    }
+
+    window.dataTables[tableId].draw();
+}
+
+// Initialize buttons
+document.addEventListener('DOMContentLoaded', function() {
+    const buttonConfigurations = [
+        { id: "generateSummary3Button", callback: generateSummary3Table },
+        { id: "generateSummary4Button", callback: generateSummary4Table },
+        { id: "generateSummary5Button", callback: generateSummary5Table },
+        { id: "generateSummary6Button", callback: generateSummary6Table },
+        { id: "generateSummary7Button", callback: generateSummary7Table },
+        { id: "generateSummary8Button", callback: generateSummary8Table },
+        { id: "generateSummary14Button", callback: generateAveragePriceSummary },
+        { id: "generateSummary9Button", callback: () => generateSummaryTables(9, 10) },
+        { id: "generateSummary11Button", callback: () => generateSummaryTables(11, 12) },
+        { id: "generateSummary13Button", callback: generateSummary13Table },
+        { id: "generateSummary15Button", callback: () => {
+            calculateTransactionCounts();
+            identifyRegistrationStatus();
+        }}
+    ];
+
+    // Now add configuration for the "Generate All Tables" button
+    const generateAllButtonConfig = {
+        id: "generateAllTablesButton",
+        callback: generateAllTables
+    };
+    buttonConfigurations.push(generateAllButtonConfig);
+    
+    buttonConfigurations.forEach(config => {
+        handleButtonClick(config.id, config.callback);
+    });
+});
+
+// Function to handle the click events
+function handleButtonClick(buttonId, callback) {
+    const button = document.getElementById(buttonId);
+    if (button) {
+        button.addEventListener("click", function () {
+            if (button.disabled) return;
+            button.disabled = true;
+            button.textContent = "Trwają czary ...";
+            setTimeout(() => {
+                callback();
+                button.disabled = false;
+                button.textContent = "Wygeneruj ponownie";
+            }, 0);
+        });
+    } else {
+        console.warn(`Button with id "${buttonId}" not found.`);
+    }
+}
+
+// Function to generate all tables
+function generateAllTables() {
+    generateSummary3Table();
+    generateSummary4Table();
+    generateSummary5Table();
+    generateSummary6Table();
+    generateSummary7Table();
+    generateSummary8Table();
+    generateAveragePriceSummary();
+    generateSummaryTables(9, 10);
+    generateSummaryTables(11, 12);
+    generateSummary13Table();
+    calculateTransactionCounts();
+    identifyRegistrationStatus();
+}
+
+const olejNapedowyData = [
+[Date.UTC(2020, 0), 352923.19],
+[Date.UTC(2020, 1), 406216.97],
+[Date.UTC(2020, 2), 430244.12],
+[Date.UTC(2020, 3), 322580.67],
+[Date.UTC(2020, 4), 289811.22],
+[Date.UTC(2020, 5), 296092.63],
+[Date.UTC(2020, 6), 282355.88],
+[Date.UTC(2020, 7), 316443.27],
+[Date.UTC(2020, 8), 356950.05],
+[Date.UTC(2020, 9), 265814.38],
+[Date.UTC(2020, 10), 214034.65],
+[Date.UTC(2020, 11), 220116.39],
+[Date.UTC(2021, 0), 248914.9],
+[Date.UTC(2021, 1), 335028],
+[Date.UTC(2021, 2), 471463],
+[Date.UTC(2021, 3), 440421.01],
+[Date.UTC(2021, 4), 409004.62],
+[Date.UTC(2021, 5), 366516.04],
+[Date.UTC(2021, 6), 339508.85],
+[Date.UTC(2021, 7), 420045.53],
+[Date.UTC(2021, 8), 473564.35],
+[Date.UTC(2021, 9), 410236.1],
+[Date.UTC(2021, 10), 354142.72],
+[Date.UTC(2021, 11), 329496.21],
+[Date.UTC(2022, 0), 350951.02],
+[Date.UTC(2022, 1), 417010.28],
+[Date.UTC(2022, 2), 779418.35],
+[Date.UTC(2022, 3), 603254.44],
+[Date.UTC(2022, 4), 559684.13],
+[Date.UTC(2022, 5), 455927.22],
+[Date.UTC(2022, 6), 446950.48],
+[Date.UTC(2022, 7), 585624.94],
+[Date.UTC(2022, 8), 608895.3],
+[Date.UTC(2022, 9), 456785.65],
+[Date.UTC(2022, 10), 402579.17],
+[Date.UTC(2022, 11), 356937.52],
+[Date.UTC(2023, 0), 374699.55],
+[Date.UTC(2023, 1), 376603.73],
+[Date.UTC(2023, 2), 472212.71],
+[Date.UTC(2023, 3), 429487.62],
+[Date.UTC(2023, 4), 343085.6],
+[Date.UTC(2023, 5), 284279.92],
+[Date.UTC(2023, 6), 258330.28],
+[Date.UTC(2023, 7), 354164.49],
+[Date.UTC(2023, 8), 356849.3],
+[Date.UTC(2023, 9), 283154.93],
+[Date.UTC(2023, 10), 238252.6],
+[Date.UTC(2023, 11), 184151.88],
+[Date.UTC(2024, 0), 253828.96],
+[Date.UTC(2024, 1), 328980.59],
+[Date.UTC(2024, 2), 430076.18],
+[Date.UTC(2024, 3), 448640.63],
+[Date.UTC(2024, 4), 331656.74],
+[Date.UTC(2024, 5), 293377.78],
+[Date.UTC(2024, 6), 299045.92],
+[Date.UTC(2024, 7), 329273.54],
+[Date.UTC(2024, 8), 330750.84],
+[Date.UTC(2024, 9), 298121.92],
+[Date.UTC(2024, 10), 197031.82],
+[Date.UTC(2024, 11), 178372.52],
+[Date.UTC(2025, 0), 272234.78]
+// Pozostałe dane...
+];
+
+const benzynaData = [
+ [Date.UTC(2020, 0), 67876],
+[Date.UTC(2020, 1), 63557.3],
+[Date.UTC(2020, 2), 49599.98],
+[Date.UTC(2020, 3), 28489.77],
+[Date.UTC(2020, 4), 47873.95],
+[Date.UTC(2020, 5), 64295.04],
+[Date.UTC(2020, 6), 70633.04],
+[Date.UTC(2020, 7), 74246.39],
+[Date.UTC(2020, 8), 87803.39],
+[Date.UTC(2020, 9), 75967.18],
+[Date.UTC(2020, 10), 61211.97],
+[Date.UTC(2020, 11), 68697.56],
+[Date.UTC(2021, 0), 67186.53],
+[Date.UTC(2021, 1), 77023.3],
+[Date.UTC(2021, 2), 102609.84],
+[Date.UTC(2021, 3), 108284.02],
+[Date.UTC(2021, 4), 115303.77],
+[Date.UTC(2021, 5), 131463.68],
+[Date.UTC(2021, 6), 115035.81],
+[Date.UTC(2021, 7), 124123.94],
+[Date.UTC(2021, 8), 123774.14],
+[Date.UTC(2021, 9), 124125.07],
+[Date.UTC(2021, 10), 122881.31],
+[Date.UTC(2021, 11), 106070.96],
+[Date.UTC(2022, 0), 94397.05],
+[Date.UTC(2022, 1), 130347.46],
+[Date.UTC(2022, 2), 213386.64],
+[Date.UTC(2022, 3), 234921.05],
+[Date.UTC(2022, 4), 312138.05],
+[Date.UTC(2022, 5), 361531.72],
+[Date.UTC(2022, 6), 323416.06],
+[Date.UTC(2022, 7), 317067.6],
+[Date.UTC(2022, 8), 310294.77],
+[Date.UTC(2022, 9), 334059.84],
+[Date.UTC(2022, 10), 305772.58],
+[Date.UTC(2022, 11), 294930.31],
+[Date.UTC(2023, 0), 265212.11],
+[Date.UTC(2023, 1), 291895.59],
+[Date.UTC(2023, 2), 337311.39],
+[Date.UTC(2023, 3), 330234.83],
+[Date.UTC(2023, 4), 338056.46],
+[Date.UTC(2023, 5), 334170.38],
+[Date.UTC(2023, 6), 284364.32],
+[Date.UTC(2023, 7), 329519.76],
+[Date.UTC(2023, 8), 324473.35],
+[Date.UTC(2023, 9), 307939.57],
+[Date.UTC(2023, 10), 304119.01],
+[Date.UTC(2023, 11), 285800.93],
+[Date.UTC(2024, 0), 269254.2],
+[Date.UTC(2024, 1), 289389.55],
+[Date.UTC(2024, 2), 338583.71],
+[Date.UTC(2024, 3), 376741.65],
+[Date.UTC(2024, 4), 356119.66],
+[Date.UTC(2024, 5), 352515.57],
+[Date.UTC(2024, 6), 323223.35],
+[Date.UTC(2024, 7), 326071.19],
+[Date.UTC(2024, 8), 312110.39],
+[Date.UTC(2024, 9), 338092.78],
+[Date.UTC(2024, 10), 280988.33],
+[Date.UTC(2024, 11), 270369.32],
+[Date.UTC(2025, 0), 260361.09]
+// Pozostałe dane...
+];
+
+const autostradyData = [
+[Date.UTC(2020, 0), 6027],
+[Date.UTC(2020, 1), 7021.28],
+[Date.UTC(2020, 2), 5890.69],
+[Date.UTC(2020, 3), 3573.49],
+[Date.UTC(2020, 4), 4589.42],
+[Date.UTC(2020, 5), 6806.77],
+[Date.UTC(2020, 6), 5675.92],
+[Date.UTC(2020, 7), 5655.56],
+[Date.UTC(2020, 8), 6913.88],
+[Date.UTC(2020, 9), 5008.61],
+[Date.UTC(2020, 10), 2968.13],
+[Date.UTC(2020, 11), 4042.3],
+[Date.UTC(2021, 0), 4014.94],
+[Date.UTC(2021, 1), 4763.21],
+[Date.UTC(2021, 2), 5534.74],
+[Date.UTC(2021, 3), 4029.1],
+[Date.UTC(2021, 4), 6690.46],
+[Date.UTC(2021, 5), 9041.19],
+[Date.UTC(2021, 6), 6703.62],
+[Date.UTC(2021, 7), 6899.23],
+[Date.UTC(2021, 8), 6833.96],
+[Date.UTC(2021, 9), 6460.83],
+[Date.UTC(2021, 10), 6307.07],
+[Date.UTC(2021, 11), 5532.17],
+[Date.UTC(2022, 0), 6116.88],
+[Date.UTC(2022, 1), 4989.82],
+[Date.UTC(2022, 2), 7275.16],
+[Date.UTC(2022, 3), 5395.91],
+[Date.UTC(2022, 4), 6238.77],
+[Date.UTC(2022, 5), 8171.06],
+[Date.UTC(2022, 6), 6000.52],
+[Date.UTC(2022, 7), 6350.68],
+[Date.UTC(2022, 8), 7589.9],
+[Date.UTC(2022, 9), 7284.13],
+[Date.UTC(2022, 10), 6719.92],
+[Date.UTC(2022, 11), 5458.38],
+[Date.UTC(2023, 0), 4843.42],
+[Date.UTC(2023, 1), 5452.15],
+[Date.UTC(2023, 2), 7348.47],
+[Date.UTC(2023, 3), 5664.82],
+[Date.UTC(2023, 4), 7669.01],
+[Date.UTC(2023, 5), 10115.99],
+[Date.UTC(2023, 6), 4862.76],
+[Date.UTC(2023, 7), 4249.26],
+[Date.UTC(2023, 8), 3628.59],
+[Date.UTC(2023, 9), 3319.86],
+[Date.UTC(2023, 10), 2444.55],
+[Date.UTC(2023, 11), 2962.04],
+[Date.UTC(2024, 0), 2891.73],
+[Date.UTC(2024, 1), 3422.46],
+[Date.UTC(2024, 2), 2643.90],
+[Date.UTC(2024, 3), 2157.82],
+[Date.UTC(2024, 4), 3976.95],
+[Date.UTC(2024, 5), 4352.51],
+[Date.UTC(2024, 6), 2035.94],
+[Date.UTC(2024, 7), 2787.07],
+[Date.UTC(2024, 8), 2250.14],
+[Date.UTC(2024, 9), 2541.40],
+[Date.UTC(2024, 10), 3301.66],
+[Date.UTC(2024, 11), 2695.36],
+[Date.UTC(2025, 0), 4686.97]
+// Pozostałe dane...
+];
+
+const adBlueData = [
+[Date.UTC(2020, 0), 905.06],
+[Date.UTC(2020, 1), 1160.8],
+[Date.UTC(2020, 2), 1418.77],
+[Date.UTC(2020, 3), 961.36],
+[Date.UTC(2020, 4), 1263.16],
+[Date.UTC(2020, 5), 1278.66],
+[Date.UTC(2020, 6), 1104.08],
+[Date.UTC(2020, 7), 1163.67],
+[Date.UTC(2020, 8), 1192.45],
+[Date.UTC(2020, 9), 1379.96],
+[Date.UTC(2020, 10), 630.34],
+[Date.UTC(2020, 11), 952.91],
+[Date.UTC(2021, 0), 899.39],
+[Date.UTC(2021, 1), 1478.22],
+[Date.UTC(2021, 2), 1822.93],
+[Date.UTC(2021, 3), 1509.05],
+[Date.UTC(2021, 4), 1653.51],
+[Date.UTC(2021, 5), 1684.8],
+[Date.UTC(2021, 6), 1454.07],
+[Date.UTC(2021, 7), 2284.83],
+[Date.UTC(2021, 8), 2502.55],
+[Date.UTC(2021, 9), 2665.64],
+[Date.UTC(2021, 10), 2279.9],
+[Date.UTC(2021, 11), 2248.47],
+[Date.UTC(2022, 0), 2932.68],
+[Date.UTC(2022, 1), 3242.09],
+[Date.UTC(2022, 2), 5596.8],
+[Date.UTC(2022, 3), 4770.45],
+[Date.UTC(2022, 4), 5526.37],
+[Date.UTC(2022, 5), 3932.7],
+[Date.UTC(2022, 6), 5411.72],
+[Date.UTC(2022, 7), 7207.67],
+[Date.UTC(2022, 8), 9422.54],
+[Date.UTC(2022, 9), 7789.96],
+[Date.UTC(2022, 10), 5317.52],
+[Date.UTC(2022, 11), 5462.6],
+[Date.UTC(2023, 0), 5612.07],
+[Date.UTC(2023, 1), 5622.65],
+[Date.UTC(2023, 2), 6967.55],
+[Date.UTC(2023, 3), 7114.83],
+[Date.UTC(2023, 4), 6529.13],
+[Date.UTC(2023, 5), 4919.09],
+[Date.UTC(2023, 6), 5989.54],
+[Date.UTC(2023, 7), 6557.7],
+[Date.UTC(2023, 8), 8252.59],
+[Date.UTC(2023, 9), 4554.19],
+[Date.UTC(2023, 10), 3131.32],
+[Date.UTC(2023, 11), 3006.75],
+[Date.UTC(2024, 0), 3722.95],
+[Date.UTC(2024, 1), 3468.19],
+[Date.UTC(2024, 2), 4596.94],
+[Date.UTC(2024, 3), 6699.24],
+[Date.UTC(2024, 4), 4922.84],
+[Date.UTC(2024, 5), 4150.27],
+[Date.UTC(2024, 6), 4996.27],
+[Date.UTC(2024, 7), 4704.71],
+[Date.UTC(2024, 8), 4761.59],
+[Date.UTC(2024, 9), 5311.33],
+[Date.UTC(2024, 10), 2244.48],
+[Date.UTC(2024, 11), 2159.94],
+[Date.UTC(2025, 0), 4386.79]
+// Pozostałe dane...
+];
+
+const olejeSilnikoweData = [
+[Date.UTC(2020, 0), 260.77],
+[Date.UTC(2020, 1), 258.74],
+[Date.UTC(2020, 2), 364.35],
+[Date.UTC(2020, 3), 321.89],
+[Date.UTC(2020, 4), 251.58],
+[Date.UTC(2020, 5), 234.01],
+[Date.UTC(2020, 6), 488.81],
+[Date.UTC(2020, 7), 474.44],
+[Date.UTC(2020, 8), 500.81],
+[Date.UTC(2020, 9), 592.17],
+[Date.UTC(2020, 10), 200.76],
+[Date.UTC(2020, 11), 536.74],
+[Date.UTC(2021, 0), 222.49],
+[Date.UTC(2021, 1), 306.46],
+[Date.UTC(2021, 2), 680.97],
+[Date.UTC(2021, 3), 685.92],
+[Date.UTC(2021, 4), 1108.6],
+[Date.UTC(2021, 5), 628.91],
+[Date.UTC(2021, 6), 554.08],
+[Date.UTC(2021, 7), 614.52],
+[Date.UTC(2021, 8), 312.04],
+[Date.UTC(2021, 9), 541.85],
+[Date.UTC(2021, 10), 766.75],
+[Date.UTC(2021, 11), 480.41],
+[Date.UTC(2022, 0), 404.81],
+[Date.UTC(2022, 1), 68.27],
+[Date.UTC(2022, 2), 605.59],
+[Date.UTC(2022, 3), 451.93],
+[Date.UTC(2022, 4), 674.7],
+[Date.UTC(2022, 5), 388.39],
+[Date.UTC(2022, 6), 187.7],
+[Date.UTC(2022, 7), 751.1],
+[Date.UTC(2022, 8), 377.16],
+[Date.UTC(2022, 9), 284.51],
+[Date.UTC(2022, 10), 574.69],
+[Date.UTC(2022, 11), 138.19],
+[Date.UTC(2023, 0), 525.12],
+[Date.UTC(2023, 1), 505.6],
+[Date.UTC(2023, 2), 456.82],
+[Date.UTC(2023, 3), 247.92],
+[Date.UTC(2023, 4), 1010.38],
+[Date.UTC(2023, 5), 377.98],
+[Date.UTC(2023, 6), 422.68],
+[Date.UTC(2023, 7), 352.77],
+[Date.UTC(2023, 8), 1052.65],
+[Date.UTC(2023, 9), 402.94],
+[Date.UTC(2023, 10), 197.31],
+[Date.UTC(2023, 11), 332.62],
+[Date.UTC(2024, 0), 553.37],
+[Date.UTC(2024, 1), 443],
+[Date.UTC(2024, 2), 502.74],
+[Date.UTC(2024, 3), 353.04],
+[Date.UTC(2024, 4), 635.78],
+[Date.UTC(2024, 5), 635.78],
+[Date.UTC(2024, 6), 337.16],
+[Date.UTC(2024, 7), 285.00],
+[Date.UTC(2024, 8), 591.16],
+[Date.UTC(2024, 9), 547.33],
+[Date.UTC(2024, 10), 298.60],
+[Date.UTC(2024, 11), 319.78],
+[Date.UTC(2025, 0), 346.98]
+// Pozostałe dane...
+];
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Konfiguracja języka dla polskich miesięcy
+    Highcharts.setOptions({
+        lang: {
+            months: ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'],
+            shortMonths: ['Sty', 'Lut', 'Mar', 'Kwi', 'Maj', 'Cze', 'Lip', 'Sie', 'Wrz', 'Paź', 'Lis', 'Gru']
+        }
+    });
+
+    // Dane które mogą być zdefiniowane wcześniej lub wczytane z serwera
+    const chartData = {
+        olejNapedowy: olejNapedowyData,
+        benzyna: benzynaData,
+        autostrady: autostradyData,
+        adBlue: adBlueData,
+        olejeSilnikowe: olejeSilnikoweData
+    };
+
+    // Zunifikowana funkcja do obliczania sumy dla zakresu dat
+    const calculateSum = (data, dateRange) => {
+        return data.reduce((sum, [timestamp, value]) => 
+            (timestamp >= dateRange[0] && timestamp <= dateRange[1]) ? sum + value : sum, 0);
+    };
+
+    // Funkcja formatująca sumę z separatorami tysięcy
+    const formatCurrency = (value) => 
+        Math.round(value).toLocaleString('pl-PL', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' zł';
+
+    // Funkcja do aktualizacji elementów DOM z sumami
+    const updateSumDisplay = (elementId, periodElementId, sum, dateRange) => {
+        const sumElement = document.getElementById(elementId);
+        const periodElement = document.getElementById(periodElementId);
+        
+        if (sumElement && periodElement) {
+            sumElement.textContent = formatCurrency(sum);
+            periodElement.textContent = `${new Date(dateRange[0]).toLocaleDateString('pl-PL')} - ${new Date(dateRange[1]).toLocaleDateString('pl-PL')}`;
+        }
+    };
+
+    // Główna konfiguracja wykresu
+    const chart = Highcharts.stockChart('chart-container-0', {
+        chart: {
+            type: 'areaspline',
+            zoomType: 'x',
+            height: 470,
+            spacingLeft: 1,
+            spacingRight: 1,
+            renderer: 'webgl',
+            events: {
+                redraw: function () {
+                    const dateRange = this.xAxis[0].getExtremes();
+                    
+                    // Aktualizacja sum dla poszczególnych kategorii
+                    updateSumDisplay(
+                        'benzynaSuma', 
+                        'benzynaOkres', 
+                        calculateSum(chartData.benzyna, [dateRange.min, dateRange.max]),
+                        [dateRange.min, dateRange.max]
+                    );
+
+                    updateSumDisplay(
+                        'olejNapedowySuma', 
+                        'olejNapedowyOkres', 
+                        calculateSum(chartData.olejNapedowy, [dateRange.min, dateRange.max]),
+                        [dateRange.min, dateRange.max]
+                    );
+                }
+            }
+        },
+        title: { text: 'Analiza wydatków - karty FLOTA' },
+        credits: { enabled: false },
+        legend: { enabled: true },
+        
+        xAxis: {
+            type: 'datetime',
+            min: Date.UTC(new Date().getFullYear() - 1, 0, 1),
+            max: Date.UTC(new Date().getFullYear(), 0, 1)
+        },
+        
+        Axis: [{
+            title: { text: 'Wartość' },
+            opposite: false
+        }],
+        
+        series: [
+            { name: 'Olej napędowy', data: chartData.olejNapedowy },
+            { name: 'Benzyna', data: chartData.benzyna },
+            { name: 'Autostrady', data: chartData.autostrady },
+            { name: 'adBlue', data: chartData.adBlue },
+            { name: 'Oleje silnikowe', data: chartData.olejeSilnikowe }
+        ],
+        
+        exporting: {
+            buttons: {
+                contextButton: {
+                    menuItems: [
+                        'viewFullscreen', 'printChart', 'separator', 
+                        'downloadPNG', 'downloadJPEG', 'downloadPDF', 'downloadSVG', 
+                        'separator', 'downloadCSV', 'downloadXLSX', 'viewData'
+                    ]
+                }
+            },
+            csv: { dateFormat: '%Y-%m-%d %H:%M:%S' },
+            menuItemDefinitions: {
+                viewData: {
+                    onclick: function () {
+                        this.viewData();
+                        this.chart.container.style.width = '';
+                    }
+                },
+                hideData: {
+                    text: 'Hide Data Table',
+                    onclick: function () {
+                        this.dataTableDiv.style.display = 'none';
+                    }
+                }
+            }
+        },
+        
+        navigation: {
+            buttonOptions: {
+                enabled: true,
+                x: -10
+            }
+        },
+        
+        rangeSelector: {
+            buttonTheme: {
+                width: 'auto',
+                padding: 4,
+                r: 2,
+                style: { fontSize: '10px' }
+            },
+            inputBoxWidth: 100,
+            inputStyle: { fontSize: '10px' }
+        },
+        
+        responsive: {
+            rules: [{
+                condition: { maxWidth: 500 },
+                chartOptions: {
+                    legend: {
+                        layout: 'horizontal',
+                        align: 'center',
+                        verticalAlign: 'bottom'
+                    }
+                }
+            }]
+        }
+    });
+
+    // Wyliczenie początkowych sum po uruchomieniu
+    const initialDateRange = chart.xAxis[0].getExtremes();
+    updateSumDisplay(
+        'benzynaSuma', 
+        'benzynaOkres', 
+        calculateSum(chartData.benzyna, [initialDateRange.min, initialDateRange.max]),
+        [initialDateRange.min, initialDateRange.max]
+    );
+    updateSumDisplay(
+        'olejNapedowySuma', 
+        'olejNapedowyOkres', 
+        calculateSum(chartData.olejNapedowy, [initialDateRange.min, initialDateRange.max]),
+        [initialDateRange.min, initialDateRange.max]
+    );
+});
+
+// Obliczanie daty wygaśnięcia
+var expiryDate = new Date();
+expiryDate.setDate(expiryDate.getDate() + 7); // Dodanie 7 dni
+
+// Formatowanie daty do formatu zgodnego z nagłówkiem Expires
+var formattedExpiryDate = expiryDate.toUTCString();
+
+// Ustawienie nagłówka Expires
+document.cookie = "Expires=" + formattedExpiryDate + "; path=/";
+
+// Informacja o ustawieniu nagłówka
+console.log("Nagłówek Expires został ustawiony na:", formattedExpiryDate);
+
+
+// Funkcja do ustawienia języka dla wszystkich tabel DataTables
+$.fn.dataTable.defaults.language = {
+    url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/pl.json'
+};
+
+// Rozpoczęcie animacji timera
+const startAnimation = () => {
+    const timeDiv = document.getElementById('aktualna-godzina');
+    let timeIteration = 0;
+    const originalTime = timeDiv.innerText;
+
+    let timeInterval = setInterval(() => {
+        timeDiv.innerText = originalTime
+            .split("")
+            .map((letter, index) => {
+                if (index < timeIteration) {
+                    return originalTime[index];
+                }
+
+                return String.fromCharCode(Math.floor(Math.random() * 26) + 65);
+            })
+            .join("");
+
+        if (timeIteration >= originalTime.length) {
+            clearInterval(timeInterval);
+            timeDiv.innerText = originalTime;
+        }
+
+        timeIteration += 1 / 3;
+    }, 30);
+}
+
+// Uruchomienie animacji
+setInterval(startAnimation, 50000);
+
+function aktualizujDateGodzine() {
+    try {
+        const dzisiaj = new Date();
+        const dzienTygodnia = ['niedziela', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota'][dzisiaj.getDay()];
+        const dzien = dzisiaj.getDate();
+        const miesiac = ['stycznia', 'lutego', 'marca', 'kwietnia', 'maja', 'czerwca', 'lipca', 'sierpnia', 'września', 'października', 'listopada', 'grudnia'][dzisiaj.getMonth()];
+        const rok = dzisiaj.getFullYear();
+        const godzina = dzisiaj.getHours().toString().padStart(2, '0');
+        const minuta = dzisiaj.getMinutes().toString().padStart(2, '0');
+
+        document.getElementById('aktualna-godzina').textContent = `${godzina}:${minuta}:00`;
+        document.getElementById('nazwa-dnia').textContent = dzienTygodnia.charAt(0).toUpperCase() + dzienTygodnia.slice(1);
+        document.getElementById('aktualna-data').textContent = `${dzien} ${miesiac} ${rok}`;
+    } catch (error) {
+        console.error("Wystąpił błąd podczas aktualizacji daty i godziny:", error);
+    }
+}
+
+function aktualizujSekundy() {
+    try {
+        const sekunda = new Date().getSeconds().toString().padStart(2, '0');
+        const elementCzasu = document.getElementById('aktualna-godzina');
+        elementCzasu.textContent = elementCzasu.textContent.slice(0, -2) + sekunda;
+    } catch (error) {
+        console.error("Wystąpił błąd podczas aktualizacji sekund:", error);
+    }
+}
+
+setInterval(aktualizujSekundy, 1000);
+setInterval(aktualizujDateGodzine, 60000); // Aktualizuj pełną datę co minutę
+aktualizujDateGodzine(); // Wywołaj funkcję od razu, aby nie było widocznego opóźnienia w wyświetlaniu
+
+
+function showInfo() {
+            alert(`Weryfikacja licznika:
+Funkcja rozpoczyna od zbierania wszystkich wartości liczników dla danego numeru rejestracyjnego i roku z poszczególnych miesięcy.
+Następnie stosuje metodę IQR (interkwartylowy zakres), aby zidentyfikować wartości odstające. IQR jest obliczany na podstawie kwartylu pierwszego (Q1) i trzeciego (Q3) zbioru wartości liczników.
+Wartości liczników spoza zakresu Q1 - 1.5 * IQR do Q3 + 1.5 * IQR są uznawane za potencjalnie nieprawidłowe i są odfiltrowywane.
+
+Korekty:
+Po odfiltrowaniu wartości odstających, funkcja sprawdza, czy są dostępne również przyszłe wartości liczników (z kolejnych miesięcy).
+Jeśli tak, oblicza średnią i maksymalną wartość przyszłych liczników.
+Wartości liczników są dalej filtrowane w taki sposób, że nie mogą przekroczyć 10-krotności średniej przyszłych wartości lub 5-krotności maksymalnej przyszłej wartości.
+Jeśli po tej operacji nie pozostaje żadna wartość, która spełnia kryteria, funkcja zwraca medianę przyszłych wartości lub obecną wartość licznika jako wartość skorygowaną.
+W przeciwnym razie, wybierana jest maksymalna wartość spośród przefiltrowanych wartości, co stanowi potencjalną poprawę licznika.
+
+Czerwony (red) – Wartość została skorygowana na podstawie średniej z dwóch sąsiadujących miesięcy (poprzedniego i następnego miesiąca). Oznacza to, że wartość była wyraźnie błędna w stosunku do średniej z obu sąsiadów.
+Pomarańczowy (orange) – Wartość została skorygowana na podstawie wartości z poprzedniego miesiąca. Jeśli wartość była zbyt niska lub za wysoka w stosunku do poprzedniego miesiąca, została poprawiona.
+Fioletowy (purple) – Wartość została skorygowana na podstawie wartości z następnego miesiąca. Oznacza to, że wartość była wyraźnie błędna w stosunku do wartości kolejnego miesiąca.
+Zielony (green) – Wartość została skorygowana, gdy brak było zarówno poprawnych wartości z poprzedniego, jak i następnego miesiąca. Wartość została ustalona na podstawie mediany lub poprawionych wartości w miesiącu.`);
+}
+</script>
+</body>
+</html>
