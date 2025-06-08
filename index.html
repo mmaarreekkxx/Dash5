@@ -94,6 +94,54 @@ select:focus, input[type="text"]:focus {
 }
 input:checked + .slider { background-color: #2563eb; }
 input:checked + .slider:before { transform: translateX(20px); }
+
+    
+
+        
+
+.mapping-controls {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-check {
+            margin-bottom: 10px;
+        }
+        
+        .form-check-input:checked {
+            background-color: #198754;
+            border-color: #198754;
+        }
+        
+        .form-check-label {
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .control-buttons {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .btn-outline-success {
+            margin-right: 10px;
+        }
+        
+        .mapping-title {
+            color: #198754;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .mapping-description {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
 </style>
 </head>
 <script>
@@ -587,20 +635,73 @@ console.log('Wsparcie przeglądarki:', browserSupportCheck());
                     <i class="fas fa-chevron-down transition-transform duration-300"></i>
                 </button>
                 <div class="hidden p-0.5">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <div class="settings-option p-2">
-                            <h4 class="font-semibold mb-1">Planowane opcje</h4>
-                            <label class="flex items-center space-x-2">
-                                <input type="checkbox" class="form-checkbox">
-                                <span>Planowane</span>
-                            </label>
+          
+                        
+        <div class="container mt-4">
+        <div class="mapping-controls">
+            <h5 class="mapping-title">
+                <i class="fas fa-cogs"></i> Ustawienia mapowania danych
+            </h5>
+            <p class="mapping-description">
+                Kontroluj sposób przetwarzania i mapowania danych z importowanych plików
+            </p>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="toggle-header-mapping" checked>
+                        <label class="form-check-label" for="toggle-header-mapping">
+                            Mapowanie nagłówków kolumn
+                        </label>
+                        <div class="form-text">
+                            Automatyczne mapowanie nazw kolumn (np. "NrFaktury" → "Nr karty")
                         </div>
-                        <div class="settings-option p-2">
-                            <h4 class="font-semibold mb-1">Planowane</h4>
-                            <select class="w-full border rounded p-1">
-                                <option>Planowane1</option>
-                                <option>Planowane2</option>
-                            </select>
+                    </div>
+                    
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="toggle-group-mapping" checked>
+                        <label class="form-check-label" for="toggle-group-mapping">
+                            Mapowanie grup produktów
+                        </label>
+                        <div class="form-text">
+                            Mapowanie nazw grup (np. "01" → "Olej napędowy")
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="toggle-group-code-mapping" checked>
+                        <label class="form-check-label" for="toggle-group-code-mapping">
+                            Mapowanie kodów grup
+                        </label>
+                        <div class="form-text">
+                            Mapowanie kodów księgowych (np. "401-115-01-1" → "Paliwo")
+                        </div>
+                    </div>
+                    
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="toggle-registration-normalization" checked>
+                        <label class="form-check-label" for="toggle-registration-normalization">
+                            Normalizacja numerów rejestracyjnych
+                        </label>
+                        <div class="form-text">
+                            Usuwanie spacji i mapowanie numerów (np. "CBXXXXX" → "CMGXXXXX")
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="control-buttons">
+                <button type="button" class="btn btn-outline-success btn-sm" onclick="toggleAllMappings(true)">
+                    <i class="fas fa-check-circle"></i> Włącz wszystkie
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="toggleAllMappings(false)">
+                    <i class="fas fa-times-circle"></i> Wyłącz wszystkie
+                </button>
+            </div>
+        </div>
+    </div>
                         </div>
                     </div>
                 </div>
@@ -663,8 +764,51 @@ console.log('Wsparcie przeglądarki:', browserSupportCheck());
 <script src="https://cdnjs.cloudflare.com/ajax/libs/smoothscroll/1.4.10/SmoothScroll.min.js"></script>
 <!-- Chroma.js -->
 <script src="https://cdn.jsdelivr.net/npm/chroma-js@2.1.1/chroma.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 <script>
+// Funkcje pomocnicze dla przełączników
+function toggleAllMappings(enabled) {
+    document.getElementById('toggle-header-mapping').checked = enabled;
+    document.getElementById('toggle-group-mapping').checked = enabled;
+    document.getElementById('toggle-group-code-mapping').checked = enabled;
+    document.getElementById('toggle-registration-normalization').checked = enabled;
+    
+    // Trigger change events
+    ['toggle-header-mapping', 'toggle-group-mapping', 'toggle-group-code-mapping', 'toggle-registration-normalization'].forEach(id => {
+        document.getElementById(id).dispatchEvent(new Event('change'));
+    });
+}
+
+// Opcjonalnie - zapisywanie ustawień w localStorage
+function saveMappingSettings() {
+    const settings = {
+        headerMapping: document.getElementById('toggle-header-mapping').checked,
+        groupMapping: document.getElementById('toggle-group-mapping').checked,
+        groupCodeMapping: document.getElementById('toggle-group-code-mapping').checked,
+        registrationNormalization: document.getElementById('toggle-registration-normalization').checked
+    };
+    localStorage.setItem('mappingSettings', JSON.stringify(settings));
+}
+
+function loadMappingSettings() {
+    const saved = localStorage.getItem('mappingSettings');
+    if (saved) {
+        const settings = JSON.parse(saved);
+        document.getElementById('toggle-header-mapping').checked = settings.headerMapping ?? true;
+        document.getElementById('toggle-group-mapping').checked = settings.groupMapping ?? true;
+        document.getElementById('toggle-group-code-mapping').checked = settings.groupCodeMapping ?? true;
+        document.getElementById('toggle-registration-normalization').checked = settings.registrationNormalization ?? true;
+    }
+}
+
+// Automatyczne zapisywanie przy zmianie ustawień
+document.addEventListener('DOMContentLoaded', function() {
+    loadMappingSettings();
+    
+    ['toggle-header-mapping', 'toggle-group-mapping', 'toggle-group-code-mapping', 'toggle-registration-normalization'].forEach(id => {
+        document.getElementById(id).addEventListener('change', saveMappingSettings);
+    });
+});
 
 // Prevent zooming
 document.addEventListener('dblclick', preventDefault);
@@ -673,7 +817,7 @@ function preventDefault(event) {
     if (!event.target.closest('.no-zoom')) event.preventDefault();
 }
 
-// Global variables
+// Global variables - dodane zmienne dla przełączników mapowania
 let mainTable, summaryTable, summary2Table;
 let jsonData = [];
 let selectedGroup = '';
@@ -686,6 +830,61 @@ const cardNumbersWithDescriptions = {};
 const uniqueRegistrationNumbers = new Set();
 const uniqueGroups = new Set();
 const activeCardsColumn = 'Nr karty';
+
+// Zmienne kontrolujące mapowania - domyślnie wszystkie aktywne
+let enableHeaderMapping = true;
+let enableGroupMapping = true;
+let enableGroupCodeMapping = true;
+let enableRegistrationNumberNormalization = true;
+
+let columnIndices = {};
+
+// Funkcja mapowania numerów rejestracyjnych
+function mapRegistrationNumber(regNumber) {
+    if (!regNumber || typeof regNumber !== 'string') {
+        return regNumber;
+    }
+
+    // Mapowanie pełnych numerów rejestracyjnych
+    const registrationMapping = {
+    'CB032NM': 'CMG4651A',
+    'CB885NL': 'CMG4649A',
+    'CB976NL': 'CMG4724A',
+    'CB027NM': 'CMG4647A',
+    'CB977NL': 'CMG4728A',
+    'CB698NL': 'CMG4650A',
+    'CB026NM': 'CMG4773A',
+    'CB884NL': 'CMG4729A',
+    'CB864NL': 'CMG4743A',
+    'CB196NL': 'CMG4652A',
+    'CB861NL': 'CMG4732A',
+    'CB623NK': 'CMG4648A',
+    'CB449NL': 'CMG4758A',
+    'CB029NM': 'CMG4754A',
+    'CB964NK': 'CMG4891A',
+    'CB695NL': 'CMG4850A',
+    'CB447NL': 'CMG4757A',
+    'CB697NL': 'CMG4731A',
+    'CB195NL': 'CMG4755A',
+    'CB949NL': 'CMG4759A',
+    'CB185NN': 'CMG4750A',
+    'CB807NN': 'CMG4751A',
+    'CB671NN': 'CMG4748A',
+    'CB629NN': 'CMG4752A',
+    'CB827NN': 'CMG4753A',
+    'CB826NN': 'CMG4746A',
+    'CB498NN': 'CMG4727A',
+    'CB802NN': 'CMG4726A',
+    'CB499NN': 'CMG4745A',
+    'CB805NN': 'CMG4730A',
+    'CB801NN': 'CMG4725A',
+    'CB184NN': 'CMG4756A',
+    'CB674NN': 'CMG4890A'
+};
+    
+    // Sprawdzamy czy numer istnieje w mapowaniu
+    return registrationMapping[regNumber] || regNumber;
+}
 
 // Group mapping
 const groupMapping = {
@@ -712,9 +911,10 @@ const groupMapping = {
     'czynsz finansowy - najem długoterminowy': 'Najem długoterminowy - czynsz'
 };
 
-let columnIndices = {};
-
 $(document).ready(() => {
+    // Inicjalizacja przełączników mapowania
+    initializeMappingToggles();
+    
     const files = [];
     let totalImportTime = 0;
     let importedFileCount = 0;
@@ -780,6 +980,30 @@ $(document).ready(() => {
             .catch(error => alert(`Wystąpił błąd podczas przetwarzania plików: ${error.message}`));
     }
 
+    // Funkcja inicjalizująca obsługę przełączników mapowania
+    function initializeMappingToggles() {
+        $('#toggle-header-mapping').on('change', function() {
+            enableHeaderMapping = this.checked;
+            console.log('Header mapping:', enableHeaderMapping);
+        });
+
+        $('#toggle-group-mapping').on('change', function() {
+            enableGroupMapping = this.checked;
+            console.log('Group mapping:', enableGroupMapping);
+        });
+
+        $('#toggle-group-code-mapping').on('change', function() {
+            enableGroupCodeMapping = this.checked;
+            console.log('Group code mapping:', enableGroupCodeMapping);
+        });
+
+        $('#toggle-registration-normalization').on('change', function() {
+            enableRegistrationNumberNormalization = this.checked;
+            console.log('Registration number normalization:', enableRegistrationNumberNormalization);
+        });
+    }
+
+    // Pozostałe funkcje bez zmian...
     async function detectFileEncoding(arrayBuffer) {
         const uint8Array = new Uint8Array(arrayBuffer);
         if (uint8Array.length >= 3 && 
@@ -871,44 +1095,47 @@ $(document).ready(() => {
                 return value;
             }));
 
-        const headersToChange = {
-            'NrFaktury': 'Nr karty',
-            'MiejsceKosztu': 'Miejscowość',
-            'Dział': 'Miejscowość',
-            'DataKosztu': 'Data realizacji',
-            'dataDokumentu': 'Data realizacji',
-            'Data utworzenia': 'Data realizacji',
-            'Tresc': 'Dane kosztowe',
-            'Opis': 'Dane kosztowe',
-            'ImportKodProduktu': 'Grupa prod',
-            'OpisRodzajuKosztu': 'Grupa prod',
-            'PozycjaOpis': 'Dane dodatkowe',
-            'Ilosc': 'Ilość',
-            'Ilość litrów': 'Ilość',
-            'ImportNrRejestracyjny': 'Nr rejestracyjny',
-            'Rejestracja': 'Nr rejestracyjny',
-            'Nazwa obiektu kosztowego': 'Nr rejestracyjny',
-            'StanLicznika': 'Licznik',
-            'Aktualny Przebieg': 'Licznik',
-            'Wartość netto fak': 'Wartość netto',
-            'NettoOpis': 'Wartość netto',
-            'Netto': 'Wartość netto',
-            'Nazwa': 'Nr rejestracyjny',
-            'Oddział': 'Miejscowość',
-            'Numer karty FLOTA': 'Nr karty',
-            'Numer karty': 'Nr karty',
-            'AktualnyPrzebieg': 'Licznik',
-            'Rodzaj': 'Grupa prod',
-            'Data pierwszej rejestracji': 'Data realizacji',
-            'Kwota zakupu': 'Wartość netto'
-        };
+        // Mapowanie nagłówków kolumn - kontrolowane przełącznikiem
+        if (enableHeaderMapping) {
+            const headersToChange = {
+                'NrFaktury': 'Nr karty',
+                'MiejsceKosztu': 'Miejscowość',
+                'Dział': 'Miejscowość',
+                'DataKosztu': 'Data realizacji',
+                'dataDokumentu': 'Data realizacji',
+                'Data utworzenia': 'Data realizacji',
+                'Tresc': 'Dane kosztowe',
+                'Opis': 'Dane kosztowe',
+                'ImportKodProduktu': 'Grupa prod',
+                'OpisRodzajuKosztu': 'Grupa prod',
+                'PozycjaOpis': 'Dane dodatkowe',
+                'Ilosc': 'Ilość',
+                'Ilość litrów': 'Ilość',
+                'ImportNrRejestracyjny': 'Nr rejestracyjny',
+                'Rejestracja': 'Nr rejestracyjny',
+                'Nazwa obiektu kosztowego': 'Nr rejestracyjny',
+                'StanLicznika': 'Licznik',
+                'Aktualny Przebieg': 'Licznik',
+                'Wartość netto fak': 'Wartość netto',
+                'NettoOpis': 'Wartość netto',
+                'Netto': 'Wartość netto',
+                'Nazwa': 'Nr rejestracyjny',
+                'Oddział': 'Miejscowość',
+                'Numer karty FLOTA': 'Nr karty',
+                'Numer karty': 'Nr karty',
+                'AktualnyPrzebieg': 'Licznik',
+                'Rodzaj': 'Grupa prod',
+                'Data pierwszej rejestracji': 'Data realizacji',
+                'Kwota zakupu': 'Wartość netto'
+            };
 
-        newData[0] = newData[0].map(header => {
-            const normalizedHeader = typeof header === 'string' 
-                ? header.normalize('NFKC').trim() 
-                : header;
-            return headersToChange[normalizedHeader] || normalizedHeader;
-        });
+            newData[0] = newData[0].map(header => {
+                const normalizedHeader = typeof header === 'string' 
+                    ? header.normalize('NFKC').trim() 
+                    : header;
+                return headersToChange[normalizedHeader] || normalizedHeader;
+            });
+        }
 
         columnIndices = Object.fromEntries(newData[0].map((header, index) => [header, index]));
 
@@ -940,15 +1167,29 @@ $(document).ready(() => {
         }
 
         newData.slice(1).forEach(row => {
-            if (registrationNumberColumnIndex !== undefined) {
+            // Normalizacja numerów rejestracyjnych - kontrolowana przełącznikiem
+            if (enableRegistrationNumberNormalization && registrationNumberColumnIndex !== undefined) {
                 if (!row[registrationNumberColumnIndex] && surnameColumnIndex !== undefined) {
                     row[registrationNumberColumnIndex] = row[surnameColumnIndex] || '';
                 }
 
                 if (row[registrationNumberColumnIndex]) {
-                    row[registrationNumberColumnIndex] = row[registrationNumberColumnIndex].toString().replace(/\s/g, '').toUpperCase();
-                    uniqueRegistrationNumbers.add(row[registrationNumberColumnIndex]);
+                    // Najpierw normalizujemy (usuwamy spacje i zamieniamy na wielkie litery)
+                    let normalizedRegNumber = row[registrationNumberColumnIndex].toString().replace(/\s/g, '').toUpperCase();
+                    
+                    // Następnie stosujemy mapowanie (CMG62H4 -> CMG6262)
+                    normalizedRegNumber = mapRegistrationNumber(normalizedRegNumber);
+                    
+                    row[registrationNumberColumnIndex] = normalizedRegNumber;
+                    uniqueRegistrationNumbers.add(normalizedRegNumber);
                 }
+            } else if (registrationNumberColumnIndex !== undefined && row[registrationNumberColumnIndex]) {
+                // Jeśli normalizacja wyłączona, ale mapowanie może być nadal aktywne
+                let regNumber = row[registrationNumberColumnIndex];
+                // Stosujemy tylko mapowanie bez normalizacji
+                regNumber = mapRegistrationNumber(regNumber);
+                row[registrationNumberColumnIndex] = regNumber;
+                uniqueRegistrationNumbers.add(regNumber);
             }
 
             if (cardNumberIndex !== undefined && groupProdIndex !== undefined) {
@@ -959,45 +1200,54 @@ $(document).ready(() => {
                 }
             }
 
+            // Mapowanie grup produktów - kontrolowane przełącznikami
             if (groupProdIndex !== undefined) {
                 const originalGroup = row[groupProdIndex];
                 let newGroup = originalGroup;
-                const groupMappings = {
-                    '401-115-01-1': 'Paliwo',
-                    '402-211-03-1': 'Usługi monitoring GPS',
-                    '401-116-01-1': 'Materiały części',
-                    '401-116-02-1': 'Materiały opony',
-                    '401-199-1': 'Materiały pozostałe',
-                    '401-116-03-1': 'Materiały części',
-                    '402-211-04-1': 'Usługi przeglądy',
-                    '402-211-05-1': 'Usługi myjnia',
-                    '403-302-05-1': 'Autostrady',
-                    '762-03-03-2': 'Szkody',
-                    '762-03-03-1': 'Szkody',
-                    '403-302-99-1': 'Podatki i opłaty',
-                    '402-211-02-1': 'Usługi opon',
-                    '402-211-02-2': 'Usługi opon',
-                    '402-211-01-1': 'Usługi',
-                    '402-299-1': 'Usługi',
-                    '248-02-0': 'Najem długoterminowy - czynsz',
-                    '406-605-': 'Ubezpieczenia',
-                    '080-01-01': 'Zakupy Inwestycyjne nowe',
-                    '080-01-02': 'Zakupy Inwestycyjne używane',
-                    '406-601-99': 'Reklama',
-                    '247-01-0100568': 'Kaucje',
-                    '403-301-02': 'Podatki i opłaty',
-                    '402-211-02-2': 'Podatki i opłaty',
-                    '402-201-99-1': 'Najem inne'
-                };
+                
+                // Mapowanie kodów grup - kontrolowane przełącznikiem
+                if (enableGroupCodeMapping) {
+                    const groupMappings = {
+                        '401-115-01-1': 'Paliwo',
+                        '402-211-03-1': 'Usługi monitoring GPS',
+                        '401-116-01-1': 'Materiały części',
+                        '401-116-02-1': 'Materiały opony',
+                        '401-199-1': 'Materiały pozostałe',
+                        '401-116-03-1': 'Materiały części',
+                        '402-211-04-1': 'Usługi przeglądy',
+                        '402-211-05-1': 'Usługi myjnia',
+                        '403-302-05-1': 'Autostrady',
+                        '762-03-03-2': 'Szkody',
+                        '762-03-03-1': 'Szkody',
+                        '403-302-99-1': 'Podatki i opłaty',
+                        '402-211-02-1': 'Usługi opon',
+                        '402-211-02-2': 'Usługi opon',
+                        '402-211-01-1': 'Usługi',
+                        '402-299-1': 'Usługi',
+                        '248-02-0': 'Najem długoterminowy - czynsz',
+                        '406-605-': 'Ubezpieczenia',
+                        '080-01-01': 'Zakupy Inwestycyjne nowe',
+                        '080-01-02': 'Zakupy Inwestycyjne używane',
+                        '406-601-99': 'Reklama',
+                        '247-01-0100568': 'Kaucje',
+                        '403-301-02': 'Podatki i opłaty',
+                        '402-211-02-2': 'Podatki i opłaty',
+                        '402-201-99-1': 'Najem inne'
+                    };
 
-                for (const [key, value] of Object.entries(groupMappings)) {
-                    if (originalGroup.includes(key)) {
-                        newGroup = value;
-                        break;
+                    for (const [key, value] of Object.entries(groupMappings)) {
+                        if (originalGroup.includes(key)) {
+                            newGroup = value;
+                            break;
+                        }
                     }
                 }
 
-                newGroup = groupMapping[originalGroup] || newGroup;
+                // Podstawowe mapowanie grup - kontrolowane przełącznikiem
+                if (enableGroupMapping) {
+                    newGroup = groupMapping[originalGroup] || newGroup;
+                }
+
                 row[groupProdIndex] = newGroup;
                 uniqueGroups.add(newGroup);
             }
@@ -1008,33 +1258,33 @@ $(document).ready(() => {
     }
 
     const renderMainTable = () => {
-    const data = jsonData.slice(1);
-    if (!mainTable) {
-        createMainTable(jsonData);
-    } else {
-        mainTable.clear().rows.add(data).draw();
-    }
-};
+        const data = jsonData.slice(1);
+        if (!mainTable) {
+            createMainTable(jsonData);
+        } else {
+            mainTable.clear().rows.add(data).draw();
+        }
+    };
 
-const createMainTable = jsonData => {
-    // Initialize column indices
-    jsonData[0].forEach((col, index) => {
-        columnIndices[col] = index;
-    });
+    const createMainTable = jsonData => {
+        // Initialize column indices
+        jsonData[0].forEach((col, index) => {
+            columnIndices[col] = index;
+        });
 
-    // Add UI controls before table initialization
-    addRowGroupingToggle();
-    addRowGroupSelect(jsonData[0]);
+        // Add UI controls before table initialization
+        addRowGroupingToggle();
+        addRowGroupSelect(jsonData[0]);
 
-    const hiddenColumns = [
-        'MPK', 'Nazwa produktu', 'Rodzaj pojazdu', 'EAN', 
-        'Data księgowania', 'Pozycja faktury', 'Wartość fak', 
-        'Cena za litr', 'Stawka vat', 'Wartość vat fak', 
-        'Wartość netto - stacja', 'Wartość VAT - stacja', 
-        'Wartość brutto - stacja', 'CenaSprzedazySrednia', 
-        'IdFloty', 'Cena_załącznik'
-    ];
-
+        const hiddenColumns = [
+            'MPK', 'Nazwa produktu', 'Rodzaj pojazdu', 'EAN', 
+            'Data księgowania', 'Pozycja faktury', 'Wartość fak', 
+            'Cena za litr', 'Stawka vat', 'Wartość vat fak', 
+            'Wartość netto - stacja', 'Wartość VAT - stacja', 
+            'Wartość brutto - stacja', 'CenaSprzedazySrednia', 
+            'IdFloty', 'Cena_załącznik'
+        ];
+        
     mainTable = $('#example').DataTable({
         data: jsonData.slice(1),
         columns: jsonData[0].map((col, index) => ({
@@ -3146,8 +3396,22 @@ function generateSummary13Table() {
     const container = $('#summary13-table-container');
     container.empty();
 
+    // Configuration constants
+    const CONFIG = {
+        FUEL_GROUPS: ['Olej napędowy', 'Benzyna', 'LPG'],
+        MIN_DISTANCE_FOR_CONSUMPTION: 10, // Minimum km to calculate consumption
+        MAX_CONSUMPTION_THRESHOLD: 50, // Max l/100km - eliminates extreme values
+        MIN_CONSUMPTION_THRESHOLD: 2, // Min l/100km - eliminates unrealistic values
+        ANOMALY_THRESHOLD: 0.15, // 15% threshold for anomaly detection (was 8%)
+        MIN_TIME_BETWEEN_REFILLS: 1, // Minimum days between refills
+        MAX_DAILY_DISTANCE: 1000, // Maximum reasonable daily distance
+        STATISTICAL_CONFIDENCE_MIN_SAMPLES: 3, // Minimum samples for reliable statistics
+        ODOMETER_ROLLBACK_THRESHOLD: 10000 // Threshold for detecting odometer rollbacks
+    };
+
     const commonClass = 'bg-indigo-500 text-white py-1 px-2 rounded-md hover:bg-indigo-700 transition-all duration-300 text-sm';
 
+    // Helper functions
     const createFilterElement = (type, id, placeholder = '') => {
         const element = $(`<${type}>`, {
             id: `summary13-${id}`,
@@ -3160,6 +3424,56 @@ function generateSummary13Table() {
         return element;
     };
 
+    const sanitizeNumericValue = (value, defaultValue = 0) => {
+        if (value === null || value === undefined || value === '') return defaultValue;
+        const cleaned = typeof value === 'string' ? value.replace(/[^\d,.-]/g, '').replace(',', '.') : value;
+        const parsed = parseFloat(cleaned);
+        return isNaN(parsed) ? defaultValue : parsed;
+    };
+
+    const isValidDate = (date) => date instanceof Date && !isNaN(date.getTime());
+
+    const calculateStatistics = (values) => {
+        if (!values || values.length === 0) return null;
+        
+        const sorted = [...values].sort((a, b) => a - b);
+        const mean = sorted.reduce((sum, val) => sum + val, 0) / sorted.length;
+        
+        // Calculate standard deviation
+        const variance = sorted.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / sorted.length;
+        const stdDev = Math.sqrt(variance);
+        
+        // Calculate median and quartiles
+        const median = sorted.length % 2 === 0 
+            ? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2
+            : sorted[Math.floor(sorted.length / 2)];
+            
+        const q1 = sorted[Math.floor(sorted.length * 0.25)];
+        const q3 = sorted[Math.floor(sorted.length * 0.75)];
+        const iqr = q3 - q1;
+        
+        return { mean, median, stdDev, q1, q3, iqr, count: sorted.length };
+    };
+
+    const removeOutliers = (values, method = 'iqr') => {
+        if (!values || values.length < CONFIG.STATISTICAL_CONFIDENCE_MIN_SAMPLES) return values;
+        
+        const stats = calculateStatistics(values);
+        if (!stats) return values;
+        
+        if (method === 'iqr') {
+            // IQR method - more robust than standard deviation
+            const lowerBound = stats.q1 - 1.5 * stats.iqr;
+            const upperBound = stats.q3 + 1.5 * stats.iqr;
+            return values.filter(val => val >= lowerBound && val <= upperBound);
+        } else {
+            // Standard deviation method
+            const threshold = 2 * stats.stdDev;
+            return values.filter(val => Math.abs(val - stats.mean) <= threshold);
+        }
+    };
+
+    // Create UI elements
     const filtersDiv = $('<div>', { id: 'summary13-filters', class: 'mb-5 flex flex-wrap gap-2' });
     const registrationSearchInput = createFilterElement('input', 'registration-search', "Szukaj Nr rejestracyjny (użyj ';' aby rozdzielić numery)");
     const registrationFilterSelect = createFilterElement('select', 'registration-filter', 'numery rejestracyjne');
@@ -3176,7 +3490,6 @@ function generateSummary13Table() {
 
     const dateFromWrapper = createDateInput('date-from', 'Data od');
     const dateToWrapper = createDateInput('date-to', 'Data do');
-
     const toggleColumnsBtn = $('<button>', {
         id: 'toggle-columns-btn',
         class: `${commonClass} ml-2`,
@@ -3184,13 +3497,8 @@ function generateSummary13Table() {
     });
 
     filtersDiv.append(
-        registrationSearchInput,
-        registrationFilterSelect,
-        yearFilterSelect,
-        dateFromWrapper,
-        dateToWrapper,
-        $('<div>', { class: 'w-full' }),
-        toggleColumnsBtn
+        registrationSearchInput, registrationFilterSelect, yearFilterSelect,
+        dateFromWrapper, dateToWrapper, $('<div>', { class: 'w-full' }), toggleColumnsBtn
     );
 
     container.append(filtersDiv);
@@ -3209,353 +3517,452 @@ function generateSummary13Table() {
     });
     container.append(tableElement);
 
-    const fuelGroups = ['Olej napędowy', 'Benzyna', 'LPG'];
-    const data = jsonData.slice(1)
-        .filter(row => fuelGroups.includes(row[columnIndices['Grupa prod']]))
+    // Data processing
+    const rawData = jsonData.slice(1)
+        .filter(row => CONFIG.FUEL_GROUPS.includes(row[columnIndices['Grupa prod']]))
+        .map(row => ({
+            regNumber: row[columnIndices['Nr rejestracyjny']] || '',
+            date: new Date(row[columnIndices['Data realizacji']]),
+            group: row[columnIndices['Grupa prod']] || '',
+            quantity: sanitizeNumericValue(row[columnIndices['Ilość']]),
+            odometer: sanitizeNumericValue(row[columnIndices['Licznik']], null),
+            netValue: sanitizeNumericValue(row[columnIndices['Wartość netto']]),
+            location: row[columnIndices['Miejscowość']] || '',
+            costData: row[columnIndices['Dane kosztowe']] || '',
+            originalRow: row
+        }))
+        .filter(row => 
+            row.regNumber && 
+            isValidDate(row.date) && 
+            row.quantity > 0 && 
+            row.netValue >= 0
+        )
         .sort((a, b) => {
-            const dateA = new Date(a[columnIndices['Data realizacji']]);
-            const dateB = new Date(b[columnIndices['Data realizacji']]);
-            return dateA - dateB || a[columnIndices['Nr rejestracyjny']].localeCompare(b[columnIndices['Nr rejestracyjny']]);
+            const dateCompare = a.date - b.date;
+            return dateCompare !== 0 ? dateCompare : a.regNumber.localeCompare(b.regNumber);
         });
 
-    const summary13Data = [];
-    const vehicleData = {};
-    const yearlyConsumption = {};
-    const invalidOdometerEntries = [];
+    // Enhanced vehicle data processing
+    const vehicleProfiles = {};
+    const processedData = [];
+    const dataQualityFlags = {};
 
-    const processRow = (row) => {
-        const regNumber = row[columnIndices['Nr rejestracyjny']];
-        const date = new Date(row[columnIndices['Data realizacji']]);
-        const year = date.getFullYear();
-        const group = row[columnIndices['Grupa prod']];
-        const quantity = parseFloat(row[columnIndices['Ilość']].replace(',', '.'));
-        const odometer = row[columnIndices['Licznik']] ? parseInt(row[columnIndices['Licznik']].replace(/\D/g, '')) : null;
-        const netValue = parseFloat(row[columnIndices['Wartość netto']].replace(',', '.'));
-        const location = row[columnIndices['Miejscowość']];
-        const costData = row[columnIndices['Dane kosztowe']];
-
-        if (isNaN(quantity) || isNaN(date.getTime()) || isNaN(netValue)) return;
-
-        const rowData = [
-            regNumber, date.toISOString().split('T')[0], group, quantity.toFixed(2),
-            odometer !== null ? odometer : 'b.d.', 'b.d.', 'b.d.', 'b.d.',
-            false, 'b.d.', netValue.toFixed(2), location, false, false, false, costData
-        ];
-
-        if (odometer !== null && odometer !== 0) {
-            if (!vehicleData[regNumber]) {
-                vehicleData[regNumber] = { lastOdometer: odometer, lastDate: date };
-            } else {
-                const lastData = vehicleData[regNumber];
-                const odometerDiff = odometer - lastData.lastOdometer;
-                const daysDiff = (date - lastData.lastDate) / (1000 * 60 * 60 * 24);
-
-                if (odometerDiff > 0 && daysDiff > 0) {
-                    const consumption = (quantity / odometerDiff) * 100;
-                    if (!yearlyConsumption[regNumber]) yearlyConsumption[regNumber] = {};
-                    if (!yearlyConsumption[regNumber][year]) yearlyConsumption[regNumber][year] = [];
-                    yearlyConsumption[regNumber][year].push(consumption);
-                    rowData[5] = odometerDiff.toFixed(0);
-                    rowData[6] = consumption.toFixed(2);
-                }
-
-                vehicleData[regNumber] = { lastOdometer: odometer, lastDate: date };
-            }
-        } else {
-            invalidOdometerEntries.push({ rowData, regNumber, date, year, quantity });
-        }
-
-        summary13Data.push(rowData);
-    };
-
-    data.forEach(processRow);
-
-    const calculateAverageConsumption = (consumptions) => {
-        if (consumptions.length === 0) return null;
-        const avgConsumption = consumptions.reduce((a, b) => a + b, 0) / consumptions.length;
-        const nonAnomalousData = consumptions.filter(c => Math.abs((c - avgConsumption) / avgConsumption) <= 0.08);
-        return nonAnomalousData.length > 0 ? nonAnomalousData.reduce((a, b) => a + b, 0) / nonAnomalousData.length : avgConsumption;
-    };
-
-    Object.keys(yearlyConsumption).forEach(regNumber => {
-        Object.keys(yearlyConsumption[regNumber]).forEach(year => {
-            yearlyConsumption[regNumber][year] = {
-                avgConsumption: calculateAverageConsumption(yearlyConsumption[regNumber][year]),
-                consumptions: yearlyConsumption[regNumber][year]
+    // First pass: Build vehicle profiles and detect anomalies
+    rawData.forEach((row, index) => {
+        const { regNumber, date, quantity, odometer } = row;
+        
+        if (!vehicleProfiles[regNumber]) {
+            vehicleProfiles[regNumber] = {
+                entries: [],
+                odometerHistory: [],
+                consumptionHistory: [],
+                statistics: null,
+                hasReliableOdometer: false
             };
-        });
-    });
-
-    invalidOdometerEntries.forEach(entry => {
-        const { rowData, regNumber, date, year, quantity } = entry;
-        const yearData = yearlyConsumption[regNumber] && yearlyConsumption[regNumber][year];
-
-        if (yearData && yearData.avgConsumption) {
-            const avgConsumption = yearData.avgConsumption;
-            const estimatedDistance = (quantity / avgConsumption) * 100;
-            rowData[5] = estimatedDistance.toFixed(0);
-            rowData[6] = avgConsumption.toFixed(2);
-
-            const lastValidOdometer = vehicleData[regNumber] ? vehicleData[regNumber].lastOdometer : null;
-            if (lastValidOdometer !== null) {
-                const correctedOdometer = lastValidOdometer + estimatedDistance;
-                rowData[4] = correctedOdometer.toFixed(0);
-                vehicleData[regNumber] = { lastOdometer: correctedOdometer, lastDate: date };
-                rowData[12] = true;
-            }
-
-            rowData[13] = true;
-            rowData[14] = true;
-
-            if (!yearlyConsumption[regNumber]) yearlyConsumption[regNumber] = {};
-            if (!yearlyConsumption[regNumber][year]) yearlyConsumption[regNumber][year] = { avgConsumption, consumptions: [] };
-            yearlyConsumption[regNumber][year].consumptions.push(avgConsumption);
-        }
-    });
-
-    summary13Data.forEach(row => {
-        const regNumber = row[0];
-        const rowDate = new Date(row[1]);
-        const year = rowDate.getFullYear();
-
-        const yearData = yearlyConsumption[regNumber] && yearlyConsumption[regNumber][year];
-        if (!yearData || !yearData.avgConsumption) {
-            row[7] = 'b.d.';
-            return;
         }
 
-        const avgConsumption = yearData.avgConsumption;
-        row[7] = avgConsumption.toFixed(2);
+        const profile = vehicleProfiles[regNumber];
+        profile.entries.push({ ...row, index });
 
-        const consumption = parseFloat(row[6]);
-        if (!isNaN(consumption) && !isNaN(avgConsumption)) {
-            const percentageDifference = ((consumption - avgConsumption) / avgConsumption) * 100;
-            row[8] = Math.abs(percentageDifference) > 8;
+        // Validate and process odometer readings
+        if (odometer !== null && odometer > 0) {
+            const lastOdometer = profile.odometerHistory.length > 0 
+                ? profile.odometerHistory[profile.odometerHistory.length - 1] 
+                : null;
 
-            const distance = parseFloat(row[5]);
-            const actualFuelUsed = parseFloat(row[3]);
-            const expectedFuelUsed = (avgConsumption * distance) / 100;
-            row[9] = (actualFuelUsed - expectedFuelUsed).toFixed(2);
-        } else {
-            row[8] = false;
-            row[9] = 'b.d.';
-        }
-    });
+            let isValidOdometer = true;
+            let odometerFlags = [];
 
-    const renderConsumption = (data, type, row) => {
-        if (type === 'display') {
-            const avgYearlyConsumption = parseFloat(row[7]);
-            const consumption = parseFloat(data);
-            if (!isNaN(consumption) && !isNaN(avgYearlyConsumption)) {
-                const percentageDifference = ((consumption - avgYearlyConsumption) / avgYearlyConsumption) * 100;
-                if (Math.abs(percentageDifference) > 8) {
-                    return `<span style="color: ${consumption > avgYearlyConsumption ? 'red' : 'green'}; font-weight: bold;">${data}</span>`;
-                } else if (row[14]) {
-                    return `<span style="color: purple; font-weight: bold;">${data}</span>`;
-                }
-            }
-        }
-        return data;
-    };
+            if (lastOdometer) {
+                const odometerDiff = odometer - lastOdometer.reading;
+                const daysDiff = (date - lastOdometer.date) / (1000 * 60 * 60 * 24);
+                const dailyDistance = daysDiff > 0 ? odometerDiff / daysDiff : 0;
 
-    const renderDifference = (data, type) => {
-        const difference = parseFloat(data);
-        if (type === 'display' && !isNaN(difference)) {
-            const color = difference > 0 ? 'red' : 'green';
-            return `<span style="color: ${color}; font-weight: bold;">${difference.toFixed(2)}</span>`;
-        }
-        return data;
-    };
-
-    // Calculate total sums for each vehicle and year, considering date filtering
-    const totalSums = {};
-    summary13Data.forEach(row => {
-        const regNumber = row[0];
-        const rowDate = new Date(row[1]);
-        const year = rowDate.getFullYear();
-        const key = `${regNumber}-${year}`;
-
-        const dateFrom = $('#summary13-date-from').val();
-        const dateTo = $('#summary13-date-to').val();
-
-        if ((!dateFrom || rowDate >= new Date(dateFrom)) && (!dateTo || rowDate <= new Date(dateTo))) {
-            if (!totalSums[key]) {
-                totalSums[key] = {
-                    quantity: 0,
-                    distance: 0,
-                    difference: 0,
-                    netValue: 0
-                };
-            }
-            totalSums[key].quantity += parseFloat(row[3]) || 0;
-            totalSums[key].distance += parseFloat(row[5]) || 0;
-            totalSums[key].difference += parseFloat(row[9]) || 0;
-            totalSums[key].netValue += parseFloat(row[10]) || 0;
-        }
-    });
-
-    const table = $('#Summary13Table').DataTable({
-    data: summary13Data,
-    columns: [
-        { title: 'Nr rejestracyjny', data: 0 },
-        { title: 'Data realizacji', data: 1 },
-        { title: 'Grupa prod', data: 2 },
-        { title: 'Ilość', data: 3 },
-        { title: 'Licznik', data: 4, render: (data, type, row) => type === 'display' && row[12] ? `<span style="color: purple; font-weight: bold;">${data}</span>` : data },
-        { title: 'Dystans (km)', data: 5, render: (data, type, row) => type === 'display' && row[13] ? `<span style="color: purple; font-weight: bold;">${data}</span>` : data },
-        { title: 'Spalanie (l/100km)', data: 6, render: renderConsumption },
-        { title: 'Śr. r. (l/100 km)', data: 7 },
-        { title: 'Różnica (l)', data: 9, render: renderDifference },
-        { title: 'Wartość netto', data: 10 },
-        { title: 'Miejscowość', data: 11 },
-        { title: 'Dane kosztowe', data: 15 }
-    ],
-    dom: '<"ex-buttons"Bf>lrtip',
-    buttons: [
-        {
-            extend: 'collection',
-            text: 'Export',
-            buttons: [
-                'csv',
-                'excel',
-                {
-                    extend: 'pdfHtml5',
-                    text: 'PDF',
-                    orientation: 'landscape',
-                    pageSize: 'A4',
-                    exportOptions: { columns: ':visible' },
-                    customize: function (doc) {
-                        doc.defaultStyle.fontSize = 8;
-                        doc.styles.tableHeader.fontSize = 9;
-                        doc.content[1].table.widths = new Array(doc.content[1].table.body[0].length).fill('*');
+                // Check for odometer rollback or unrealistic values
+                if (odometerDiff < 0 && Math.abs(odometerDiff) < CONFIG.ODOMETER_ROLLBACK_THRESHOLD) {
+                    odometerFlags.push('potential_rollback');
+                    isValidOdometer = false;
+                } else if (dailyDistance > CONFIG.MAX_DAILY_DISTANCE) {
+                    odometerFlags.push('excessive_daily_distance');
+                    isValidOdometer = false;
+                } else if (odometerDiff > 0 && daysDiff >= CONFIG.MIN_TIME_BETWEEN_REFILLS) {
+                    // Valid distance calculation
+                    const consumption = (quantity / odometerDiff) * 100;
+                    
+                    if (consumption >= CONFIG.MIN_CONSUMPTION_THRESHOLD && 
+                        consumption <= CONFIG.MAX_CONSUMPTION_THRESHOLD &&
+                        odometerDiff >= CONFIG.MIN_DISTANCE_FOR_CONSUMPTION) {
+                        profile.consumptionHistory.push({
+                            consumption,
+                            distance: odometerDiff,
+                            date,
+                            quantity,
+                            index
+                        });
                     }
                 }
-            ]
-        }
-    ],
-    paging: true,
-    pageLength: 20,
-    searching: true,
-    info: false,
-    order: [[0, 'asc'], [1, 'asc']],
-    rowGroup: {
-        dataSrc: [0, function(row) {
-            return new Date(row[1]).getFullYear();
-        }],
-        startRender: function (rows, group, level) {
-            if (level === 0) {
-                // This is the vehicle registration number group
-                return $('<tr/>').append('<td colspan="12">' + group + '</td>');
-            } else if (level === 1) {
-                // This is the year group
-                const regNumber = rows.data()[0][0];
-                const year = group;
-                
-                // Oblicz sumy tylko dla widocznych wierszy
-                const visibleRows = rows.nodes().toArray().filter(node => $(node).is(':visible'));
-                const visibleData = visibleRows.map(node => table.row(node).data());
-                
-                const totals = visibleData.reduce((acc, row) => {
-                    return {
-                        quantity: acc.quantity + (parseFloat(row[3]) || 0),
-                        distance: acc.distance + (parseFloat(row[5]) || 0),
-                        difference: acc.difference + (parseFloat(row[9]) || 0),
-                        netValue: acc.netValue + (parseFloat(row[10]) || 0)
-                    };
-                }, { quantity: 0, distance: 0, difference: 0, netValue: 0 });
+            }
 
-                return $('<tr/>').append(
-                    `<td colspan="2"><strong>${regNumber} - ${year}</strong></td>` +
-                    `<td></td>` +
-                    `<td class="text-left">${totals.quantity.toFixed(2)}</td>` +
-                    `<td></td>` +
-                    `<td class="text-left">${isNaN(totals.distance) || totals.distance === 0 ? 'b.d.' : totals.distance.toFixed(0)}</td>` +
-                    `<td></td><td></td>` +
-                    `<td class="text-left">${isNaN(totals.difference) || totals.difference === 0 ? 'b.d.' : totals.difference.toFixed(2)}</td>` +
-                    `<td class="text-left">${totals.netValue.toFixed(2)}</td>` +
-                    `<td></td>` +
-                    `<td></td>`
-                );
+            if (isValidOdometer) {
+                profile.odometerHistory.push({
+                    reading: odometer,
+                    date,
+                    index,
+                    flags: odometerFlags
+                });
+                profile.hasReliableOdometer = true;
             }
         }
-    },
-    initComplete: function () {
-        const api = this.api();
-        const columns = api.settings().init().columns;
 
-        const createCheckbox = (col, index) => {
-            if (col.title === 'Nr rejestracyjny') return '';
-            const checked = col.visible !== false ? 'checked' : '';
-            return `
-                <label class="flex items-center space-x-2 text-sm">
-                    <input type="checkbox" class="toggle-column" data-column-index="${index}" ${checked}>
-                    <span>${col.title}</span>
-                </label>
-            `;
+        dataQualityFlags[index] = {
+            hasValidOdometer: odometer !== null && odometer > 0,
+            odometerFlags: [],
+            isEstimated: false,
+            isAnomalous: false,
+            confidenceLevel: 'unknown'
         };
+    });
 
-        const checkboxesHtml = columns.map(createCheckbox).join('');
-        columnsCheckboxesDiv.html(`<div class="flex flex-wrap gap-2">${checkboxesHtml}</div>`);
+    // Second pass: Calculate statistics and process entries
+    Object.keys(vehicleProfiles).forEach(regNumber => {
+        const profile = vehicleProfiles[regNumber];
+        
+        if (profile.consumptionHistory.length >= CONFIG.STATISTICAL_CONFIDENCE_MIN_SAMPLES) {
+            const consumptions = profile.consumptionHistory.map(entry => entry.consumption);
+            const cleanedConsumptions = removeOutliers(consumptions, 'iqr');
+            profile.statistics = calculateStatistics(cleanedConsumptions);
+            
+            // Mark anomalous entries
+            if (profile.statistics) {
+                profile.consumptionHistory.forEach(entry => {
+                    const deviation = Math.abs(entry.consumption - profile.statistics.mean) / profile.statistics.mean;
+                    if (deviation > CONFIG.ANOMALY_THRESHOLD) {
+                        dataQualityFlags[entry.index].isAnomalous = true;
+                    }
+                });
+            }
+        }
 
-        columnsCheckboxesDiv.find('.toggle-column').on('change', function () {
-            const column = api.column($(this).attr('data-column-index'));
-            column.visible(!column.visible());
+        // Process each entry for the vehicle
+        profile.entries.forEach((entry, entryIndex) => {
+            const { regNumber, date, group, quantity, odometer, netValue, location, costData, index } = entry;
+            const year = date.getFullYear();
+            
+            let distance = null;
+            let consumption = null;
+            let avgConsumption = null;
+            let fuelDifference = null;
+            let estimatedOdometer = odometer;
+            let flags = dataQualityFlags[index];
+
+            // Calculate distance and consumption
+            if (entryIndex > 0 && profile.hasReliableOdometer) {
+                const prevEntry = profile.entries[entryIndex - 1];
+                const prevOdometerEntry = profile.odometerHistory.find(h => h.index === prevEntry.index);
+                const currentOdometerEntry = profile.odometerHistory.find(h => h.index === index);
+
+                if (prevOdometerEntry && currentOdometerEntry) {
+                    distance = currentOdometerEntry.reading - prevOdometerEntry.reading;
+                    
+                    if (distance > CONFIG.MIN_DISTANCE_FOR_CONSUMPTION) {
+                        consumption = (quantity / distance) * 100;
+                        flags.confidenceLevel = 'high';
+                    }
+                } else if (!currentOdometerEntry && profile.statistics) {
+                    // Estimate distance based on average consumption
+                    distance = (quantity / profile.statistics.mean) * 100;
+                    consumption = profile.statistics.mean;
+                    flags.isEstimated = true;
+                    flags.confidenceLevel = 'estimated';
+                    
+                    // Estimate odometer reading
+                    if (prevOdometerEntry) {
+                        estimatedOdometer = prevOdometerEntry.reading + distance;
+                    }
+                }
+            }
+
+            // Get yearly average consumption
+            const yearlyStats = profile.statistics;
+            if (yearlyStats && yearlyStats.count >= CONFIG.STATISTICAL_CONFIDENCE_MIN_SAMPLES) {
+                avgConsumption = yearlyStats.mean;
+                flags.confidenceLevel = flags.confidenceLevel === 'unknown' ? 'medium' : flags.confidenceLevel;
+                
+                // Calculate fuel difference
+                if (consumption !== null && distance !== null) {
+                    const expectedFuel = (avgConsumption * distance) / 100;
+                    fuelDifference = quantity - expectedFuel;
+                }
+            }
+
+            // Create processed row
+            const processedRow = [
+                regNumber,
+                date.toISOString().split('T')[0],
+                group,
+                quantity.toFixed(2),
+                estimatedOdometer !== null ? estimatedOdometer.toFixed(0) : 'b.d.',
+                distance !== null ? distance.toFixed(0) : 'b.d.',
+                consumption !== null ? consumption.toFixed(2) : 'b.d.',
+                avgConsumption !== null ? avgConsumption.toFixed(2) : 'b.d.',
+                flags.isAnomalous,
+                fuelDifference !== null ? fuelDifference.toFixed(2) : 'b.d.',
+                netValue.toFixed(2),
+                location,
+                flags.isEstimated, // Odometer estimated
+                flags.isEstimated, // Distance estimated
+                flags.isEstimated, // Consumption estimated
+                costData,
+                flags.confidenceLevel // New column for data confidence
+            ];
+
+            processedData.push(processedRow);
         });
+    });
 
-        toggleColumnsBtn.on('click', () => columnsCheckboxesDiv.toggle());
-    }
-});
+    // Enhanced rendering functions
+    const renderWithConfidence = (data, type, row, columnIndex) => {
+        if (type !== 'display') return data;
+        
+        const confidence = row[16]; // Confidence level column
+        const isEstimated = row[12 + (columnIndex - 4)]; // Adjust for estimated flags
+        
+        let color = 'black';
+        let style = '';
+        
+        if (isEstimated) {
+            color = 'purple';
+            style = 'font-weight: bold; font-style: italic;';
+        } else if (confidence === 'high') {
+            color = 'green';
+        } else if (confidence === 'medium') {
+            color = 'orange';
+        } else if (confidence === 'low') {
+            color = 'red';
+        }
+        
+        return `<span style="color: ${color}; ${style}" title="Confidence: ${confidence}">${data}</span>`;
+    };
 
-const uniqueRegistrations = [...new Set(summary13Data.map(row => row[0]))].sort();
-const uniqueYears = [...new Set(summary13Data.map(row => new Date(row[1]).getFullYear()))].sort();
+    const renderConsumption = (data, type, row) => {
+        if (type !== 'display') return data;
+        
+        const avgYearlyConsumption = parseFloat(row[7]);
+        const consumption = parseFloat(data);
+        const isAnomalous = row[8];
+        const isEstimated = row[14];
+        
+        let color = 'black';
+        let style = '';
+        
+        if (isEstimated) {
+            color = 'purple';
+            style = 'font-weight: bold; font-style: italic;';
+        } else if (isAnomalous && !isNaN(consumption) && !isNaN(avgYearlyConsumption)) {
+            color = consumption > avgYearlyConsumption ? 'red' : 'green';
+            style = 'font-weight: bold;';
+        }
+        
+        const confidenceTitle = `Confidence: ${row[16] || 'unknown'}`;
+        return `<span style="color: ${color}; ${style}" title="${confidenceTitle}">${data}</span>`;
+    };
 
-uniqueRegistrations.forEach(reg => {
-    registrationFilterSelect.append($('<option>', { value: reg, text: reg }));
-});
+    const renderDifference = (data, type, row) => {
+        if (type !== 'display') return data;
+        
+        const difference = parseFloat(data);
+        if (isNaN(difference)) return data;
+        
+        const color = difference > 0 ? 'red' : 'green';
+        const confidenceTitle = `Confidence: ${row[16] || 'unknown'}`;
+        
+        return `<span style="color: ${color}; font-weight: bold;" title="${confidenceTitle}">${difference.toFixed(2)}</span>`;
+    };
 
-uniqueYears.forEach(year => {
-    yearFilterSelect.append($('<option>', { value: year, text: year }));
-});
+    // DataTable initialization
+    const table = $('#Summary13Table').DataTable({
+        data: processedData,
+        columns: [
+            { title: 'Nr rejestracyjny', data: 0 },
+            { title: 'Data realizacji', data: 1 },
+            { title: 'Grupa prod', data: 2 },
+            { title: 'Ilość', data: 3 },
+            { title: 'Licznik', data: 4, render: (data, type, row) => renderWithConfidence(data, type, row, 4) },
+            { title: 'Dystans (km)', data: 5, render: (data, type, row) => renderWithConfidence(data, type, row, 5) },
+            { title: 'Spalanie (l/100km)', data: 6, render: renderConsumption },
+            { title: 'Śr. r. (l/100 km)', data: 7 },
+            { title: 'Różnica (l)', data: 9, render: renderDifference },
+            { title: 'Wartość netto', data: 10 },
+            { title: 'Miejscowość', data: 11 },
+            { title: 'Dane kosztowe', data: 15 },
+            { title: 'Pewność danych', data: 16, visible: false } // Hidden confidence column
+        ],
+        dom: '<"ex-buttons"Bf>lrtip',
+        buttons: [
+            {
+                extend: 'collection',
+                text: 'Export',
+                buttons: [
+                    'csv',
+                    'excel',
+                    {
+                        extend: 'pdfHtml5',
+                        text: 'PDF',
+                        orientation: 'landscape',
+                        pageSize: 'A4',
+                        exportOptions: { columns: ':visible' },
+                        customize: function (doc) {
+                            doc.defaultStyle.fontSize = 8;
+                            doc.styles.tableHeader.fontSize = 9;
+                            doc.content[1].table.widths = new Array(doc.content[1].table.body[0].length).fill('*');
+                        }
+                    }
+                ]
+            }
+        ],
+        paging: true,
+        pageLength: 20,
+        searching: true,
+        info: false,
+        order: [[0, 'asc'], [1, 'asc']],
+        rowGroup: {
+            dataSrc: [0, function(row) {
+                return new Date(row[1]).getFullYear();
+            }],
+            startRender: function (rows, group, level) {
+                if (level === 0) {
+                    return $('<tr/>').append('<td colspan="13">' + group + '</td>');
+                } else if (level === 1) {
+                    const regNumber = rows.data()[0][0];
+                    const year = group;
+                    
+                    const visibleRows = rows.nodes().toArray().filter(node => $(node).is(':visible'));
+                    const visibleData = visibleRows.map(node => table.row(node).data());
+                    
+                    const totals = visibleData.reduce((acc, row) => {
+                        return {
+                            quantity: acc.quantity + (parseFloat(row[3]) || 0),
+                            distance: acc.distance + (parseFloat(row[5]) || 0),
+                            difference: acc.difference + (parseFloat(row[9]) || 0),
+                            netValue: acc.netValue + (parseFloat(row[10]) || 0)
+                        };
+                    }, { quantity: 0, distance: 0, difference: 0, netValue: 0 });
 
-registrationSearchInput.on('input', () => {
-    updateRegistrationFilter();
-    table.draw();
-});
+                    // Calculate average consumption for the group
+                    const avgConsumption = totals.distance > 0 ? (totals.quantity / totals.distance) * 100 : null;
 
-registrationFilterSelect.add(yearFilterSelect).add('#summary13-date-from').add('#summary13-date-to').on('change', () => table.draw());
+                    return $('<tr/>').append(
+                        `<td colspan="2"><strong>${regNumber} - ${year}</strong></td>` +
+                        `<td></td>` +
+                        `<td class="text-left">${totals.quantity.toFixed(2)}</td>` +
+                        `<td></td>` +
+                        `<td class="text-left">${totals.distance > 0 ? totals.distance.toFixed(0) : 'b.d.'}</td>` +
+                        `<td class="text-left">${avgConsumption ? avgConsumption.toFixed(2) : 'b.d.'}</td>` +
+                        `<td></td>` +
+                        `<td class="text-left">${totals.difference !== 0 ? totals.difference.toFixed(2) : 'b.d.'}</td>` +
+                        `<td class="text-left">${totals.netValue.toFixed(2)}</td>` +
+                        `<td></td><td></td><td></td>`
+                    );
+                }
+            }
+        },
+        initComplete: function () {
+            const api = this.api();
+            const columns = api.settings().init().columns;
 
-$.fn.dataTable.ext.search.push(
-    function (settings, data, dataIndex) {
-        if (settings.nTable.id !== 'Summary13Table') return true;
+            const createCheckbox = (col, index) => {
+                if (col.title === 'Nr rejestracyjny') return '';
+                const checked = col.visible !== false ? 'checked' : '';
+                return `
+                    <label class="flex items-center space-x-2 text-sm">
+                        <input type="checkbox" class="toggle-column" data-column-index="${index}" ${checked}>
+                        <span>${col.title}</span>
+                    </label>
+                `;
+            };
 
-        const selectedReg = registrationFilterSelect.val();
-        const searchReg = registrationSearchInput.val().toLowerCase();
-        const selectedYear = yearFilterSelect.val();
-        const dateFrom = $('#summary13-date-from').val();
-        const dateTo = $('#summary13-date-to').val();
+            const checkboxesHtml = columns.map(createCheckbox).join('');
+            columnsCheckboxesDiv.html(`<div class="flex flex-wrap gap-2">${checkboxesHtml}</div>`);
 
-        const rowReg = data[0];
-        const rowDate = new Date(data[1]);
-        const rowYear = rowDate.getFullYear();
+            columnsCheckboxesDiv.find('.toggle-column').on('change', function () {
+                const column = api.column($(this).attr('data-column-index'));
+                column.visible(!column.visible());
+            });
 
-        const passesRegFilter = !selectedReg || selectedReg === rowReg;
-        const passesSearchFilter = !searchReg || searchReg.split(';').some(partialReg => rowReg.toLowerCase().includes(partialReg.trim()));
-        const passesYearFilter = !selectedYear || rowYear == selectedYear;
-        const passesDateRangeFilter = (!dateFrom || rowDate >= new Date(dateFrom)) && (!dateTo || rowDate <= new Date(dateTo));
+            toggleColumnsBtn.on('click', () => columnsCheckboxesDiv.toggle());
+        }
+    });
 
-        return passesRegFilter && passesSearchFilter && passesYearFilter && passesDateRangeFilter;
-    }
-);
+    // Filter setup
+    const uniqueRegistrations = [...new Set(processedData.map(row => row[0]))].sort();
+    const uniqueYears = [...new Set(processedData.map(row => new Date(row[1]).getFullYear()))].sort();
 
-function updateRegistrationFilter() {
-    const searchValue = registrationSearchInput.val().toLowerCase();
-    const filteredRegistrations = uniqueRegistrations.filter(reg => reg.toLowerCase().includes(searchValue));
-
-    registrationFilterSelect.html('<option value="">Wszystkie numery rejestracyjne</option>');
-    filteredRegistrations.forEach(reg => {
+    uniqueRegistrations.forEach(reg => {
         registrationFilterSelect.append($('<option>', { value: reg, text: reg }));
     });
-}
+
+    uniqueYears.forEach(year => {
+        yearFilterSelect.append($('<option>', { value: year, text: year }));
+    });
+
+    // Event handlers
+    registrationSearchInput.on('input', () => {
+        updateRegistrationFilter();
+        table.draw();
+    });
+
+    registrationFilterSelect.add(yearFilterSelect).add('#summary13-date-from').add('#summary13-date-to').on('change', () => table.draw());
+
+    // Custom search filter
+    $.fn.dataTable.ext.search.push(
+        function (settings, data, dataIndex) {
+            if (settings.nTable.id !== 'Summary13Table') return true;
+
+            const selectedReg = registrationFilterSelect.val();
+            const searchReg = registrationSearchInput.val().toLowerCase();
+            const selectedYear = yearFilterSelect.val();
+            const dateFrom = $('#summary13-date-from').val();
+            const dateTo = $('#summary13-date-to').val();
+
+            const rowReg = data[0];
+            const rowDate = new Date(data[1]);
+            const rowYear = rowDate.getFullYear();
+
+            const passesRegFilter = !selectedReg || selectedReg === rowReg;
+            const passesSearchFilter = !searchReg || searchReg.split(';').some(partialReg => rowReg.toLowerCase().includes(partialReg.trim()));
+            const passesYearFilter = !selectedYear || rowYear == selectedYear;
+            const passesDateRangeFilter = (!dateFrom || rowDate >= new Date(dateFrom)) && (!dateTo || rowDate <= new Date(dateTo));
+
+            return passesRegFilter && passesSearchFilter && passesYearFilter && passesDateRangeFilter;
+        }
+    );
+
+    function updateRegistrationFilter() {
+        const searchValue = registrationSearchInput.val().toLowerCase();
+        const filteredRegistrations = uniqueRegistrations.filter(reg => reg.toLowerCase().includes(searchValue));
+
+        registrationFilterSelect.html('<option value="">Wszystkie numery rejestracyjne</option>');
+        filteredRegistrations.forEach(reg => {
+            registrationFilterSelect.append($('<option>', { value: reg, text: reg }));
+        });
+    }
+
+    // Add data quality summary
+    const qualitySummary = $('<div>', {
+        id: 'data-quality-summary',
+        class: 'mt-4 p-4 bg-gray-100 rounded-lg',
+        html: `
+            <h3 class="text-lg font-bold mb-2">Podsumowanie jakości danych:</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div><strong>Wysoka pewność:</strong> <span style="color: green;">●</span> Dane z licznika</div>
+                <div><strong>Średnia pewność:</strong> <span style="color: orange;">●</span> Obliczone średnie</div>
+                <div><strong>Dane szacowane:</strong> <span style="color: purple; font-style: italic;">●</span> Wartości estymowane</div>
+                <div><strong>Anomalie:</strong> <span style="color: red; font-weight: bold;">●</span> Odbiegające od normy</div>
+            </div>
+        `
+    });
+    
+    container.append(qualitySummary);
 }
 
 function generateAveragePriceSummary() {
@@ -4096,7 +4503,11 @@ const olejNapedowyData = [
 [Date.UTC(2024, 9), 298121.92],
 [Date.UTC(2024, 10), 197031.82],
 [Date.UTC(2024, 11), 178372.52],
-[Date.UTC(2025, 0), 272234.78]
+[Date.UTC(2025, 0), 272234.78],
+[Date.UTC(2025, 1), 323297.77],
+[Date.UTC(2025, 2), 385441.34],
+[Date.UTC(2025, 3), 351925.24],
+[Date.UTC(2025, 4), 266535.54]
 // Pozostałe dane...
 ];
 
@@ -4161,7 +4572,11 @@ const benzynaData = [
 [Date.UTC(2024, 9), 338092.78],
 [Date.UTC(2024, 10), 280988.33],
 [Date.UTC(2024, 11), 270369.32],
-[Date.UTC(2025, 0), 260361.09]
+[Date.UTC(2025, 0), 260361.09],
+[Date.UTC(2025, 1), 274379.48],
+[Date.UTC(2025, 2), 299772.90],
+[Date.UTC(2025, 3), 318825.05],
+[Date.UTC(2025, 4), 256122.16]
 // Pozostałe dane...
 ];
 
@@ -4226,7 +4641,11 @@ const autostradyData = [
 [Date.UTC(2024, 9), 2541.40],
 [Date.UTC(2024, 10), 3301.66],
 [Date.UTC(2024, 11), 2695.36],
-[Date.UTC(2025, 0), 4686.97]
+[Date.UTC(2025, 0), 4686.97],
+[Date.UTC(2025, 1), 6242.69],
+[Date.UTC(2025, 2), 6043.01],
+[Date.UTC(2025, 3), 5847.41],
+[Date.UTC(2025, 4), 6282.53]
 // Pozostałe dane...
 ];
 
@@ -4291,7 +4710,11 @@ const adBlueData = [
 [Date.UTC(2024, 9), 5311.33],
 [Date.UTC(2024, 10), 2244.48],
 [Date.UTC(2024, 11), 2159.94],
-[Date.UTC(2025, 0), 4386.79]
+[Date.UTC(2025, 0), 4386.79],
+[Date.UTC(2025, 1), 3016.39],
+[Date.UTC(2025, 2), 5331.12],
+[Date.UTC(2025, 3), 5460.85],
+[Date.UTC(2025, 4), 4448.94]
 // Pozostałe dane...
 ];
 
@@ -4356,7 +4779,11 @@ const olejeSilnikoweData = [
 [Date.UTC(2024, 9), 547.33],
 [Date.UTC(2024, 10), 298.60],
 [Date.UTC(2024, 11), 319.78],
-[Date.UTC(2025, 0), 346.98]
+[Date.UTC(2025, 0), 346.98],
+[Date.UTC(2025, 1), 160.26],
+[Date.UTC(2025, 2), 608.56],
+[Date.UTC(2025, 3), 54.43],
+[Date.UTC(2025, 4), 347.75]
 // Pozostałe dane...
 ];
 
@@ -4630,3 +5057,114 @@ Zielony (green) – Wartość została skorygowana, gdy brak było zarówno popr
 </script>
 </body>
 </html>
+
+<!-- Minimalistyczny przycisk i blok z pełną treścią -->
+<button class="toggle-button" onclick="toggleVisibility(this)">+</button>
+<div class="toggle-content" style="display: none;">
+  <h3>Główne usprawnienia w zoptymalizowanej wersji:</h3>
+  <ol>
+    <li><strong>Lepsze zarządzanie błędnymi danymi</strong>
+      <ul>
+        <li>Walidacja danych wejściowych: Funkcja <code>sanitizeNumericValue()</code> czyści i waliduje wszystkie wartości numeryczne</li>
+        <li>Sprawdzanie dat: Weryfikacja poprawności dat przed przetwarzaniem</li>
+        <li>Filtrowanie nierealistycznych wartości: Eliminacja spalania poniżej 2l/100km i powyżej 50l/100km</li>
+      </ul>
+    </li>
+    <li><strong>Zaawansowana detekcja anomalii</strong>
+      <ul>
+        <li>Metoda IQR: Używa rozstępu międzykwartylowego zamiast odchylenia standardowego (bardziej odporna na wartości odstające)</li>
+        <li>Progowanie statystyczne: Wymaga minimum 3 próbek do obliczania wiarygodnych statystyk</li>
+        <li>Detekcja cofnięcia licznika: Identyfikuje potencjalne problemy z odczytem licznika</li>
+      </ul>
+    </li>
+    <li><strong>Realistyczne modelowanie zużycia</strong>
+      <ul>
+        <li>Minimalna odległość: Wymaga co najmniej 10km do obliczenia spalania</li>
+        <li>Ograniczenia czasowe: Minimum 1 dzień między tankowaniami</li>
+        <li>Maksymalny dzienny przebieg: Ograniczenie do 1000km/dzień</li>
+        <li>Estymacja na podstawie profilu pojazdu: Lepsze szacowanie brakujących danych</li>
+      </ul>
+    </li>
+    <li><strong>System pewności danych</strong>
+      <ul>
+        <li>Poziomy pewności: Wysoki, średni, niski, szacowany</li>
+        <li>Wizualne oznaczenia: Kolorowe kodowanie według jakości danych</li>
+        <li>Legenda jakości: Wyjaśnienie znaczenia kolorów dla użytkownika</li>
+      </ul>
+    </li>
+    <li><strong>Ulepszona analiza statystyczna</strong>
+      <ul>
+        <li>Mediana i kwartyle: Dodatkowe metryki odporne na wartości odstające</li>
+        <li>Usuwanie anomalii: Automatyczne wykluczanie nietypowych wartości z obliczeń średniej</li>
+        <li>Profil pojazdu: Śledzenie historii każdego pojazdu osobno</li>
+      </ul>
+    </li>
+    <li><strong>Lepsza wydajność</strong>
+      <ul>
+        <li>Dwuprzebiegowe przetwarzanie: Najpierw budowanie profili, potem przetwarzanie</li>
+        <li>Konfiguracja przez stałe: Łatwe dostosowanie parametrów</li>
+        <li>Optymalizowana struktura danych: Mniej powtarzających się obliczeń</li>
+      </ul>
+    </li>
+    <li><strong>Dodatkowe funkcje</strong>
+      <ul>
+        <li>Podsumowanie jakości danych: Wizualne wyjaśnienie oznaczeń</li>
+        <li>Lepsze grupowanie: Uwzględnia średnie spalanie w podsumowaniach grup</li>
+        <li>Ukryta kolumna pewności: Dodatkowe informacje dostępne na żądanie</li>
+      </ul>
+    </li>
+  </ol>
+</div>
+
+<!-- Skrypt lokalny do przełączania widoczności -->
+<script>
+  function toggleVisibility(btn) {
+    const content = btn.nextElementSibling;
+    if (content.style.display === "none") {
+      content.style.display = "block";
+      btn.textContent = "–";
+    } else {
+      content.style.display = "none";
+      btn.textContent = "+";
+    }
+  }
+</script>
+
+<!-- Minimalny styl, nie zwęża strony -->
+<style>
+  .toggle-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    line-height: 32px;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+  }
+
+  .toggle-button:hover {
+    background-color: #0056b3;
+  }
+
+  .toggle-content {
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+    margin-bottom: 1rem;
+  }
+
+  .toggle-content h3 {
+    margin-top: 0;
+  }
+
+  .toggle-content ul {
+    padding-left: 1.2rem;
+    margin-bottom: 1rem;
+  }
+</style>
