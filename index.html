@@ -1,453 +1,168 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="theme-color" content="#000000">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DASH5.06.r</title>
-    
-    <!-- External Stylesheets -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.tailwindcss.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/rowgroup/1.1.4/css/rowGroup.dataTables.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/select/1.3.3/css/select.dataTables.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/scroller/2.4.0/css/scroller.dataTables.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/fixedheader/4.0.1/css/fixedHeader.dataTables.min.css" rel="stylesheet">
-    <link href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css" rel="stylesheet">
-    <link href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css" rel="stylesheet">
-    
-    <!-- Critical CSS -->
-    <style id="critical-css">
-        /* Base Styles */
-        :root {
-            --primary-bg: linear-gradient(45deg, #2c3036, #3e3e40);
-            --primary-color: #3b82f6;
-            --text-color: #333;
-            --border-color: #4a4a4a;
-            --hover-bg: #f0f9ff;
-        }
-
-        body {
-            background: var(--primary-bg);
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            width: 100vw;
-            overflow-x: hidden;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Button Styles */
-        .button {
-            border: 0.1em solid transparent;
-            border-radius: 0.5em;
-            background-color: #010101;
-            box-shadow: 0.0625em 0.0625em 0.0625em rgba(255, 255, 255, 0.6);
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .button:hover {
-            background-color: var(--primary-color);
-            color: #fff;
-        }
-
-        /* Layout Components */
-        .chart-box {
-            height: 400px;
-            width: 100%;
-            margin-bottom: 1rem;
-        }
-
-        .bg-white {
-            margin-bottom: 1rem;
-        }
-
-        .p-6 {
-            padding: 1rem;
-        }
-
-        /* Table Styles */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            border: 0.2em solid var(--border-color);
-        }
-
-        .dataTables_wrapper {
-            width: 100%;
-            overflow-x: auto;
-            scrollbar-width: thin;
-        }
-
-        .dataTables_wrapper::-webkit-scrollbar {
-            height: 6px;
-        }
-
-        .dataTables_wrapper::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        .dataTables_wrapper::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 3px;
-        }
-
-        .dataTables_wrapper::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-
-        /* DataTable Specific Styles */
-        table.dataTable {
-            font-size: 11px;
-            line-height: 1.2;
-        }
-
-        table.dataTable thead th {
-            background-color: #2a2a2a;
-            color: #fff;
-            font-weight: 600;
-            padding: 6px 4px;
-            border-bottom: 2px solid var(--border-color);
-            border-right: 1px solid var(--border-color);
-            white-space: nowrap;
-            min-width: 50px;
-            max-width: 150px;
-        }
-
-        table.dataTable tbody td {
-            background-color: #fff;
-            padding: 4px;
-            border-top: 1px solid #e0e0e0;
-            border-right: 1px solid #e0e0e0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            min-width: 50px;
-            max-width: 150px;
-        }
-
-        table.dataTable tbody tr:last-child td {
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        table.dataTable tbody td:last-child,
-        table.dataTable thead th:last-child {
-            border-right: 0;
-        }
-
-        table.dataTable tbody tr:hover {
-            background-color: var(--hover-bg);
-        }
-
-        table.dataTable th:nth-child(1),
-        table.dataTable td:nth-child(1) {
-            max-width: 80px;
-        }
-
-        table.dataTable th:nth-child(2),
-        table.dataTable td:nth-child(2) {
-            max-width: 120px;
-        }
-
-        /* Component Styles */
-        .fuel-summary {
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .dt-buttons .dt-button {
-            background-color: #4A90E2;
-            color: #fff;
-            border-radius: 4px;
-            padding: 8px 16px;
-            font-size: 11px;
-            font-weight: 700;
-            border: 0;
-            margin: 3px;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .dt-buttons .dt-button:hover {
-            background-color: #357ABD;
-        }
-
-        .dt-button-collection {
-            background-color: #FFF;
-            border: 1px solid #CCC;
-        }
-
-        .dt-button-collection .dt-button {
-            background-color: #F5F5F5;
-            color: #333;
-        }
-
-        .dt-button-collection .dt-button:hover {
-            background-color: #E0E0E0;
-            color: #000;
-        }
-
-        #total-import-time {
-            background-color: red;
-            color: #fff;
-            border-radius: 4px;
-            padding: 5px 10px;
-        }
-
-        #map {
-            height: 420px;
-            width: 100%;
-            border-radius: 8px;
-        }
-
-        /* Table Layout */
-        .table-wrapper {
-            display: flex;
-            flex-wrap: wrap;
-            margin: 0 -0.5rem;
-        }
-
-        .table-container {
-            width: 100%;
-            padding: 0 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .table-container table {
-            width: 100%;
-            table-layout: fixed;
-        }
-
-        .table-container th,
-        .table-container td {
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-
-        /* Form Elements */
-        .bg-white.rounded-md.shadow-lg.overflow-hidden button:hover {
-            color: var(--primary-color);
-        }
-
-        .ex-buttons,
-        .ex-button,
-        .dataTables_length,
-        .dataTables_filter,
-        .dataTables_info,
-        .dataTables_paginate {
-            font-size: 11px;
-            box-shadow: inset 1px 1px 2px 0 rgba(255, 255, 255, 0.5);
-        }
-
-        select,
-        input[type="text"] {
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            color: #e0e0e0;
-            transition: all 0.3s;
-        }
-
-        select:focus,
-        input[type="text"]:focus {
-            background-color: rgba(255, 255, 255, 0.2);
-            border-color: #0ff;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-        }
-
-        /* Toggle Switch */
-        input:checked + .slider {
-            background-color: #2563eb;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(20px);
-        }
-
-        /* Mapping Controls */
-        .mapping-controls {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .form-check {
-            margin-bottom: 10px;
-        }
-
-        .form-check-input:checked {
-            background-color: #198754;
-            border-color: #198754;
-        }
-
-        .form-check-label {
-            font-weight: 500;
-            color: #495057;
-        }
-
-        .control-buttons {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #dee2e6;
-        }
-
-        .btn-outline-success {
-            margin-right: 10px;
-        }
-
-        .mapping-title {
-            color: #198754;
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
-
-        .mapping-description {
-            font-size: 0.9em;
-            color: #6c757d;
-            margin-bottom: 15px;
-        }
-
-        /* File List Styles */
-        #file-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-        }
-
-        #file-list li {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: 8px 12px;
-            display: flex;
-            align-items: center;
-            transition: 0.2s;
-            font-size: 0.9rem;
-            color: #1e293b;
-        }
-
-        #file-list li:hover {
-            background: #f1f5f9;
-            transform: translateX(4px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-
-        #file-list li::before {
-            content: '\f15b';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            margin-right: 10px;
-            color: var(--primary-color);
-            flex-shrink: 0;
-        }
-
-        #file-list li.excel::before {
-            content: '\f1c3';
-            color: #16a34a;
-        }
-
-        #file-list li.pdf::before {
-            content: '\f1c1';
-            color: #dc2626;
-        }
-
-        #file-list li .file-name {
-            flex: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        #file-list li .file-size {
-            font-size: 0.8rem;
-            color: #64748b;
-            margin-left: 8px;
-            flex-shrink: 0;
-        }
-
-        #file-list li .remove-file {
-            border: 0;
-            color: #ef4444;
-            cursor: pointer;
-            padding: 4px;
-            margin-left: 8px;
-            border-radius: 4px;
-            transition: 0.2s;
-            flex-shrink: 0;
-        }
-
-        #file-list li .remove-file:hover {
-            background: #fee2e2;
-            color: #dc2626;
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 768px) {
-            #file-list {
-                grid-template-columns: 1fr;
-            }
-
-            #file-list li {
-                font-size: 0.85rem;
-                padding: 6px 10px;
-            }
-
-            #file-list li .file-size {
-                font-size: 0.75rem;
-            }
-
-            table.dataTable {
-                font-size: 10px;
-            }
-
-            table.dataTable thead th,
-            table.dataTable tbody td {
-                padding: 3px 2px;
-                min-width: 40px;
-                max-width: 100px;
-            }
-        }
-
-        @media (max-width: 760px) {
-            .chart-box {
-                height: 420px;
-            }
-
-            .button {
-                padding: 8px 16px;
-            }
-        }
-
-        @media (min-width: 760px) {
-            .table-responsive {
-                overflow-x: auto;
-            }
-
-            .table-container {
-                width: 50%;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="theme-color" content="#000000">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>DASH5.08.1</title>
+   
+<script src="https://cdn.jsdelivr.net/npm/smoothscroll-for-websites@1.4.10/SmoothScroll.min.js" crossorigin="anonymous"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/1.13.7/css/dataTables.tailwindcss.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/rowgroup/1.1.4/css/rowGroup.dataTables.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/select/1.3.3/css/select.dataTables.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/scroller/2.4.0/css/scroller.dataTables.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/fixedheader/4.0.1/css/fixedHeader.dataTables.min.css" rel="stylesheet">
+<link href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css" rel="stylesheet">
+<link href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css" rel="stylesheet">
+<style>
+:root {
+--table-border:#e2e8f0;--table-header-bg:#f8fafc;--table-header-text:#334155;--table-hover-bg:#f8fafc;
+--table-stripe-bg:#f9fafb;--table-highlight-bg:#f1f5f9;--table-positive:#10b981;--table-negative:#ef4444;
+--table-neutral:#f59e0b;--table-muted:#64748b;--table-padding-x:16px;--table-padding-y:12px;
+--table-compact-padding-x:8px;--table-compact-padding-y:6px;--table-header-font-size:11px;
+--table-body-font-size:13px;--table-compact-font-size:11px;
+}
+body{background:linear-gradient(45deg,#2c3036 0%,#3e3e40 100%);margin:0;padding:0;height:100vh;width:100vw;overflow-x:hidden}
+.button{border:.1em solid transparent;border-radius:.5em;background-color:#010101;box-shadow:.0625em .0625em .0625em rgba(255,255,255,.6);padding:10px 20px;cursor:pointer;transition:background-color 0.3s ease}
+.button:hover{background-color:#3b82f6;color:#fff}
+.chart-box{height:400px;width:100%;margin-bottom:1rem}
+.bg-white{margin-bottom:1rem}
+.p-6{padding:1rem}
+table{width:100%;border-collapse:collapse;font-size:var(--table-body-font-size);background:white}
+.dataTables_wrapper{width:100%;overflow-x:auto}
+table.dataTable thead th,th{background:#2a2a2a;color:#ffffff;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;font-size:var(--table-header-font-size);padding:12px;text-align:left;border-bottom:2px solid #4a4a4a;border-right:1px solid #4a4a4a;white-space:nowrap;position:relative}
+table.dataTable tbody td,td{padding:10px;border-bottom:1px solid #e0e0e0;border-top:1px solid #e0e0e0;border-right:1px solid #e0e0e0;color:#475569;vertical-align:middle;background-color:#ffffff}
+table.dataTable tbody tr:last-child td{border-bottom:1px solid #e0e0e0}
+table.dataTable tbody td:last-child,table.dataTable thead th:last-child{border-right:none}
+table.dataTable tbody tr:hover,tr:hover{background-color:#f0f9ff !important;transition:background-color 0.15s ease}
+.table-container{background:white;border:1px solid var(--table-border);border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.02);width:100%;padding:0 0.5rem;margin-bottom:1rem}
+.table-header{background:var(--table-header-bg);padding:20px 24px;border-bottom:1px solid var(--table-border)}
+.table-header h3{margin:0;font-size:16px;font-weight:600;color:#1e293b}
+.table-header p{margin:8px 0 0 0;font-size:13px;color:var(--table-muted)}
+.table-content{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.table-hover tbody tr:hover{background:var(--table-hover-bg);transition:background-color 0.15s ease}
+.table-striped tbody tr:nth-child(even){background:var(--table-stripe-bg)}
+.table-compact{font-size:var(--table-compact-font-size)}
+.table-compact th,.table-compact td{padding:var(--table-compact-padding-y) var(--table-compact-padding-x)}
+.table-responsive{display:block;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;-ms-overflow-style:-ms-autohiding-scrollbar}
+.text-left{text-align:left !important}
+.text-center{text-align:center !important}
+.text-right{text-align:right !important}
+th.numeric,td.numeric{text-align:right;font-variant-numeric:tabular-nums}
+th.sortable{cursor:pointer;user-select:none;position:relative;padding-right:28px}
+th.sortable::after{content:'⇅';position:absolute;right:8px;opacity:0.3;font-size:10px}
+th.sortable:hover::after{opacity:0.6}
+th.sortable.asc::after{content:'↑';opacity:1}
+th.sortable.desc::after{content:'↓';opacity:1}
+.table-highlight,tr.highlight{background:var(--table-highlight-bg) !important;font-weight:600}
+.table-footer,tfoot tr{background:#f1f5f9;font-weight:600;border-top:2px solid var(--table-border)}
+.table-group-header{background:#1e293b;color:white;font-weight:600;text-transform:uppercase;font-size:10px;letter-spacing:1px}
+.value-positive,.text-success{color:var(--table-positive);font-weight:600}
+.value-negative,.text-danger{color:var(--table-negative);font-weight:600}
+.value-neutral,.text-warning{color:var(--table-neutral);font-weight:600}
+.value-muted,.text-muted{color:var(--table-muted);font-style:italic}
+.table-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;line-height:1.4}
+.table-badge.success{background:rgba(16,185,129,0.1);color:var(--table-positive)}
+.table-badge.danger{background:rgba(239,68,68,0.1);color:var(--table-negative)}
+.table-badge.warning{background:rgba(245,158,11,0.1);color:var(--table-neutral)}
+.data-table{font-size:11px;width:100%}
+.data-table th{background:#1e293b;color:white;padding:8px 4px;font-size:10px;font-weight:500;text-align:center;border:1px solid #334155}
+.data-table td{padding:6px 4px;font-size:11px;text-align:center;border:1px solid #f1f5f9}
+.data-table tbody tr:hover{background:var(--table-hover-bg)}
+.data-table .font-semibold{font-weight:600;color:#0f172a}
+.data-table .text-gray-400{color:#94a3b8;font-style:italic}
+.data-table-wrapper{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -20px;padding:0 20px}
+.table-empty{text-align:center;padding:48px 24px;color:#64748b}
+.table-empty-icon{font-size:48px;opacity:0.3;margin-bottom:16px}
+.table-empty-text{font-size:14px}
+.dataTables_wrapper .dataTables_length,.dataTables_wrapper .dataTables_filter,.dataTables_wrapper .dataTables_info,.dataTables_wrapper .dataTables_paginate{font-size:11px;box-shadow:inset 1px 1px 2px 0px rgba(255,255,255,.5);color:#64748b}
+.dataTables_wrapper .dataTables_filter input{background-color:rgba(255,255,255,0.1);border:1px solid rgba(0,255,255,0.3);color:#e0e0e0;border-radius:4px;padding:6px 12px;font-size:13px;transition:all 0.3s ease}
+.dataTables_wrapper .dataTables_filter input:focus{background-color:rgba(255,255,255,0.2);border-color:#00ffff;box-shadow:0 0 10px rgba(0,255,255,0.5);outline:none}
+.fuel-summary{border-radius:0.5rem;padding:1rem;margin-bottom:1rem}
+.dt-buttons .dt-button{background-color:#4A90E2;color:white;border-radius:4px;padding:8px 16px;font-size:14px;font-weight:bold;border:none;margin:3px;transition:background-color 0.3s ease,color 0.3s ease}
+.dt-buttons .dt-button:hover{background-color:#357ABD;color:#FFF}
+.dt-button-collection{background-color:#FFF;border:1px solid #CCC}
+.dt-button-collection .dt-button{background-color:#F5F5F5;color:#333}
+.dt-button-collection .dt-button:hover{background-color:#E0E0E0;color:#000}
+#total-import-time{background-color:red;color:white;border-radius:4px;padding:5px 10px}
+#map{height:420px;width:100%;border-radius:8px}
+select,input[type="text"]{background-color:rgba(255,255,255,0.1);border:1px solid rgba(0,255,255,0.3);color:#e0e0e0;transition:all 0.3s ease}
+select:focus,input[type="text"]:focus{background-color:rgba(255,255,255,0.2);border-color:#00ffff;box-shadow:0 0 10px rgba(0,255,255,0.5)}
+input:checked+.slider{background-color:#2563eb}
+input:checked+.slider:before{transform:translateX(20px)}
+.mapping-controls{background:#f8f9fa;border:1px solid #dee2e6;border-radius:8px;padding:20px;margin-bottom:20px}
+.form-check{margin-bottom:10px}
+.form-check-input:checked{background-color:#198754;border-color:#198754}
+.form-check-label{font-weight:500;color:#495057}
+.control-buttons{margin-top:15px;padding-top:15px;border-top:1px solid #dee2e6}
+.btn-outline-success{margin-right:10px}
+.mapping-title{color:#198754;font-weight:600;margin-bottom:15px}
+.mapping-description{font-size:0.9em;color:#6c757d;margin-bottom:15px}
+#aktualna-godzina{font-family:'Roboto Mono',monospace;letter-spacing:0.05em}
+.scramble-animation{animation:scrambleGlow 0.5s ease-in-out}
+@keyframes scrambleGlow{0%,100%{text-shadow:none}50%{text-shadow:0 0 10px rgba(59,130,246,0.5)}}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes tableRowFadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.animate-pulse{animation:pulse 2s ease-in-out}
+.accordion{transition:transform 0.3s,opacity 0.3s;will-change:transform}
+.loaded{opacity:1 !important}
+.table-row-animated{animation:tableRowFadeIn 0.3s ease-out}
+.table-sorting{transition:opacity 0.2s ease;opacity:0.7}
+.table-wrapper{display:flex;flex-wrap:wrap;margin:0 -0.5rem}
+.bg-white.rounded-md.shadow-lg.overflow-hidden button:hover{color:#3b82f6}
+@media(max-width:768px){
+.table-mobile-stack thead{display:none}
+.table-mobile-stack tr{display:block;margin-bottom:16px;border:1px solid var(--table-border);border-radius:8px;padding:12px}
+.table-mobile-stack td{display:flex;justify-content:space-between;padding:8px 0;border:none;border-bottom:1px solid #f1f5f9}
+.table-mobile-stack td:last-child{border-bottom:none}
+.table-mobile-stack td::before{content:attr(data-label);font-weight:600;color:#475569;font-size:12px}
+table.dataTable{font-size:0.9em}
+table.dataTable tbody td,table.dataTable thead th{padding:4px}
+.chart-box{height:420px}
+.button{padding:8px 16px}
+}
+@media(min-width:760px){
+.table-responsive{overflow-x:auto}
+.table-container{width:50%;padding:0 0.5rem;margin-bottom:1rem}
+}
+@media print{
+.table-container{page-break-inside:avoid;box-shadow:none;border:1px solid #ddd}
+th{background:#f5f5f5 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.table-striped tbody tr:nth-child(even){background:#fafafa !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+</style>
 </head>
 <body class="w-full">
-    <div class="w-full px-0 py-0">
-        <!-- DROPZONE -->
-        <div class="mb-2">
-            <div class="dropzone-container mb-2">
+<script>
+class PerformanceOptimizer{constructor(){this.cacheKey='DASH5.07.8_cache';this.cacheExpiry=24*60*60*1000}init(){this.lazyLoadImages();if(!document.getElementById('perf-styles')){const style=document.createElement('style');style.id='perf-styles';style.textContent='.accordion{transition:transform .3s,opacity .3s;will-change:transform}.loaded{opacity:1!important}';document.head.appendChild(style)}}lazyLoadImages(){const images=document.querySelectorAll('img[data-src]');if(!images.length)return;if('IntersectionObserver' in window){const imageObserver=new IntersectionObserver((entries,observer)=>{entries.forEach(entry=>{if(entry.isIntersecting){const img=entry.target;img.src=img.dataset.src;img.classList.add('loaded');img.removeAttribute('data-src');observer.unobserve(img)}})},{rootMargin:'50px'});images.forEach(img=>{img.style.opacity='0';img.style.transition='opacity 0.3s';imageObserver.observe(img)})}else{images.forEach(img=>{img.src=img.dataset.src;img.removeAttribute('data-src')})}}cache(key,data=null){const fullKey=`${this.cacheKey}_${key}`;if(data===null){try{const item=localStorage.getItem(fullKey);if(!item)return null;const{value,expiry}=JSON.parse(item);if(Date.now()>expiry){localStorage.removeItem(fullKey);return null}return value}catch{return null}}else{try{const item={value:data,expiry:Date.now()+this.cacheExpiry};localStorage.setItem(fullKey,JSON.stringify(item))}catch(e){if(e.name==='QuotaExceededError'){this.cleanCache();try{localStorage.setItem(fullKey,JSON.stringify(item))}catch{}}}}}cleanCache(){const keys=Object.keys(localStorage).filter(key=>key.startsWith(this.cacheKey));if(keys.length>10){keys.slice(0,Math.floor(keys.length/2)).forEach(key=>localStorage.removeItem(key))}}}
+function toggleAccordion(button){const closeOthers=document.getElementById('closeOthersCheckbox')?.checked;const content=button.nextElementSibling;if(content)content.classList.toggle('hidden');const icon=button.querySelector('i:last-child');if(icon)icon.classList.toggle('rotate-180');if(navigator.vibrate)setTimeout(()=>navigator.vibrate(5),0);if(closeOthers&&content&&!content.classList.contains('hidden')){document.querySelectorAll('.accordion-container').forEach(acc=>{if(!acc.contains(button)){const accButton=acc.querySelector('button');const accContent=accButton.nextElementSibling;const accIcon=accButton.querySelector('i:last-child');accContent?.classList.add('hidden');accIcon?.classList.remove('rotate-180')}})}}
+function toggleFullScreen(){const doc=document;const docEl=doc.documentElement;const requestFullScreen=docEl.requestFullscreen||docEl.mozRequestFullScreen||docEl.webkitRequestFullscreen||docEl.msRequestFullscreen;const exitFullScreen=doc.exitFullscreen||doc.mozCancelFullScreen||doc.webkitExitFullscreen||doc.msExitFullscreen;if(!doc.fullscreenElement&&!doc.mozFullScreenElement&&!doc.webkitFullscreenElement&&!doc.msFullscreenElement){requestFullScreen.call(docEl)}else{exitFullScreen.call(doc)}}
+function createFullScreenButton(){const btn=document.createElement('button');btn.innerHTML='⛶';btn.className='fixed top-4 right-4 z-50 w-10 h-10 bg-gray-800/70 border border-gray-600/30 rounded-md backdrop-blur-sm hover:bg-gray-700/80 transition-all duration-300 shadow-inner active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)] active:transform active:translate-y-0.5 text-gray-300 hover:text-white';btn.setAttribute('aria-label','Przełącz tryb pełnoekranowy');btn.addEventListener('click',toggleFullScreen);document.body.appendChild(btn)}
+const startAnimation=()=>{const timeDiv=document.getElementById('aktualna-godzina');if(!timeDiv)return;let timeIteration=0;const originalTime=timeDiv.innerText;timeDiv.classList.add('scramble-animation');const timeInterval=setInterval(()=>{timeDiv.innerText=originalTime.split("").map((letter,index)=>{if(index<timeIteration){return originalTime[index]}if(letter===':')return':';return String.fromCharCode(Math.floor(Math.random()*10)+48)}).join("");if(timeIteration>=originalTime.length){clearInterval(timeInterval);timeDiv.innerText=originalTime;setTimeout(()=>{timeDiv.classList.remove('scramble-animation')},500)}timeIteration+=1/3},40)};
+function aktualizujDateGodzine(){try{const dzisiaj=new Date();const dzienTygodnia=['Niedziela','Poniedziałek','Wtorek','Środa','Czwartek','Piątek','Sobota'][dzisiaj.getDay()];const dzien=dzisiaj.getDate();const miesiac=['stycznia','lutego','marca','kwietnia','maja','czerwca','lipca','sierpnia','września','października','listopada','grudnia'][dzisiaj.getMonth()];const rok=dzisiaj.getFullYear();const godzina=dzisiaj.getHours().toString().padStart(2,'0');const minuta=dzisiaj.getMinutes().toString().padStart(2,'0');const sekunda=dzisiaj.getSeconds().toString().padStart(2,'0');const godzinaElement=document.getElementById('aktualna-godzina');if(godzinaElement){godzinaElement.textContent=`${godzina}:${minuta}:${sekunda}`}const nazwaElement=document.getElementById('nazwa-dnia');if(nazwaElement){nazwaElement.textContent=dzienTygodnia}const dataElement=document.getElementById('aktualna-data');if(dataElement){dataElement.textContent=`${dzien} ${miesiac} ${rok}`}console.log(`⏰ Czas zaktualizowany: ${godzina}:${minuta}:${sekunda}`)}catch(error){console.error("❌ Wystąpił błąd podczas aktualizacji daty i godziny:",error)}}
+function aktualizujSekundy(){try{const sekunda=new Date().getSeconds().toString().padStart(2,'0');const elementCzasu=document.getElementById('aktualna-godzina');if(elementCzasu&&elementCzasu.textContent.length>=8){elementCzasu.textContent=elementCzasu.textContent.slice(0,-2)+sekunda}}catch(error){console.error("❌ Wystąpił błąd podczas aktualizacji sekund:",error)}}
+function checkSmoothScrollStatus(){console.log('\n🔍 Sprawdzanie statusu SmoothScroll...');const status={biblioteka:typeof SmoothScroll!=='undefined',obiektGlobalny:!!window.SmoothScroll,skryptWDOM:!!document.querySelector('script[src*="smoothscroll"]'),cssScrollBehavior:getComputedStyle(document.documentElement).scrollBehavior,przegladarka:navigator.userAgent};console.table(status);if(status.biblioteka){console.log('✅ SmoothScroll jest dostępny i można go używać')}else{console.log('❌ SmoothScroll nie jest dostępny')}if(status.cssScrollBehavior==='smooth'){console.warn('⚠️ CSS scroll-behavior jest ustawiony na "smooth" - może to konfliktować z biblioteką SmoothScroll')}return status}
+window.checkSmoothScrollStatus=checkSmoothScrollStatus;
+let scrambleInterval,secondsInterval,minuteInterval;
+function initializeClock(){if(scrambleInterval)clearInterval(scrambleInterval);if(secondsInterval)clearInterval(secondsInterval);if(minuteInterval)clearInterval(minuteInterval);aktualizujDateGodzine();secondsInterval=setInterval(aktualizujSekundy,1000);minuteInterval=setInterval(aktualizujDateGodzine,60000);scrambleInterval=setInterval(startAnimation,50000);console.log('🕐 Zegar został zainicjalizowany')}
+document.addEventListener('DOMContentLoaded',()=>{new PerformanceOptimizer().init();createFullScreenButton();initializeClock();document.querySelector('.accordion-container button i.fa-chart-line')?.closest('button')?.click();console.log('=== SmoothScroll Status ===');if(typeof SmoothScroll!=='undefined'){try{SmoothScroll({animationTime:200,stepSize:65,keyboardSupport:true,arrowScroll:50,pulseAlgorithm:true,pulseScale:4,pulseNormalize:1,touchpadSupport:true});console.log('✅ SmoothScroll: WSPIERANE');console.log('✅ Biblioteka została załadowana poprawnie');console.log('✅ SmoothScroll został zainicjalizowany');if(window.SmoothScroll){console.log('✅ Obiekt SmoothScroll jest dostępny globalnie')}}catch(error){console.error('❌ SmoothScroll: BŁĄD INICJALIZACJI');console.error('Szczegóły błędu:',error)}}else{console.error('❌ SmoothScroll: NIE WSPIERANE');console.error('❌ Biblioteka SmoothScroll nie została załadowana');const smoothScrollScript=document.querySelector('script[src*="smoothscroll"]');if(smoothScrollScript){console.log('ℹ️ Tag <script> dla SmoothScroll jest obecny w DOM:',smoothScrollScript.src)}else{console.log('ℹ️ Tag <script> dla SmoothScroll NIE został znaleziony w DOM')}}console.log('=========================')});
+document.addEventListener('touchstart',e=>{if(e.touches.length>1||(e.type==='touchstart'&&e.touches.length>1)||e.detail===2){e.preventDefault()}},{passive:false});
+function safeJSONParse(jsonString,defaultValue=null){try{return JSON.parse(jsonString)}catch(error){console.warn('Błąd parsowania JSON:',error);return defaultValue}}
+function safeSaveToLocalStorage(key,data){try{localStorage.setItem(key,JSON.stringify(data))}catch(error){console.error('Błąd zapisu do localStorage:',error);if(error instanceof DOMException&&error.name==='QuotaExceededError'){const keys=Object.keys(localStorage).slice(0,5);keys.forEach(k=>localStorage.removeItem(k));try{localStorage.setItem(key,JSON.stringify(data))}catch{}}}}
+function browserSupportCheck(){return{localStorage:!!window.localStorage,sessionStorage:!!window.sessionStorage,indexedDB:!!window.indexedDB,serviceWorker:'serviceWorker' in navigator,webWorkers:!!window.Worker,fullscreen:!!(document.fullscreenEnabled||document.mozFullScreenEnabled||document.webkitFullscreenEnabled||document.msFullscreenEnabled),smoothScroll:typeof SmoothScroll!=='undefined'}}
+console.log('Wsparcie przeglądarki:',browserSupportCheck());
+</script>
+<div class="w-full px-1 py-1">
+        <div class="mb-1">
+            <div class="mb-1">
                 <label for="file-input" id="dropzone" class="block border-2 border-dashed border-gray-300 rounded-md p-4 text-center cursor-pointer bg-white shadow hover:bg-blue-50 hover:border-blue-500 transition">
                     <i class="fas fa-cloud-upload-alt text-blue-500 text-2xl mb-2"></i>
                     <p class="text-gray-700 font-semibold">Kliknij lub przeciągnij i upuść pliki</p>
@@ -456,18 +171,17 @@
                 <p id="file-info" class="text-red-500 mt-2 text-sm"></p>
             </div>
 
-            <!-- HEADER SECTION -->
             <div class="bg-white rounded-md shadow p-2 mb-2 flex flex-col space-y-2">
                 <div class="flex items-center justify-between">
-                    <h1 class="text-3xl font-bold" id="aktualna-godzina" onclick="startAnimation();">00:00:00</h1>
+                    <h1 class="text-3xl font-bold cursor-pointer" id="aktualna-godzina" onclick="startAnimation();">00:00:00</h1>
                 </div>
-                <hr class="my-1" />
+                <hr class="my-1"/>
                 <div class="flex items-center text-xs justify-between">
                     <div class="flex items-center">
                         <p class="mr-2" id="nazwa-dnia"></p>
                         <p class="mr-2" id="aktualna-data"></p>
-                        <p id="total-import-time" class="bg-red-500 text-white rounded px-2 py-1 flex items-center">
-                            <i class="fas fa-gas-pump mr-1"></i>DASH5.07.ref
+                        <p id="total-import-time" class="bg-red-500 text-white rounded px-2 py-1 flex items-center text-xs">
+                            <i class="fas fa-gas-pump mr-1"></i>DASH5.08.1
                         </p>
                     </div>
                     <label class="flex items-center cursor-pointer">
@@ -478,814 +192,379 @@
                         <span class="ml-2 text-sm text-gray-600">Auto-zamykanie</span>
                     </label>
                 </div>
-
-                <!-- FILE LIST ACCORDION -->
                 <div class="accordion-container">
                     <button class="w-full px-2 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
                         <span><i class="fas fa-list-ul text-blue-500 mr-2"></i>Lista plików</span>
                         <i class="fas fa-chevron-down transition-transform duration-300"></i>
                     </button>
                     <div class="hidden p-0.5">
-                        <div class="flex items-center space-x-2 mb-2">
-                            <p class="text-gray-700"></p>
-                            <ul class="list-disc pl-4">
-                                <ul id="file-list" class="list-disc pl-2"></ul>
-                            </ul>
-                        </div>
+                        <ul id="file-list" class="list-disc pl-6 text-gray-700"></ul>
                     </div>
                 </div>
             </div>
-
-            <!-- ACCORDIONS -->
-            <div id="accordions-container">
-                <!-- Analiza wydatków kart FLOTA -->
-                <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
-                    <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
-                        <span><i class="fas fa-chart-line text-blue-500 mr-2"></i>Analiza wydatków kart FLOTA</span>
-                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                    </button>
-                    <div class="hidden p-0.5">
-                        <div class="grid grid-cols-2 md:grid-cols-2 gap-2 mb-0 px-2 py-0">
-                            <div class="fuel-summary bg-green-50">
-                                <h3 class="text-lg font-bold mb-2 text-green-600">
-                                    <i class="fas fa-gas-pump text-green-500 mr-2"></i>Benzyna
-                                </h3>
-                                <p class="text-sm">Okres: <span id="benzynaOkres" class="text-sm"></span></p>
-                                <p class="font-bold">Suma: <span id="benzynaSuma" class="font-bold text-green-600"></span></p>
-                            </div>
-                            <div class="fuel-summary bg-gray-50">
-                                <h3 class="text-lg font-semibold mb-2">
-                                    <i class="fas fa-gas-pump text-blue-500 mr-2"></i>Olej napędowy
-                                </h3>
-                                <p class="text-sm">Okres: <span id="olejNapedowyOkres" class="text-sm"></span></p>
-                                <p class="font-bold">Suma: <span id="olejNapedowySuma" class="font-bold"></span></p>
-                            </div>
-                        </div>
-                        <div id="dashboard-row-1" class="mb-0">
-                            <div id="chart-container-0"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Zaimportowane dane -->
-                <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
-                    <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
-                        <span><i class="fas fa-table text-blue-500 mr-2"></i>Zaimportowane dane</span>
-                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                    </button>
-                    <div class="hidden p-0.5">
-                        <h3 class="text-lg font-semibold mb-2">Wybierz kolumny:</h3>
-                        <select id="columnVisibility" multiple class="w-full border border-gray-300 rounded-md py-2 px-3 mb-2"></select>
-                        <div class="overflow-x-auto">
-                            <table id="example" class="w-full table-auto border-collapse border border-gray-300"></table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Podsumowanie i wykresy -->
-                <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
-                    <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
-                        <span><i class="fas fa-car text-blue-500 mr-2"></i>Podsumowanie i wykresy</span>
-                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                    </button>
-                    <div class="hidden p-0.5">
-                        <button id="generate-summary" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 mb-2">Wygeneruj</button>
-                        <div class="table-wrapper">
-                            <div id="summary-table-container" class="table-container"></div>
-                            <div id="summary2-table-container" class="table-container"></div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                            <div>
-                                <h3 class="text-lg font-semibold mb-2 text-gray-700">Zlicz:</h3>
-                                <select class="w-full bg-blue-50 border border-blue-300 rounded py-2 px-3 focus:outline-none" id="select-column">
-                                    <option value="Wartość netto">Wartość netto</option>
-                                    <option value="Ilość">Ilość</option>
-                                    <option value="activeCardsColumn">Liczba aktywnych kart</option>
-                                </select>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold mb-2 text-gray-700">Numer rejestracyjny</h3>
-                                <div class="flex items-center space-x-2">
-                                    <select class="w-1/2 bg-green-50 border border-green-300 rounded py-2 px-3 focus:outline-none" id="select-registration-number">
-                                        <option>Wybierz numer</option>
-                                    </select>
-                                    <input type="text" class="w-1/2 bg-green-50 border border-green-300 rounded py-2 px-3 focus:outline-none" id="search-registration-number" placeholder="Wyszukaj">
-                                </div>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold mb-2 text-gray-700">Grupa</h3>
-                                <div class="flex items-center space-x-2">
-                                    <select class="w-1/2 bg-purple-50 border border-purple-300 rounded py-2 px-3 focus:outline-none" id="select-group">
-                                        <option>Wybierz grupę</option>
-                                    </select>
-                                    <input type="text" class="w-1/2 bg-purple-50 border border-purple-300 rounded py-2 px-3 focus:outline-none" id="search-group" placeholder="Wyszukaj">
-                                </div>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold mb-2 text-gray-700">Numer karty</h3>
-                                <div class="flex items-center space-x-2">
-                                    <select class="w-1/2 bg-orange-50 border border-orange-300 rounded py-2 px-3 focus:outline-none" id="select-card-number">
-                                        <option>Wybierz numer karty</option>
-                                    </select>
-                                    <input type="text" class="w-1/2 bg-purple-50 border border-purple-300 rounded py-2 px-3 focus:outline-none" id="search-card-number" placeholder="Wyszukaj">
-                                </div>
-                            </div>
-                        </div>
-                        <div id="chart-container-1"></div>
-                        <div id="chart-container-2"></div>
-                        <div id="chart-container-3"></div>
-                    </div>
-                </div>
-
-                <!-- Summary Accordions -->
-                <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2" data-summary-id="3">
-                    <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
-                        <span><i class="fas fa-tachometer-alt text-blue-500 mr-2"></i>Podsumowanie paliwo - pojazd/miesiąc/Ilość/wartość/licznik</span>
-                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                    </button>
-                    <div class="hidden p-0.5">
-                        <button id="generateSummary3Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
-                        <div id="summary3-table-container"></div>
-                    </div>
-                </div>
-
-                <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2" data-summary-id="4">
-                    <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
-                        <span><i class="fas fa-tachometer-alt text-blue-500 mr-2"></i>Wskazania licznika (podział na miesiące)</span>
-                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                    </button>
-                    <div class="hidden p-0.5">
-                        <button id="generateSummary4Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
-                        <div id="summary4-table-container"></div>
-                    </div>
-                </div>
-
-                <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2" data-summary-id="5">
-                    <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
-                        <span><i class="fas fa-gas-pump text-blue-500 mr-2"></i>Zakupy wg stacji</span>
-                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                    </button>
-                    <div class="hidden p-0.5">
-                        <button id="generateSummary5Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
-                        <div id="summary5-table-container"></div>
-                    </div>
-                </div>
-
-                <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2" data-summary-id="6">
-                    <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
-                        <span><i class="fas fa-calendar-week text-blue-500 mr-2"></i>Transakcje Weekend #6</span>
-                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                    </button>
-                    <div class="hidden p-0.5">
-                        <button id="generateSummary6Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
-                        <div class="grid grid-cols-2 md:grid-cols-2 gap-2">
-                            <div class="bg-yellow-100 border border-yellow-200 p-2 rounded">
-                                <h3 class="text-lg font-bold mb-1 text-yellow-700">
-                                    <i class="fas fa-calendar-check text-yellow-500 mr-2"></i>Sobota
-                                </h3>
-                                <p class="font-bold">Suma: <span id="SaturdaySuma" class="font-bold text-yellow-700"></span></p>
-                            </div>
-                            <div class="bg-red-100 border border-red-200 p-2 rounded">
-                                <h3 class="text-lg font-bold mb-1 text-red-700">
-                                    <i class="fas fa-calendar-times text-red-500 mr-2"></i>Niedziela
-                                </h3>
-                                <p class="font-bold">Suma: <span id="SundaySuma" class="font-bold text-red-700"></span></p>
-                            </div>
-                        </div>
-                        <div id="month-selector-container" class="mb-4"></div>
-                        <div id="summary6-table-container" class="mt-2"></div>
-                    </div>
-                </div>
-
-                <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2" data-summary-id="7">
-                    <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
-                        <span><i class="fas fa-ellipsis-h text-blue-500 mr-2"></i>Inn..go #7</span>
-                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                    </button>
-                    <div class="hidden p-0.5">
-                        <button id="generateSummary7Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
-                        <div id="summary7-table-container"></div>
-                    </div>
-                </div>
-
-                <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2" data-summary-id="8">
-                    <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
-                        <span><i class="fas fa-ellipsis-h text-blue-500 mr-2"></i>Inn..go #8</span>
-                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                    </button>
-                    <div class="hidden p-0.5">
-                        <button id="generateSummary8Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
-                        <div id="summary8-table-container"></div>
-                    </div>
-                </div>
-
-                <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2" data-summary-id="9">
-                    <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
-                        <span><i class="fas fa-chart-pie text-blue-500 mr-2"></i>Statystyki produktów #9 #10</span>
-                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                    </button>
-                    <div class="hidden p-0.5">
-                        <button id="generateSummary9Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
-                        <div id="summary9-table-container"></div>
-                        <div id="summary10-table-container"></div>
-                    </div>
-                </div>
-
-                <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2" data-summary-id="11">
-                    <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
-                        <span><i class="fas fa-clipboard-list text-blue-500 mr-2"></i>Statystyki produktów wg pojazdu/#11 #12</span>
-                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                    </button>
-                    <div class="hidden p-0.5">
-                        <button id="generateSummary11Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
-                        <div id="summary11-table-container"></div>
-                        <div id="summary12-table-container"></div>
-                    </div>
-                </div>
-
-                <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2" data-summary-id="13">
-                    <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
-                        <span><i class="fas fa-burn text-blue-500 mr-2"></i>Spalanie</span>
-                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                    </button>
-                    <div class="hidden p-0.5">
-                        <button id="generateSummary13Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
-                        <div id="summary13-table-container"></div>
-                    </div>
-                </div>
-
-                <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2" data-summary-id="14">
-                    <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
-                        <span><i class="fas fa-burn text-blue-500 mr-2"></i>Średnia cena</span>
-                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                    </button>
-                    <div class="hidden p-0.5">
-                        <button id="generateSummary14Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
-                        <div id="summary14-table-container"></div>
-                    </div>
-                </div>
-
-                <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2" data-summary-id="15">
-                    <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
-                        <span><i class="fas fa-burn text-blue-500 mr-2"></i>Różnice</span>
-                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                    </button>
-                    <div class="hidden p-0.5">
-                        <button id="generateSummary15Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
-                        <div id="summary15-table-container"></div>
-                    </div>
-                </div>
-
-                <!-- Settings Accordion -->
-                <div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
-                    <button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
-                        <span><i class="fas fa-cog text-blue-500 mr-2"></i>Ustawienia</span>
-                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                    </button>
-                    <div class="hidden p-0.5">
-                        <div class="container mt-4">
-                            <div class="mapping-controls">
-                                <h5 class="mapping-title">
-                                    <i class="fas fa-cogs"></i> Ustawienia mapowania danych
-                                </h5>
-                                <p class="mapping-description">
-                                    Kontroluj sposób przetwarzania i mapowania danych z importowanych plików
-                                </p>
-                                
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="toggle-header-mapping" checked>
-                                            <label class="form-check-label" for="toggle-header-mapping">
-                                                Mapowanie nagłówków kolumn
-                                            </label>
-                                            <div class="form-text">
-                                                Automatyczne mapowanie nazw kolumn (np. "NrFaktury" → "Nr karty")
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="toggle-group-mapping" checked>
-                                            <label class="form-check-label" for="toggle-group-mapping">
-                                                Mapowanie grup produktów
-                                            </label>
-                                            <div class="form-text">
-                                                Mapowanie nazw grup (np. "01" → "Olej napędowy")
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-md-6">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="toggle-group-code-mapping" checked>
-                                            <label class="form-check-label" for="toggle-group-code-mapping">
-                                                Mapowanie kodów grup
-                                            </label>
-                                            <div class="form-text">
-                                                Mapowanie kodów księgowych (np. "401-115-01-1" → "Paliwo")
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="toggle-registration-normalization" checked>
-                                            <label class="form-check-label" for="toggle-registration-normalization">
-                                                Normalizacja numerów rejestracyjnych
-                                            </label>
-                                            <div class="form-text">
-                                                Usuwanie spacji i mapowanie numerów (np. "CBXXXXX" → "CMGXXXXX")
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="control-buttons">
-                                    <button type="button" class="btn btn-outline-success btn-sm" onclick="toggleAllMappings(true)">
-                                        <i class="fas fa-check-circle"></i> Włącz wszystkie
-                                    </button>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="toggleAllMappings(false)">
-                                        <i class="fas fa-times-circle"></i> Wyłącz wszystkie
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Generate All Button -->
-            <div class="w-full px-2 py-2">
-                <button id="generateAllTablesButton" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300">Gen all</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- External Scripts -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.tailwindcss.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.dataTables.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.bootstrap.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.colVis.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
-    <script src="https://cdn.datatables.net/rowgroup/1.1.4/js/dataTables.rowGroup.min.js"></script>
-    <script src="https://cdn.datatables.net/staterestore/1.3.0/js/dataTables.stateRestore.js"></script>
-    <script src="https://cdn.datatables.net/scroller/2.4.0/js/dataTables.scroller.min.js"></script>
-    <script src="https://cdn.datatables.net/fixedheader/4.0.1/js/dataTables.fixedHeader.min.js"></script>
-    <script src="https://cdn.datatables.net/plug-ins/1.13.7/pagination/extjs.js"></script>
-    <script src="https://cdn.datatables.net/plug-ins/1.13.7/dataRender/ellipsis.js"></script>
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
-    <script src="https://code.highcharts.com/modules/export-data.js"></script>
-    <script src="https://code.highcharts.com/modules/offline-exporting.js"></script>
-    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
-    <script src="https://code.highcharts.com/highcharts-more.js"></script>
-    <script src="https://code.highcharts.com/highcharts-3d.js"></script>
-    <script src="https://code.highcharts.com/modules/series-label.js"></script>
-    <script src="https://code.highcharts.com/stock/highstock.js"></script>
-    <script src="https://code.highcharts.com/modules/stock.js"></script>
-    <script src="https://code.highcharts.com/modules/xrange.js"></script>
-    <script src="https://code.highcharts.com/modules/drilldown.js"></script>
-    <script src="https://code.highcharts.com/themes/gray.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sparklines/2.1.2/jquery.sparkline.min.js"></script>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
-    <script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/smoothscroll-for-websites@1.4.10/SmoothScroll.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chroma-js@2.1.1/chroma.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-
-    <!-- Main Application Script -->
+<div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+<button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+<span><i class="fas fa-chart-line text-blue-500 mr-2"></i>Analiza wydatków kart FLOTA</span>
+<i class="fas fa-chevron-down transition-transform duration-300"></i>
+</button>
+<div class="hidden p-0.5">
+<div class="grid grid-cols-2 md:grid-cols-2 gap-2 mb-0 px-2 py-0">
+<div class="fuel-summary bg-green-50">
+<h3 class="text-lg font-bold mb-2 text-green-600">
+<i class="fas fa-gas-pump text-green-500 mr-2"></i>Benzyna
+</h3>
+<p class="text-sm">Okres: <span id="benzynaOkres" class="text-sm"></span></p>
+<p class="font-bold">Suma: <span id="benzynaSuma" class="font-bold text-green-600"></span></p>
+</div>
+<div class="fuel-summary bg-gray-50">
+<h3 class="text-lg font-semibold mb-2">
+<i class="fas fa-gas-pump text-blue-500 mr-2"></i>Olej napędowy
+</h3>
+<p class="text-sm">Okres: <span id="olejNapedowyOkres" class="text-sm"></span></p>
+<p class="font-bold">Suma: <span id="olejNapedowySuma" class="font-bold"></span></p>
+</div>
+</div>
+<div id="dashboard-row-1" class="mb-0">
+<div id="chart-container-0"></div>
+</div>
+</div>
+</div>
+<div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+<button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+<span><i class="fas fa-table text-blue-500 mr-2"></i>Zaimportowane dane</span>
+<i class="fas fa-chevron-down transition-transform duration-300"></i>
+</button>
+<div class="hidden p-0.5">
+<h3 class="text-lg font-semibold mb-2">Wybierz kolumny:</h3>
+<select id="columnVisibility" multiple class="w-full border border-gray-300 rounded-md py-2 px-3 mb-2"></select>
+<div class="overflow-x-auto">
+<table id="example" class="w-full table-auto table-hover"></table>
+</div>
+</div>
+</div>
+<div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+<button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+<span><i class="fas fa-car text-blue-500 mr-2"></i>Podsumowanie i wykresy</span>
+<i class="fas fa-chevron-down transition-transform duration-300"></i>
+</button>
+<div class="hidden p-0.5">
+<button id="generate-summary" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 mb-2">Wygeneruj</button>
+<div class="table-wrapper">
+<div id="summary-table-container" class="table-container"></div>
+<div id="summary2-table-container" class="table-container"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4">
+<div>
+<h3 class="text-lg font-semibold mb-2 text-gray-700">Zlicz:</h3>
+<select class="form-control bg-blue-50 border-blue-300" id="select-column">
+<option value="Wartość netto">Wartość netto</option>
+<option value="Ilość">Ilość</option>
+<option value="activeCardsColumn">Liczba aktywnych kart</option>
+<option value="transactionCount">Ilość transakcji</option>
+</select>
+</div>
+<div>
+<h3 class="text-lg font-semibold mb-2 text-gray-700">Numer rejestracyjny</h3>
+<div class="flex space-x-2">
+<select class="form-control bg-green-50 border-green-300 w-1/2" id="select-registration-number">
+<option>Wybierz numer</option>
+</select>
+<input type="text" class="form-control bg-green-50 border-green-300 w-1/2" id="search-registration-number" placeholder="Wyszukaj">
+</div>
+</div>
+<div>
+<h3 class="text-lg font-semibold mb-2 text-gray-700">Grupa</h3>
+<div class="flex space-x-2">
+<select class="form-control bg-purple-50 border-purple-300 w-1/2" id="select-group">
+<option>Wybierz grupę</option>
+</select>
+<input type="text" class="form-control bg-purple-50 border-purple-300 w-1/2" id="search-group" placeholder="Wyszukaj">
+</div>
+</div>
+<div>
+<h3 class="text-lg font-semibold mb-2 text-gray-700">Numer karty</h3>
+<div class="flex space-x-2">
+<select class="form-control bg-orange-50 border-orange-300 w-1/2" id="select-card-number">
+<option>Wybierz numer karty</option>
+</select>
+<input type="text" class="form-control bg-orange-50 border-orange-300 w-1/2" id="search-card-number" placeholder="Wyszukaj">
+</div>
+</div>
+</div>
+<div id="chart-container-1"></div>
+<div id="chart-container-2"></div>
+<div id="chart-container-3"></div>
+</div>
+</div>
+<div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+<button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+<span><i class="fas fa-tachometer-alt text-blue-500 mr-2"></i>Podsumowanie paliwo - pojazd/miesiąc/Ilość/wartość/licznik</span>
+<i class="fas fa-chevron-down transition-transform duration-300"></i>
+</button>
+<div class="hidden p-0.5">
+<button id="generateSummary3Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
+<div id="summary3-table-container" class="table-responsive"></div>
+</div>
+</div>
+<div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+<button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+<span><i class="fas fa-tachometer-alt text-blue-500 mr-2"></i>Wskazania licznika (podział na miesiące)</span>
+<i class="fas fa-chevron-down transition-transform duration-300"></i>
+</button>
+<div class="hidden p-0.5">
+<button id="generateSummary4Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
+<div id="summary4-table-container" class="table-responsive"></div>
+</div>
+</div>
+<div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+<button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+<span><i class="fas fa-gas-pump text-blue-500 mr-2"></i>Zakupy wg stacji</span>
+<i class="fas fa-chevron-down transition-transform duration-300"></i>
+</button>
+<div class="hidden p-0.5">
+<button id="generateSummary5Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
+<div id="summary5-table-container" class="table-responsive"></div>
+</div>
+</div>
+<div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+<button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+<span><i class="fas fa-calendar-week text-blue-500 mr-2"></i>Transakcje Weekend #6</span>
+<i class="fas fa-chevron-down transition-transform duration-300"></i>
+</button>
+<div class="hidden p-0.5">
+<button id="generateSummary6Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
+<div class="grid grid-cols-2 md:grid-cols-2 gap-2">
+<div class="bg-yellow-100 border border-yellow-200 p-2 rounded">
+<h3 class="text-lg font-bold mb-1 text-yellow-700">
+<i class="fas fa-calendar-check text-yellow-500 mr-2"></i>Sobota
+</h3>
+<p class="font-bold">Suma: <span id="SaturdaySuma" class="font-bold text-yellow-700"></span></p>
+</div>
+<div class="bg-red-100 border border-red-200 p-2 rounded">
+<h3 class="text-lg font-bold mb-1 text-red-700">
+<i class="fas fa-calendar-times text-red-500 mr-2"></i>Niedziela
+</h3>
+<p class="font-bold">Suma: <span id="SundaySuma" class="font-bold text-red-700"></span></p>
+</div>
+</div>
+<div id="month-selector-container" class="mb-4"></div>
+<div id="summary6-table-container" class="mt-2 table-responsive"></div>
+</div>
+</div>
+<div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+<button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+<span><i class="fas fa-ellipsis-h text-blue-500 mr-2"></i>Inn..go #7</span>
+<i class="fas fa-chevron-down transition-transform duration-300"></i>
+</button>
+<div class="hidden p-0.5">
+<button id="generateSummary7Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
+<div id="summary7-table-container" class="table-responsive"></div>
+</div>
+</div>
+<div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+<button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+<span><i class="fas fa-ellipsis-h text-blue-500 mr-2"></i>Inn..go #8</span>
+<i class="fas fa-chevron-down transition-transform duration-300"></i>
+</button>
+<div class="hidden p-0.5">
+<button id="generateSummary8Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
+<div id="summary8-table-container" class="table-responsive"></div>
+</div>
+</div>
+<div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+<button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+<span><i class="fas fa-chart-pie text-blue-500 mr-2"></i>Statystyki produktów #9 #10</span>
+<i class="fas fa-chevron-down transition-transform duration-300"></i>
+</button>
+<div class="hidden p-0.5">
+<button id="generateSummary9Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
+<div id="summary9-table-container" class="table-responsive"></div>
+<div id="summary10-table-container" class="table-responsive"></div>
+</div>
+</div>
+<div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+<button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+<span><i class="fas fa-clipboard-list text-blue-500 mr-2"></i>Statystyki produktów wg pojazdu/#11 #12</span>
+<i class="fas fa-chevron-down transition-transform duration-300"></i>
+</button>
+<div class="hidden p-0.5">
+<button id="generateSummary11Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
+<div id="summary11-table-container" class="table-responsive"></div>
+<div id="summary12-table-container" class="table-responsive"></div>
+</div>
+</div>
+<div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+<button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+<span><i class="fas fa-burn text-blue-500 mr-2"></i>Spalanie</span>
+<i class="fas fa-chevron-down transition-transform duration-300"></i>
+</button>
+<div class="hidden p-0.5">
+<button id="generateSummary13Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
+<div id="summary13-table-container" class="table-responsive"></div>
+</div>
+</div>
+<div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+<button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+<span><i class="fas fa-burn text-blue-500 mr-2"></i>Średnia cena</span>
+<i class="fas fa-chevron-down transition-transform duration-300"></i>
+</button>
+<div class="hidden p-0.5">
+<button id="generateSummary14Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
+<div id="summary14-table-container" class="table-responsive"></div>
+</div>
+</div>
+<div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+<button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+<span><i class="fas fa-burn text-blue-500 mr-2"></i>Różnice</span>
+<i class="fas fa-chevron-down transition-transform duration-300"></i>
+</button>
+<div class="hidden p-0.5">
+<button id="generateSummary15Button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300 mb-2">Wygeneruj</button>
+<div id="summary15-table-container" class="table-responsive"></div>
+</div>
+</div>
+<div class="accordion-container bg-white rounded-md shadow-lg overflow-hidden mb-2">
+<button class="w-full px-4 py-3 text-left font-semibold flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
+<span><i class="fas fa-cog text-blue-500 mr-2"></i>Ustawienia</span>
+<i class="fas fa-chevron-down transition-transform duration-300"></i>
+</button>
+<div class="hidden p-0.5">
+<div class="container mt-4">
+<div class="mapping-controls">
+<h5 class="mapping-title">
+<i class="fas fa-cogs"></i> Ustawienia mapowania danych
+</h5>
+<p class="mapping-description">Kontroluj sposób przetwarzania i mapowania danych z importowanych plików</p>
+<div class="row">
+<div class="col-md-6">
+<div class="form-check form-switch">
+<input class="form-check-input" type="checkbox" id="toggle-header-mapping" checked>
+<label class="form-check-label" for="toggle-header-mapping">Mapowanie nagłówków kolumn</label>
+<div class="form-text">Automatyczne mapowanie nazw kolumn (np. "NrFaktury" → "Nr karty")</div>
+</div>
+<div class="form-check form-switch">
+<input class="form-check-input" type="checkbox" id="toggle-group-mapping" checked>
+<label class="form-check-label" for="toggle-group-mapping">Mapowanie grup produktów</label>
+<div class="form-text">Mapowanie nazw grup (np. "01" → "Olej napędowy")</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="form-check form-switch">
+<input class="form-check-input" type="checkbox" id="toggle-group-code-mapping" checked>
+<label class="form-check-label" for="toggle-group-code-mapping">Mapowanie kodów grup</label>
+<div class="form-text">Mapowanie kodów księgowych (np. "401-115-01-1" → "Paliwo")</div>
+</div>
+<div class="form-check form-switch">
+<input class="form-check-input" type="checkbox" id="toggle-registration-normalization" checked>
+<label class="form-check-label" for="toggle-registration-normalization">Normalizacja numerów rejestracyjnych</label>
+<div class="form-text">Usuwanie spacji i mapowanie numerów (np. "CBXXXXX" → "CMGXXXXX")</div>
+</div>
+</div>
+</div>
+<div class="control-buttons">
+<button type="button" class="btn btn-outline-success btn-sm" onclick="toggleAllMappings(true)">
+<i class="fas fa-check-circle"></i> Włącz wszystkie
+</button>
+<button type="button" class="btn btn-outline-secondary btn-sm" onclick="toggleAllMappings(false)">
+<i class="fas fa-times-circle"></i> Wyłącz wszystkie
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="w-full px-2 py-2">
+<button id="generateAllTablesButton" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-all duration-300">Gen all</button>
+</div>
+</div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.tailwindcss.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.dataTables.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.colVis.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/rowgroup/1.1.4/js/dataTables.rowGroup.min.js"></script>
+<script src="https://cdn.datatables.net/staterestore/1.3.0/js/dataTables.stateRestore.js"></script>
+<script src="https://cdn.datatables.net/scroller/2.4.0/js/dataTables.scroller.min.js"></script>
+<script src="https://cdn.datatables.net/fixedheader/4.0.1/js/dataTables.fixedHeader.min.js"></script>
+<script src="https://cdn.datatables.net/plug-ins/1.13.7/pagination/extjs.js"></script>
+<script src="https://cdn.datatables.net/plug-ins/1.13.7/dataRender/ellipsis.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/offline-exporting.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/highcharts-3d.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/modules/stock.js"></script>
+<script src="https://code.highcharts.com/modules/xrange.js"></script>
+<script src="https://code.highcharts.com/modules/drilldown.js"></script>
+<script src="https://code.highcharts.com/themes/gray.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
+<script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chroma-js@2.1.1/chroma.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <script>
-        // Constants and Configuration
-        const APP_CONFIG = {
-            version: '1.0.1',
-            cacheExpiration: 24 * 60 * 60 * 1000,
-            animationDuration: 300,
-            debounceDelay: 250
-        };
+        // Funkcje pomocnicze dla przełączników
+        function toggleAllMappings(enabled) {
+            document.getElementById('toggle-header-mapping').checked = enabled;
+            document.getElementById('toggle-group-mapping').checked = enabled;
+            document.getElementById('toggle-group-code-mapping').checked = enabled;
+            document.getElementById('toggle-registration-normalization').checked = enabled;
+            
+            ['toggle-header-mapping', 'toggle-group-mapping', 'toggle-group-code-mapping', 'toggle-registration-normalization'].forEach(id => {
+                document.getElementById(id).dispatchEvent(new Event('change'));
+            });
+        }
 
-        // Performance Optimizer Module
-        const PerformanceModule = (() => {
-            class PerformanceOptimizer {
-                constructor() {
-                    this.storage = window.localStorage;
-                    this.cacheVersion = APP_CONFIG.version;
-                    this.CACHE_EXPIRATION = APP_CONFIG.cacheExpiration;
-                }
-
-                saveToCache(key, data) {
-                    try {
-                        const cacheData = {
-                            version: this.cacheVersion,
-                            timestamp: Date.now(),
-                            data
-                        };
-                        this.storage.setItem(key, JSON.stringify(cacheData));
-                    } catch (error) {
-                        console.error('Błąd zapisu cache:', error);
-                        if (error instanceof DOMException && error.name === 'QuotaExceededError') {
-                            this.clearOldestCacheEntries();
-                            this.saveToCache(key, data);
-                        }
-                    }
-                }
-
-                getFromCache(key) {
-                    try {
-                        const cached = this.storage.getItem(key);
-                        if (!cached) return null;
-                        
-                        const parsed = JSON.parse(cached);
-                        const isValid = parsed.version === this.cacheVersion && 
-                                      (Date.now() - parsed.timestamp) < this.CACHE_EXPIRATION;
-                        
-                        return isValid ? parsed.data : null;
-                    } catch (error) {
-                        console.error('Błąd odczytu cache:', error);
-                        return null;
-                    }
-                }
-
-                clearOldestCacheEntries() {
-                    const entries = Object.keys(this.storage)
-                        .map(key => {
-                            try {
-                                const data = JSON.parse(this.storage.getItem(key));
-                                return { key, timestamp: data.timestamp || 0 };
-                            } catch {
-                                return { key, timestamp: 0 };
-                            }
-                        })
-                        .sort((a, b) => a.timestamp - b.timestamp);
-                    
-                    entries.slice(0, 3).forEach(entry => this.storage.removeItem(entry.key));
-                }
-
-                preloadCriticalResources() {
-                    const styles = this.getFromCache('additionalStyles') || 
-                        `.accordion{transition:all .3s ease;will-change:transform,opacity}.fullscreen-btn{position:fixed;top:10px;right:10px;z-index:1000}`;
-                    
-                    if (!this.getFromCache('additionalStyles')) {
-                        this.saveToCache('additionalStyles', styles);
-                    }
-                    
-                    const styleTag = document.createElement('style');
-                    styleTag.textContent = styles;
-                    document.head.appendChild(styleTag);
-                }
-
-                lazyLoadImages() {
-                    if ('IntersectionObserver' in window) {
-                        const imageObserver = new IntersectionObserver((entries) => {
-                            entries.forEach(entry => {
-                                if (entry.isIntersecting) {
-                                    const img = entry.target;
-                                    img.src = img.dataset.src;
-                                    img.removeAttribute('data-src');
-                                    img.classList.add('loaded');
-                                    imageObserver.unobserve(img);
-                                }
-                            });
-                        }, {
-                            rootMargin: '100px 0px',
-                            threshold: 0.01
-                        });
-
-                        document.querySelectorAll('img[data-src]').forEach(img => {
-                            img.style.opacity = '0';
-                            img.addEventListener('load', () => img.style.opacity = '1');
-                            imageObserver.observe(img);
-                        });
-                    } else {
-                        document.querySelectorAll('img[data-src]').forEach(img => {
-                            img.src = img.dataset.src;
-                            img.removeAttribute('data-src');
-                        });
-                    }
-                }
-
-                deferNonCriticalScripts() {
-                    document.querySelectorAll('script[data-defer]').forEach(script => {
-                        const newScript = document.createElement('script');
-                        newScript.src = script.dataset.defer;
-                        newScript.defer = true;
-                        document.body.appendChild(newScript);
-                    });
-                }
-
-                init() {
-                    this.preloadCriticalResources();
-                    this.lazyLoadImages();
-                    this.deferNonCriticalScripts();
-                }
-            }
-
-            return {
-                init: () => new PerformanceOptimizer().init()
+        function saveMappingSettings() {
+            const settings = {
+                headerMapping: document.getElementById('toggle-header-mapping').checked,
+                groupMapping: document.getElementById('toggle-group-mapping').checked,
+                groupCodeMapping: document.getElementById('toggle-group-code-mapping').checked,
+                registrationNormalization: document.getElementById('toggle-registration-normalization').checked
             };
-        })();
+            localStorage.setItem('mappingSettings', JSON.stringify(settings));
+        }
 
-        // UI Controller Module
-        const UIController = (() => {
-            function toggleAccordion(button) {
-                const closeOthers = document.getElementById('closeOthersCheckbox')?.checked;
-                const content = button.nextElementSibling;
-                
-                if (content) {
-                    content.classList.toggle('hidden');
+        function loadMappingSettings() {
+            const saved = localStorage.getItem('mappingSettings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+                document.getElementById('toggle-header-mapping').checked = settings.headerMapping ?? true;
+                document.getElementById('toggle-group-mapping').checked = settings.groupMapping ?? true;
+                document.getElementById('toggle-group-code-mapping').checked = settings.groupCodeMapping ?? true;
+                document.getElementById('toggle-registration-normalization').checked = settings.registrationNormalization ?? true;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMappingSettings();
+            
+            ['toggle-header-mapping', 'toggle-group-mapping', 'toggle-group-code-mapping', 'toggle-registration-normalization'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('change', saveMappingSettings);
                 }
-                
-                const icon = button.querySelector('i:last-child');
-                if (icon) {
-                    icon.classList.toggle('rotate-180');
-                }
-                
-                // Haptic feedback
-                if (navigator.vibrate) {
-                    setTimeout(() => navigator.vibrate(5), 0);
-                }
+            });
+        });
 
-                // Close other accordions if enabled
-                if (closeOthers && content && !content.classList.contains('hidden')) {
-                    document.querySelectorAll('.accordion-container').forEach(acc => {
-                        if (!acc.contains(button)) {
-                            const accButton = acc.querySelector('button');
-                            const accContent = accButton?.nextElementSibling;
-                            const accIcon = accButton?.querySelector('i:last-child');
-                            
-                            accContent?.classList.add('hidden');
-                            accIcon?.classList.remove('rotate-180');
-                        }
-                    });
-                }
-            }
-
-            function toggleFullScreen() {
-                const doc = document;
-                const docEl = doc.documentElement;
-                
-                const requestFullScreen = docEl.requestFullscreen || 
-                                        docEl.mozRequestFullScreen || 
-                                        docEl.webkitRequestFullscreen || 
-                                        docEl.msRequestFullscreen;
-                
-                const exitFullScreen = doc.exitFullscreen || 
-                                     doc.mozCancelFullScreen || 
-                                     doc.webkitExitFullscreen || 
-                                     doc.msExitFullscreen;
-                
-                const isFullScreen = !!(doc.fullscreenElement || 
-                                      doc.mozFullScreenElement || 
-                                      doc.webkitFullscreenElement || 
-                                      doc.msFullscreenElement);
-                
-                if (!isFullScreen) {
-                    requestFullScreen.call(docEl);
-                } else {
-                    exitFullScreen.call(doc);
-                }
-            }
-
-            function createFullScreenButton() {
-                const btn = document.createElement('button');
-                btn.innerHTML = '⛶';
-                btn.className = 'fixed top-4 right-4 z-50 w-10 h-10 bg-gray-800/70 border border-gray-600/30 rounded-md backdrop-blur-sm hover:bg-gray-700/80 transition-all duration-300 shadow-inner active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)] active:transform active:translate-y-0.5 text-gray-300 hover:text-white';
-                btn.setAttribute('aria-label', 'Przełącz tryb pełnoekranowy');
-                btn.addEventListener('click', toggleFullScreen);
-                document.body.appendChild(btn);
-            }
-
-            return {
-                toggleAccordion,
-                toggleFullScreen,
-                createFullScreenButton
-            };
-        })();
-
-        // Utility Functions Module
-        const Utils = (() => {
-            function safeJSONParse(jsonString, defaultValue = null) {
-                try {
-                    return JSON.parse(jsonString);
-                } catch (error) {
-                    console.warn('Błąd parsowania JSON:', error);
-                    return defaultValue;
-                }
-            }
-
-            function debounce(func, wait = APP_CONFIG.debounceDelay) {
-                let timeout;
-                return function executedFunction(...args) {
-                    const later = () => {
-                        clearTimeout(timeout);
-                        func(...args);
-                    };
-                    clearTimeout(timeout);
-                    timeout = setTimeout(later, wait);
-                };
-            }
-
-            function safeSaveToLocalStorage(key, data) {
-                try {
-                    localStorage.setItem(key, JSON.stringify(data));
-                } catch (error) {
-                    console.error('Błąd zapisu do localStorage:', error);
-                    if (error instanceof DOMException && error.name === 'QuotaExceededError') {
-                        clearOldLocalStorageEntries();
-                        localStorage.setItem(key, JSON.stringify(data));
-                    }
-                }
-            }
-
-            function clearOldLocalStorageEntries(maxEntries = 50) {
-                const entries = Object.keys(localStorage)
-                    .map(key => {
-                        try {
-                            const data = JSON.parse(localStorage.getItem(key));
-                            return { key, timestamp: data.timestamp || 0 };
-                        } catch {
-                            return { key, timestamp: 0 };
-                        }
-                    })
-                    .sort((a, b) => a.timestamp - b.timestamp);
-                
-                const entriesToRemove = entries.slice(0, entries.length - maxEntries);
-                entriesToRemove.forEach(entry => localStorage.removeItem(entry.key));
-            }
-
-            function browserSupportCheck() {
-                return {
-                    localStorage: !!window.localStorage,
-                    sessionStorage: !!window.sessionStorage,
-                    indexedDB: !!window.indexedDB,
-                    serviceWorker: 'serviceWorker' in navigator,
-                    webWorkers: !!window.Worker,
-                    fullscreen: !!(document.fullscreenEnabled || 
-                                 document.mozFullScreenEnabled || 
-                                 document.webkitFullscreenEnabled || 
-                                 document.msFullscreenEnabled)
-                };
-            }
-
-            return {
-                safeJSONParse,
-                debounce,
-                safeSaveToLocalStorage,
-                clearOldLocalStorageEntries,
-                browserSupportCheck
-            };
-        })();
-
-        // Settings Module
-        const SettingsModule = (() => {
-            function toggleAllMappings(enabled) {
-                const toggleIds = [
-                    'toggle-header-mapping',
-                    'toggle-group-mapping',
-                    'toggle-group-code-mapping',
-                    'toggle-registration-normalization'
-                ];
-                
-                toggleIds.forEach(id => {
-                    const element = document.getElementById(id);
-                    if (element) {
-                        element.checked = enabled;
-                        element.dispatchEvent(new Event('change'));
-                    }
-                });
-            }
-
-            function saveMappingSettings() {
-                const settings = {
-                    headerMapping: document.getElementById('toggle-header-mapping')?.checked ?? true,
-                    groupMapping: document.getElementById('toggle-group-mapping')?.checked ?? true,
-                    groupCodeMapping: document.getElementById('toggle-group-code-mapping')?.checked ?? true,
-                    registrationNormalization: document.getElementById('toggle-registration-normalization')?.checked ?? true
-                };
-                Utils.safeSaveToLocalStorage('mappingSettings', settings);
-            }
-
-            function loadMappingSettings() {
-                const saved = localStorage.getItem('mappingSettings');
-                if (saved) {
-                    const settings = Utils.safeJSONParse(saved, {});
-                    
-                    document.getElementById('toggle-header-mapping').checked = settings.headerMapping ?? true;
-                    document.getElementById('toggle-group-mapping').checked = settings.groupMapping ?? true;
-                    document.getElementById('toggle-group-code-mapping').checked = settings.groupCodeMapping ?? true;
-                    document.getElementById('toggle-registration-normalization').checked = settings.registrationNormalization ?? true;
-                }
-            }
-
-            function initSettings() {
-                loadMappingSettings();
-                
-                const toggleIds = [
-                    'toggle-header-mapping',
-                    'toggle-group-mapping',
-                    'toggle-group-code-mapping',
-                    'toggle-registration-normalization'
-                ];
-                
-                toggleIds.forEach(id => {
-                    const element = document.getElementById(id);
-                    if (element) {
-                        element.addEventListener('change', saveMappingSettings);
-                    }
-                });
-            }
-
-            return {
-                toggleAllMappings,
-                initSettings
-            };
-        })();
-
-        // Event Handlers Module
-        const EventHandlers = (() => {
-            function preventZoom(event) {
-                if (!event.target.closest('.no-zoom')) {
-                    event.preventDefault();
-                }
-            }
-
-            function initEventListeners() {
-                // Prevent zooming
-                document.addEventListener('dblclick', preventZoom);
-                document.addEventListener('gesturestart', preventZoom);
-                
-                // Touch events
-                document.addEventListener('touchstart', e => {
-                    if (e.touches.length > 1 || 
-                        (e.type === 'touchstart' && e.touches.length > 1) || 
-                        e.detail === 2) {
-                        e.preventDefault();
-                    }
-                }, { passive: false });
-            }
-
-            return {
-                initEventListeners
-            };
-        })();
-
-        // Main Application Initialization
-        const App = (() => {
-            function init() {
-                // Initialize modules
-                PerformanceModule.init();
-                UIController.createFullScreenButton();
-                SettingsModule.initSettings();
-                EventHandlers.initEventListeners();
-                
-                // Auto-open first accordion
-                const firstAccordion = document.querySelector('.accordion-container button i.fa-chart-line');
-                if (firstAccordion) {
-                    firstAccordion.closest('button')?.click();
-                }
-                
-                // Initialize SmoothScroll
-                if (typeof SmoothScroll !== 'undefined') {
-                    SmoothScroll({
-                        animationTime: 200,
-                        stepSize: 65,
-                        keyboardSupport: true,
-                        arrowScroll: 50,
-                        pulseAlgorithm: true,
-                        pulseScale: 4,
-                        pulseNormalize: 1,
-                        touchpadSupport: true
-                    });
-                }
-                
-                // Log browser support
-                console.log('Wsparcie przeglądarki:', Utils.browserSupportCheck());
-            }
-
-            return {
-                init
-            };
-        })();
-
-        // Initialize application when DOM is ready
-        document.addEventListener('DOMContentLoaded', App.init);
-
-        // Export global functions
-        window.toggleAccordion = UIController.toggleAccordion;
-        window.toggleFullScreen = UIController.toggleFullScreen;
-        window.toggleAllMappings = SettingsModule.toggleAllMappings;
-        window.safeJSONParse = Utils.safeJSONParse;
-        window.debounce = Utils.debounce;
-        window.safeSaveToLocalStorage = Utils.safeSaveToLocalStorage;
-    </script>
+        document.addEventListener('dblclick', e => e.preventDefault());
+        document.addEventListener('gesturestart', e => e.preventDefault());
+</script>
 <script>
 // Global variables - dodane zmienne dla przełączników mapowania
 let mainTable, summaryTable, summary2Table;
@@ -1300,6 +579,7 @@ const cardNumbersWithDescriptions = {};
 const uniqueRegistrationNumbers = new Set();
 const uniqueGroups = new Set();
 const activeCardsColumn = 'Nr karty';
+const transactionCountColumn = 'TRANSACTION_COUNT'; // Nowa zmienna dla opcji liczenia transakcji
 
 // Zmienne kontrolujące mapowania - domyślnie wszystkie aktywne
 let enableHeaderMapping = true;
@@ -1487,6 +767,7 @@ function mapRegistrationNumber(regNumber) {
   'WB227CA': 'CMG64W7',
   'DLU3049C': 'CMG99W3',
   'CB752LH': 'CMG4725A',
+  'BI121EC': 'CMG17W4',
 '_ADOWARKA': 'ŁADOWARKA',
 'WÓZEKWIDŁO': 'WÓZEK',
 'WOZEK': 'WÓZEK',
@@ -1527,7 +808,9 @@ $(document).ready(() => {
     initializeMappingToggles();
     
     const files = [];
-    let totalImportTime = 0;
+    let fileImportTimes = new Map(); // Przechowuje czasy importu poszczególnych plików
+    let globalImportStartTime = null; // Czas rozpoczęcia całego importu
+    let globalImportEndTime = null; // Czas zakończenia całego importu
     let importedFileCount = 0;
     const $fileInput = $('#file-input');
     const $fileList = $('#file-list');
@@ -1575,7 +858,7 @@ $(document).ready(() => {
             files.push(file);
             const li = document.createElement('li');
             li.className = 'list-group-item';
-            li.innerHTML = `${file.name} <span class="import-time"></span> 
+            li.innerHTML = `${file.name} <span class="import-time" data-filename="${file.name}"></span> 
                             <button class='btn btn-danger btn-sm remove-file' data-index='${files.length}'>Usuń</button>`;
             fragment.appendChild(li);
         });
@@ -1583,13 +866,25 @@ $(document).ready(() => {
     }
 
     function processFiles(newFiles) {
-        Promise.all(newFiles.map((file, index) => readAndRenderDataAsync(file, index + 1)))
-            .then(() => {
-                console.log("Wszystkie pliki zostały przetworzone.");
-                updateImportSummary();
-            })
-            .catch(error => alert(`Wystąpił błąd podczas przetwarzania plików: ${error.message}`));
-    }
+    // Zapisz czas rozpoczęcia całego procesu importu
+    globalImportStartTime = performance.now();
+    
+    // Prosty status "Importowanie..."
+    $totalImportTime.text(`⏳ Importowanie ${newFiles.length} ${newFiles.length === 1 ? 'pliku' : 'plików'}...`);
+
+    Promise.all(newFiles.map((file, index) => readAndRenderDataAsync(file, files.length - newFiles.length + index)))
+        .then(() => {
+            // Zapisz czas zakończenia całego procesu importu
+            globalImportEndTime = performance.now();
+            console.log("Wszystkie pliki zostały przetworzone.");
+            updateImportSummary();
+        })
+        .catch(error => {
+            globalImportEndTime = performance.now();
+            alert(`Wystąpił błąd podczas przetwarzania plików: ${error.message}`);
+            updateImportSummary();
+        });
+}
 
     // Funkcja inicjalizująca obsługę przełączników mapowania
     function initializeMappingToggles() {
@@ -1648,7 +943,7 @@ $(document).ready(() => {
     });
 
     async function readAndRenderDataAsync(file, index) {
-        const startTime = performance.now();
+        const fileStartTime = performance.now();
         try {
             const arrayBuffer = await readAsArrayBufferAsync(file);
             const encoding = await detectFileEncoding(arrayBuffer);
@@ -1669,7 +964,7 @@ $(document).ready(() => {
                     encoding: encoding
                 });
                 
-                processWorkbook(workbook, index, startTime);
+                processWorkbook(workbook, file, fileStartTime);
             } else {
                 const workbook = XLSX.read(arrayBuffer, {
                     type: 'array',
@@ -1677,15 +972,19 @@ $(document).ready(() => {
                     dateNF: 'yyyy-mm-dd'
                 });
                 
-                processWorkbook(workbook, index, startTime);
+                processWorkbook(workbook, file, fileStartTime);
             }
         } catch (error) {
             console.error("Błąd odczytu pliku:", error);
-            alert(`Wystąpił błąd podczas importu pliku: ${error.message}`);
+            // Zapisz czas nawet w przypadku błędu
+            const fileEndTime = performance.now();
+            const fileImportTime = ((fileEndTime - fileStartTime) / 1000).toFixed(2);
+            fileImportTimes.set(file.name, fileImportTime);
+            throw error;
         }
     }
 
-    function processWorkbook(workbook, index, startTime) {
+    function processWorkbook(workbook, file, fileStartTime) {
         const sheetName = workbook.SheetNames[0];
         let newData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {
             raw: false,
@@ -1750,20 +1049,59 @@ $(document).ready(() => {
 
         columnIndices = Object.fromEntries(newData[0].map((header, index) => [header, index]));
 
-        processNewData(newData, index);
+        processNewData(newData, file);
 
-        const endTime = performance.now();
-        const importTime = ((endTime - startTime) / 1000).toFixed(2);
-        totalImportTime += parseFloat(importTime);
+        const fileEndTime = performance.now();
+        const fileImportTime = ((fileEndTime - fileStartTime) / 1000).toFixed(2);
+        
+        // Zapisz czas importu tego pliku
+        fileImportTimes.set(file.name, fileImportTime);
         importedFileCount++;
 
-        $fileList.find(`li:nth-child(${index}) .import-time`).text(`(Czas importu: ${importTime}s)`);
-        updateImportSummary();
+        // Aktualizuj wyświetlanie czasu dla tego konkretnego pliku
+        $(`.import-time[data-filename="${file.name}"]`).text(`(${fileImportTime}s)`);
+        
+        // Nie wywołuj updateImportSummary tutaj - zostanie wywołana po zakończeniu wszystkich plików
     }
 
     function updateImportSummary() {
-        $totalImportTime.text(`✔️Zaimportowano ${importedFileCount} ${importedFileCount === 1 ? 'plik' : 'pliki/ów'}: ${totalImportTime.toFixed(2)}s`);
+    if (globalImportStartTime && globalImportEndTime) {
+        const totalRealTime = ((globalImportEndTime - globalImportStartTime) / 1000).toFixed(2);
+        
+        // Oblicz średni czas importu na plik
+        const avgTimePerFile = fileImportTimes.size > 0 
+            ? (Array.from(fileImportTimes.values())
+                .reduce((sum, time) => sum + parseFloat(time), 0) / fileImportTimes.size).toFixed(2)
+            : 0;
+        
+        // Oblicz sumę czasów (dla porównania)
+        const sumOfTimes = Array.from(fileImportTimes.values())
+            .reduce((sum, time) => sum + parseFloat(time), 0).toFixed(2);
+        
+        // Zwięzła informacja w HTML
+        $totalImportTime.text(`✔️ Import ${importedFileCount} ${importedFileCount === 1 ? 'pliku' : 'plików'}: ${totalRealTime}s`);
+        
+        // Szczegółowe informacje tylko w konsoli
+        console.log('=== SZCZEGÓŁY IMPORTU ===');
+        console.log(`📁 Liczba plików: ${importedFileCount}`);
+        console.log(`⏱️ Czas całkowity: ${totalRealTime}s`);
+        console.log(`📊 Średni czas/plik: ${avgTimePerFile}s`);
+        console.log(`Σ Suma czasów indywidualnych: ${sumOfTimes}s`);
+        
+        if (fileImportTimes.size > 1) {
+            const timeSaved = (sumOfTimes - totalRealTime).toFixed(2);
+            console.log(`🔄 Oszczędność czasu (import równoległy): ${timeSaved}s`);
+            console.log(`📈 Przyspieszenie: ${(sumOfTimes / totalRealTime).toFixed(2)}x`);
+        }
+        
+        console.log('📋 Czasy importu poszczególnych plików:');
+        fileImportTimes.forEach((time, filename) => {
+            console.log(`   • ${filename}: ${time}s`);
+        });
+        
+        console.log('========================');
     }
+}
 
     function processNewData(newData, index) {
         const surnameColumnIndex = columnIndices['Nazwisko'];
@@ -1951,28 +1289,172 @@ const getTableButtons = () => {
                     extend: 'csv', 
                     charset: 'UTF-8', 
                     bom: true, 
+                    filename: function() {
+                        const today = new Date();
+                        const dateStr = today.getFullYear() + '-' + 
+                                      String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                                      String(today.getDate()).padStart(2, '0');
+                        return 'MainTable_' + dateStr;
+                    },
                     exportOptions: { columns: ':visible' } 
                 },
                 { 
                     extend: 'excel', 
-                    title: null, 
-                    exportOptions: { columns: ':visible' } 
+                    title: null,
+                    filename: function() {
+                        const today = new Date();
+                        const dateStr = today.getFullYear() + '-' + 
+                                      String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                                      String(today.getDate()).padStart(2, '0');
+                        return 'MainTable_' + dateStr;
+                    },
+                    exportOptions: { columns: ':visible' },
+                    customize: function(xlsx) {
+                        // Eksport Excel domyślnie zachowa nagłówki kolumn
+                        // Opcjonalnie możemy dostosować style
+                        var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                        
+                        // Pogrubienie nagłówków (pierwszy wiersz)
+                        $('row:first c', sheet).each(function() {
+                            $(this).attr('s', '2'); // styl pogrubiony
+                        });
+                    }
                 },
                 {
                     extend: 'pdfHtml5',
                     orientation: 'landscape',
                     pageSize: 'A4',
-                    title: 'List PDF',
+                    title: null,
+                    filename: function() {
+                        const today = new Date();
+                        const dateStr = today.getFullYear() + '-' + 
+                                      String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                                      String(today.getDate()).padStart(2, '0');
+                        return 'MainTable_' + dateStr;
+                    },
                     exportOptions: { columns: ':visible' },
-                    customize: doc => {
-                        doc.styles.title = { 
-                            color: 'blue', 
-                            fontSize: '25', 
-                            bold: true 
+                    customize: function(doc) {
+                        // Usunięcie obiektu tytułu z dokumentu PDF
+                        if (doc.content[0].text) {
+                            doc.content.splice(0, 1);
+                        }
+                        
+                        // Pobranie liczby kolumn
+                        var columnCount = doc.content[0].table.body[0].length;
+                        
+                        // Bardziej agresywne dostosowanie wielkości czcionki
+                        var fontSize = 10;
+                        if (columnCount > 20) {
+                            fontSize = 5;
+                        } else if (columnCount > 18) {
+                            fontSize = 5.5;
+                        } else if (columnCount > 16) {
+                            fontSize = 6;
+                        } else if (columnCount > 14) {
+                            fontSize = 6.5;
+                        } else if (columnCount > 12) {
+                            fontSize = 7;
+                        } else if (columnCount > 10) {
+                            fontSize = 8;
+                        } else if (columnCount > 8) {
+                            fontSize = 9;
+                        }
+                        
+                        // Ustawienie stylu dla całej tabeli
+                        doc.styles.tableHeader = {
+                            bold: true,
+                            fontSize: fontSize,
+                            color: 'white',           // Biała czcionka
+                            fillColor: '#050952',     // Ciemnoniebieski kolor tła
+                            alignment: 'center'
                         };
-                        doc.content[1].table.widths = 
-                            Array(doc.content[1].table.body[0].length + 1)
-                                .join('*').split('');
+                        
+                        doc.styles.tableBodyEven = {
+                            fontSize: fontSize
+                        };
+                        
+                        doc.styles.tableBodyOdd = {
+                            fontSize: fontSize,
+                            fillColor: '#f5f5f5'
+                        };
+                        
+                        // Zwiększony lewy margines (20pt), pozostałe bez zmian
+                        doc.pageMargins = [20, 10, 10, 10];
+                        
+                        // Opcja 1: Pozwól pdfmake automatycznie dopasować kolumny
+                        if (columnCount > 12) {
+                            // Dla dużej liczby kolumn użyj automatycznego dopasowania
+                            doc.content[0].table.widths = Array(columnCount).fill('auto');
+                        } else {
+                            // Dla mniejszej liczby kolumn użyj równomiernego podziału
+                            doc.content[0].table.widths = Array(columnCount).fill('*');
+                        }
+                        
+                        // Zawijanie tekstu w komórkach z mniejszymi marginesami
+                        doc.content[0].table.body.forEach(function(row, rowIndex) {
+                            row.forEach(function(cell) {
+                                cell.noWrap = false;
+                                // Mniejsze marginesy dla oszczędności miejsca
+                                cell.margin = [1, 2, 1, 2];
+                                
+                                // Skrócenie długich tekstów
+                                if (cell.text && cell.text.length > 30) {
+                                    cell.text = cell.text.substring(0, 27) + '...';
+                                }
+                                
+                                // Wyrównanie
+                                if (rowIndex === 0) {
+                                    cell.alignment = 'center';
+                                    // Dodatkowe wymuszenie koloru dla nagłówków
+                                    cell.fillColor = '#050952';
+                                    cell.color = 'white';
+                                } else if (cell.text && !isNaN(cell.text)) {
+                                    cell.alignment = 'right';
+                                } else {
+                                    cell.alignment = 'left';
+                                }
+                            });
+                        });
+                        
+                        // Uproszczony layout tabeli
+                        doc.content[0].layout = {
+                            hLineWidth: function(i, node) {
+                                return (i === 0 || i === 1 || i === node.table.body.length) ? 0.5 : 0.25;
+                            },
+                            vLineWidth: function(i, node) {
+                                return 0.25;
+                            },
+                            hLineColor: function(i, node) {
+                                return '#999999';
+                            },
+                            vLineColor: function(i, node) {
+                                return '#cccccc';
+                            },
+                            paddingLeft: function(i, node) {
+                                return 2;
+                            },
+                            paddingRight: function(i, node) {
+                                return 2;
+                            },
+                            paddingTop: function(i, node) {
+                                return 1;
+                            },
+                            paddingBottom: function(i, node) {
+                                return 1;
+                            }
+                        };
+                        
+                        // Dodatkowa opcja: tryb "fit to page" dla bardzo szerokich tabel
+                        if (columnCount > 15) {
+                            doc.pageOrientation = 'landscape';
+                            doc.content[0].fontSize = fontSize - 1; // Dodatkowe zmniejszenie
+                            
+                            // Opcja kompresji kolumn
+                            doc.content[0].table.dontBreakRows = true;
+                            doc.content[0].table.keepWithHeaderRows = 1;
+                        }
+                        
+                        // Usunięta sekcja footer - brak informacji o dacie generowania
                     }
                 }
             ]
@@ -2318,9 +1800,11 @@ function updateSelectOptions(selectId, options) {
         });
     }
 
+    // Zaktualizowana funkcja generateSummary2Table z obsługą opcji "Ilość transakcji"
     function generateSummary2Table() {
         const mainTableData = mainTable.rows().data().toArray();
         const summary2Data = {};
+        
         mainTableData.forEach(row => {
             const rowRegistrationNumber = row[columnIndices['Nr rejestracyjny']];
             const rowCardNumber = row[columnIndices['Nr karty']];
@@ -2329,14 +1813,29 @@ function updateSelectOptions(selectId, options) {
                 const date = row[columnIndices['Data realizacji']];
                 const value = parseFloat(row[columnIndices[valueColumn]]);
                 const group = row[columnIndices['Grupa prod']];
-                if (!isNaN(value) && date && (selectedGroup === '' || group === selectedGroup || selectedGroup === 'Wszystkie grupy')) {
+                
+                if (date && (selectedGroup === '' || group === selectedGroup || selectedGroup === 'Wszystkie grupy')) {
                     const year = new Date(date).getFullYear();
                     const month = new Date(date).getMonth() + 1;
+                    
                     if (!summary2Data[month]) summary2Data[month] = {};
-                    if (!summary2Data[month][year]) summary2Data[month][year] = { 'value': 0, 'activeCardsCount': new Set() };
-                    if (valueColumn === activeCardsColumn) {
+                    if (!summary2Data[month][year]) {
+                        summary2Data[month][year] = { 
+                            'value': 0, 
+                            'activeCardsCount': new Set(),
+                            'transactionCount': 0  // Dodane pole dla liczenia transakcji
+                        };
+                    }
+                    
+                    // Logika zliczania w zależności od wybranej opcji
+                    if (valueColumn === transactionCountColumn) {
+                        // Zliczanie transakcji - każdy wiersz to jedna transakcja
+                        summary2Data[month][year]['transactionCount'] += 1;
+                    } else if (valueColumn === activeCardsColumn) {
+                        // Zliczanie unikalnych kart
                         summary2Data[month][year]['activeCardsCount'].add(row[columnIndices[activeCardsColumn]]);
-                    } else {
+                    } else if (!isNaN(value)) {
+                        // Sumowanie wartości liczbowych
                         summary2Data[month][year]['value'] += value;
                     }
                 }
@@ -2344,10 +1843,20 @@ function updateSelectOptions(selectId, options) {
         });
 
         const uniqueYears = Array.from(new Set(mainTableData.map(row => new Date(row[columnIndices['Data realizacji']]).getFullYear()))).sort((a, b) => a - b);
+        
+        // Funkcja do obliczania wartości dla kolorowania
         const coloringData = uniqueYears.reduce((acc, year) => {
             const yearValues = Array(12).fill(0).map((_, month) => {
                 const monthData = summary2Data[month + 1]?.[year];
-                return monthData ? (valueColumn !== activeCardsColumn ? monthData['value'] : monthData['activeCardsCount'].size) : 0;
+                if (!monthData) return 0;
+                
+                if (valueColumn === transactionCountColumn) {
+                    return monthData['transactionCount'];
+                } else if (valueColumn === activeCardsColumn) {
+                    return monthData['activeCardsCount'].size;
+                } else {
+                    return monthData['value'];
+                }
             });
             acc[year] = findExtremesIndices(yearValues);
             return acc;
@@ -2361,7 +1870,18 @@ function updateSelectOptions(selectId, options) {
             tableBody += `<tr><td>${getMonthName(month)}</td>`;
             uniqueYears.forEach(year => {
                 const monthData = summary2Data[month]?.[year];
-                const value = monthData ? (valueColumn !== activeCardsColumn ? monthData['value'].toFixed(2) : monthData['activeCardsCount'].size.toFixed(0)) : '0';
+                let value = '0';
+                
+                if (monthData) {
+                    if (valueColumn === transactionCountColumn) {
+                        value = monthData['transactionCount'].toFixed(0);
+                    } else if (valueColumn === activeCardsColumn) {
+                        value = monthData['activeCardsCount'].size.toFixed(0);
+                    } else {
+                        value = monthData['value'].toFixed(2);
+                    }
+                }
+                
                 let cellStyle = '';
                 if (coloringData[year].highest.has(month - 1)) {
                     cellStyle = ' style="color: red;"';
@@ -2459,9 +1979,19 @@ function updateSelectOptions(selectId, options) {
         $(`#search-${item}`).on('input', () => updateUILists());
     });
 
+    // Zaktualizowany event handler z obsługą opcji "Ilość transakcji"
     $("#select-column, #select-group, #select-registration-number, #select-card-number").on("change", function() {
         selectedColumn = $("#select-column").val();
-        valueColumn = selectedColumn === 'activeCardsColumn' ? activeCardsColumn : selectedColumn;
+        
+        // Ustawienie odpowiedniej kolumny wartości
+        if (selectedColumn === 'activeCardsColumn') {
+            valueColumn = activeCardsColumn;
+        } else if (selectedColumn === 'transactionCount') {
+            valueColumn = transactionCountColumn;
+        } else {
+            valueColumn = selectedColumn;
+        }
+        
         selectedGroup = $("#select-group").val();
         selectedRegistrationNumber = $("#select-registration-number").val();
         selectedCardNumber = $("#select-card-number").val();
@@ -2469,6 +1999,7 @@ function updateSelectOptions(selectId, options) {
         renderCharts();
     });
 
+    // Zaktualizowana funkcja renderCharts z obsługą opcji "Ilość transakcji"
     function renderCharts() {
         if (!mainTable || !$.fn.DataTable.isDataTable(mainTable)) {
             console.error("Tabela mainTable nie jest zainicjowana lub nie zawiera danych.");
@@ -2496,18 +2027,27 @@ function updateSelectOptions(selectId, options) {
             const group = row[columnIndices['Grupa prod']];
             const cardNumber = row[columnIndices['Nr karty']];
 
-            if (!isNaN(value) && date) {
+            if (date) {
                 const year = date.getFullYear();
                 const month = date.getMonth();
                 const category = `${year}-${('0' + (month + 1)).slice(-2)}`;
                 allMonths.add(category);
 
                 if (!seriesData.has(group)) seriesData.set(group, new Map());
-                if (!seriesData.get(group).has(category)) seriesData.get(group).set(category, { value: 0, activeCardsCount: new Set() });
+                if (!seriesData.get(group).has(category)) {
+                    seriesData.get(group).set(category, { 
+                        value: 0, 
+                        activeCardsCount: new Set(),
+                        transactionCount: 0  // Dodane pole dla liczenia transakcji
+                    });
+                }
 
-                if (valueColumn === activeCardsColumn) {
+                // Logika zliczania w zależności od wybranej opcji
+                if (valueColumn === transactionCountColumn) {
+                    seriesData.get(group).get(category).transactionCount += 1;
+                } else if (valueColumn === activeCardsColumn) {
                     seriesData.get(group).get(category).activeCardsCount.add(cardNumber);
-                } else {
+                } else if (!isNaN(value)) {
                     seriesData.get(group).get(category).value += value;
                 }
             }
@@ -2516,16 +2056,30 @@ function updateSelectOptions(selectId, options) {
         const chartData = Array.from(seriesData).map(([group, groupData]) => ({
             name: group,
             data: Array.from(allMonths).sort().map(category => {
-                const value = groupData.has(category)
-                    ? (valueColumn !== activeCardsColumn
-                        ? groupData.get(category).value
-                        : groupData.get(category).activeCardsCount.size)
-                    : 0;
+                let value = 0;
+                if (groupData.has(category)) {
+                    const categoryData = groupData.get(category);
+                    if (valueColumn === transactionCountColumn) {
+                        value = categoryData.transactionCount;
+                    } else if (valueColumn === activeCardsColumn) {
+                        value = categoryData.activeCardsCount.size;
+                    } else {
+                        value = categoryData.value;
+                    }
+                }
                 return [Date.parse(category), parseFloat(value.toFixed(2))];
             })
         }));
 
-        const chartTitle = `${valueColumn} - ${selectedGroup || 'Wszystkie grupy'} - ${selectedCardNumber ? (cardNumbersWithDescriptions[selectedCardNumber.toUpperCase()] || selectedCardNumber) : (selectedRegistrationNumber || 'Wszystkie auta')}`;
+        // Ustawienie odpowiedniego tytułu wykresu
+        let columnDisplayName = valueColumn;
+        if (valueColumn === transactionCountColumn) {
+            columnDisplayName = 'Ilość transakcji';
+        } else if (valueColumn === activeCardsColumn) {
+            columnDisplayName = 'Liczba aktywnych kart';
+        }
+
+        const chartTitle = `${columnDisplayName} - ${selectedGroup || 'Wszystkie grupy'} - ${selectedCardNumber ? (cardNumbersWithDescriptions[selectedCardNumber.toUpperCase()] || selectedCardNumber) : (selectedRegistrationNumber || 'Wszystkie auta')}`;
 
         const chartOptions = {
             chart: {
@@ -2545,7 +2099,7 @@ function updateSelectOptions(selectId, options) {
                 dateTimeLabelFormats: { month: '%b' }
             },
             yAxis: {
-                title: { text: valueColumn, style: { color: '#a3ff12' } },
+                title: { text: columnDisplayName, style: { color: '#a3ff12' } },
                 labels: { style: { fontSize: '12px', color: '#ffffff' } }
             },
             tooltip: { shared: true, crosshairs: true },
@@ -5481,7 +5035,6 @@ document.addEventListener('DOMContentLoaded', function() {
             identifyRegistrationStatus();
         }}
     ];
-
     // Now add configuration for the "Generate All Tables" button
     const generateAllButtonConfig = {
         id: "generateAllTablesButton",
@@ -6054,60 +5607,10 @@ document.cookie = "Expires=" + formattedExpiryDate + "; path=/";
 // Informacja o ustawieniu nagłówka
 console.log("Nagłówek Expires został ustawiony na:", formattedExpiryDate);
 
-
 // Funkcja do ustawienia języka dla wszystkich tabel DataTables
 $.fn.dataTable.defaults.language = {
     url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/pl.json'
 };
-
-let isAnimating = false;
-
-const startAnimation = () => {
-    if (isAnimating) return;
-    isAnimating = true;
-    
-    const timeDiv = document.getElementById('aktualna-godzina');
-    const originalTime = timeDiv.innerText;
-    let iteration = 0;
-    
-    const animate = setInterval(() => {
-        timeDiv.innerText = originalTime
-            .split("")
-            .map((char, i) => i < iteration ? originalTime[i] : String.fromCharCode(Math.floor(Math.random() * 26) + 65))
-            .join("");
-            
-        if (iteration >= originalTime.length) {
-            clearInterval(animate);
-            timeDiv.innerText = originalTime;
-            isAnimating = false;
-        }
-        iteration += 1/3;
-    }, 30);
-};
-
-const updateTime = () => {
-    if (isAnimating) return;
-    
-    const now = new Date();
-    const time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
-    document.getElementById('aktualna-godzina').textContent = time;
-};
-
-const updateDate = () => {
-    const now = new Date();
-    const days = ['niedziela', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota'];
-    const months = ['stycznia', 'lutego', 'marca', 'kwietnia', 'maja', 'czerwca', 'lipca', 'sierpnia', 'września', 'października', 'listopada', 'grudnia'];
-    
-    document.getElementById('nazwa-dnia').textContent = days[now.getDay()].charAt(0).toUpperCase() + days[now.getDay()].slice(1);
-    document.getElementById('aktualna-data').textContent = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-};
-
-// Uruchomienie
-setInterval(updateTime, 1000);
-setInterval(updateDate, 60000);
-setInterval(startAnimation, 50000);
-updateTime();
-updateDate();
 
 function showInfo() {
             alert(`Weryfikacja licznika:
@@ -6128,8 +5631,6 @@ Fioletowy (purple) – Wartość została skorygowana na podstawie wartości z n
 Zielony (green) – Wartość została skorygowana, gdy brak było zarówno poprawnych wartości z poprzedniego, jak i następnego miesiąca. Wartość została ustalona na podstawie mediany lub poprawionych wartości w miesiącu.`);
 }
 </script>
-</body>
-</html>
 
 <!-- Minimalistyczny przycisk i blok z pełną treścią -->
 <button class="toggle-button" onclick="toggleVisibility(this)">+</button>
@@ -6203,7 +5704,7 @@ Zielony (green) – Wartość została skorygowana, gdy brak było zarówno popr
   }
 </script>
 
-<!-- Minimalny styl, nie zwęża strony -->
+<!-- Minimalny styl -->
 <style>
   .toggle-button {
     background-color: #007bff;
@@ -6241,3 +5742,5 @@ Zielony (green) – Wartość została skorygowana, gdy brak było zarówno popr
     margin-bottom: 1rem;
   }
 </style>
+</body>
+</html>
