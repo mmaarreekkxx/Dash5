@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#e8e8e8">
+  <title>PSFimport — Analiza KPI</title>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#e8e8e8;--card:#fff;--ink:#0a0a0a;--ink2:#555;--muted:#999;
+      --green:#4ade80;--green-d:#22c55e;--border:#e0e0e0;--border-l:#ebebeb;
+      --r:18px;--rs:12px;
+    }
+    html{height:-webkit-fill-available}
+    body{
+      font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+      background:var(--bg);color:var(--ink);
+      min-height:100vh;min-height:-webkit-fill-available;
+      overflow-x:hidden;-webkit-font-smoothing:antialiased;
+    }
+
+    /* ══════ NAV ══════ */
+    .nav{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:10px 24px;background:var(--card);
+      border-bottom:1px solid var(--border-l);
+      position:sticky;top:0;z-index:100;
+    }
+    .nav-l,.nav-r{display:flex;align-items:center;gap:12px}
+    .logo{width:36px;height:36px;flex-shrink:0}
+    .nav-title{font-size:14px;font-weight:700;letter-spacing:-.3px}
+    .nav-ver{
+      font-size:10px;color:var(--muted);font-weight:400;
+      background:var(--bg);padding:2px 7px;border-radius:100px;margin-left:4px;
+    }
+    .ib{
+      width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border);
+      display:flex;align-items:center;justify-content:center;cursor:pointer;
+      background:#fff;transition:.15s;flex-shrink:0;position:relative;
+    }
+    .ib:hover{border-color:#999;background:var(--bg)}
+    .ib svg,.ib i{width:14px;height:14px;color:var(--ink2);font-size:13px;stroke:var(--ink2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .ib.danger:hover{border-color:#f87171;background:#fef2f2}
+    .ib.danger:hover i,.ib.danger:hover svg{color:#ef4444;stroke:#ef4444}
+    .file-badge{
+      position:absolute;top:-4px;right:-4px;
+      background:var(--ink);color:#fff;font-size:9px;font-weight:700;
+      width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      border:2px solid #fff;display:none;
+    }
+
+    /* ══════ LAYOUT ══════ */
+    .wrap{display:flex;height:calc(100vh - 57px);overflow:hidden}
+    /* Zmniejszone marginesy po lewej i prawej (z 28px na 12px) */
+    .main{flex:1;overflow-y:auto;overflow-x:hidden;padding:24px 12px 60px;-webkit-overflow-scrolling:touch}
+
+    /* ══════ PAGE HEADER ══════ */
+    .hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:24px;flex-wrap:wrap}
+    .hdr-l{flex-shrink:0}
+    .hdr-sub{font-size:11px;color:var(--muted);margin-bottom:4px;letter-spacing:.02em}
+    .hdr-h1{font-size:32px;font-weight:800;letter-spacing:-1.5px;line-height:1.1}
+
+    /* ══════ DROPZONE ══════ */
+    .drop-area{
+      flex:1;min-width:260px;max-width:400px;
+      border:2px dashed var(--border);border-radius:var(--r);
+      padding:18px 20px;text-align:center;cursor:pointer;
+      transition:.2s;background:#fff;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+    }
+    .drop-area:hover,.drop-area.over{border-color:var(--ink);background:var(--bg)}
+    .drop-area i{font-size:22px;color:var(--muted)}
+    .drop-area p{font-size:12px;color:var(--ink2);font-weight:500}
+    .drop-area span{font-size:10.5px;color:var(--muted)}
+    #loadingSpinner{display:none;align-items:center;gap:8px;justify-content:center;font-size:11.5px;color:var(--ink2);margin-top:6px}
+    .spin-loader{border-radius:50%;width:18px;height:18px;border:2px solid rgba(0,0,0,.1);border-top-color:var(--ink);animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ══════ KPI GRID ══════ */
+    .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px}
+    .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+
+    /* ══════ CARD ══════ */
+    .card{
+      background:var(--card);border-radius:var(--r);padding:20px 22px;
+      border:1px solid var(--border-l);transition:box-shadow .3s;position:relative;
+    }
+    .card:hover{box-shadow:0 6px 24px rgba(0,0,0,.06)}
+    .ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .ct{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:500;color:var(--ink2)}
+    .ct svg{width:15px;height:15px;stroke:var(--ink2);fill:none;stroke-width:1.8;flex-shrink:0;stroke-linecap:round;stroke-linejoin:round}
+    .ct i{font-size:13px;color:var(--ink2)}
+
+    /* KPI numbers */
+    .big{font-size:38px;font-weight:800;letter-spacing:-2px;line-height:1}
+    .big sup{font-size:16px;font-weight:600;letter-spacing:0;vertical-align:super;margin-left:1px}
+    .kr{display:flex;justify-content:space-between;margin-top:14px}
+    .ki .kv{font-size:14px;font-weight:700}
+    .ki .kl{font-size:10.5px;color:var(--muted);margin-top:2px}
+    .ki.r{text-align:right}
+
+    /* ══════ CHART CARD ══════ */
+    .chart-full{margin-bottom:10px}
+    .chart-container{min-height:250px;width:100%}
+
+    /* ══════ GROUPING SECTION ══════ */
+    .sec-bar{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+    .sec-bar h2{font-size:13px;font-weight:700;margin-right:4px}
+    .pill-btn{
+      display:inline-flex;align-items:center;gap:5px;
+      padding:5px 12px;border-radius:100px;
+      border:1.5px solid var(--border);background:var(--card);
+      font-size:11.5px;font-weight:500;font-family:inherit;
+      cursor:pointer;color:var(--ink2);transition:.15s;white-space:nowrap;
+    }
+    .pill-btn:hover{border-color:#999;color:var(--ink)}
+    .pill-btn.on{background:var(--ink);border-color:var(--ink);color:#fff}
+    .grp-spacer{flex:1}
+    .grp-search{
+      padding:5px 12px;border-radius:100px;border:1.5px solid var(--border);
+      background:var(--bg);font-size:12px;font-family:inherit;outline:none;
+      color:var(--ink);transition:.2s;min-width:130px;
+    }
+
+    /* ══════ SUPERGROUPS ══════ */
+    .supergroup-wrap{margin-bottom:6px}
+    .supergroup-hdr{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:10px 14px;border-radius:12px;
+      background:var(--card);border:1.5px solid var(--border);
+      cursor:pointer;transition:.15s;
+    }
+    .supergroup-hdr:hover{background:var(--bg);border-color:#bbb}
+    .sg-title{font-size:13px;font-weight:700;letter-spacing:-.2px}
+    .supergroup-body{padding:4px 0 4px 12px;display:flex;flex-direction:column;gap:2px}
+
+    /* Group items */
+    .group-list{display:flex;flex-direction:column;gap:2px;max-height:60vh;overflow-y:auto;padding-right:2px}
+    .group-header{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:8px 12px;border-radius:10px;
+      background:var(--card);border:1px solid var(--border-l);
+      cursor:pointer;transition:.15s;
+    }
+    .group-header:hover{background:var(--bg)}
+    .gh-l{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+    .gname{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .gbadge{font-size:10px;background:var(--bg);padding:1px 6px;border-radius:100px;color:var(--muted);font-weight:700}
+    .gh-r{display:flex;align-items:center;gap:16px;flex-shrink:0}
+    .gval{text-align:right}
+    .gv-sub{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-bottom:1px}
+    .gv-main{font-size:12.5px;font-weight:700}
+    .gpct{font-size:11px;font-weight:700;color:var(--muted);width:40px;text-align:right}
+    .expand-icon{width:20px;text-align:center;color:var(--muted);transition:.2s}
+
+    .group-details{display:none;padding:8px 12px 12px;background:#fff;border:1px solid var(--border-l);border-top:none;border-radius:0 0 10px 10px;margin-top:-4px;margin-bottom:4px;overflow-x:auto}
+    .group-details table{width:100%;border-collapse:collapse;font-size:11.5px}
+    .group-details th{text-align:left;padding:6px 8px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--border-l)}
+    .group-details td{padding:8px;border-bottom:1px solid #f5f5f5;vertical-align:top}
+
+    /* Tag styles for repairs */
+    .tag{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;margin-right:4px}
+    .tag-rozrzad{background:#fee2e2;color:#ef4444}
+    .tag-pasek{background:#ffedd5;color:#f59e0b}
+    .tag-olej{background:#dcfce7;color:#22c55e}
+    .tag-naprawa{background:#f3f4f6;color:#6b7280}
+
+    /* ══════ PRODUCT KPI CHARTS ══════ */
+    .product-kpi-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));gap:10px;margin-bottom:10px}
+    .pkpi-card{padding:15px;background:#fff;border-radius:var(--r);border:1px solid var(--border-l)}
+    .pkpi-title{font-size:12px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+    .pkpi-chart{height:120px}
+
+    /* ══════ TABLE ══════ */
+    .tbl-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:12px;flex-wrap:wrap}
+    .tbl-search{padding:6px 14px;border-radius:100px;border:1.5px solid var(--border);background:var(--bg);font-size:12px;outline:none;width:200px}
+    .fbtn{padding:6px 14px;border-radius:100px;border:1.5px solid var(--border);background:#fff;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px}
+    .fbtn:hover{background:var(--bg)}
+
+    /* Alert container */
+    #alertContainer{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+    .alert-item{pointer-events:auto;background:#fff;padding:12px 16px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.1);display:flex;align-items:center;gap:12px;min-width:280px;border-left:4px solid #000;animation:slideIn .3s ease-out}
+    @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+    .alert-item.success{border-left-color:var(--green-d)}
+    .alert-item.error{border-left-color:#ef4444}
+    .alert-item.info{border-left-color:#3b82f6}
+
+    /* Fullscreen button */
+    .fs{position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:var(--ink);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:1000;transition:.2s}
+    .fs:hover{transform:scale(1.1)}
+    .fs svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2}
+
+    @media (max-width:768px){
+      .g3,.g2{grid-template-columns:1fr}
+      .hdr-h1{font-size:24px}
+      .main{padding:16px 10px 80px}
+    }
+  </style>
+</head>
+<body>
+
+<div id="alertContainer"></div>
+
+<nav class="nav">
+  <div class="nav-l">
+    <svg class="logo" viewBox="0 0 100 100"><rect width="100" height="100" rx="24" fill="#0a0a0a"/><path d="M30 35h40M30 50h40M30 65h25" stroke="#fff" stroke-width="8" stroke-linecap="round"/></svg>
+    <div class="nav-title">PSFimport<span class="nav-ver">v6.2 KPI</span></div>
+  </div>
+  <div class="nav-r">
+    <div class="ib" id="btn-import-nav" title="Importuj pliki"><i class="fas fa-plus"></i></div>
+    <div class="ib danger" id="clearDataButton" title="Wyczyść dane"><i class="fas fa-trash-alt"></i></div>
+    <div class="ib" style="border:none;background:none">
+      <i class="fas fa-file-invoice-dollar"></i>
+      <div class="file-badge" id="fileCountBadge">0</div>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="main">
+    <div class="hdr">
+      <div class="hdr-l">
+        <div class="hdr-sub">ANALIZA KOSZTÓW SERWISOWYCH</div>
+        <h1 class="hdr-h1">Panel KPI</h1>
+      </div>
+      <div class="drop-area" id="dropzone">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <p>Przeciągnij pliki Excel/CSV tutaj</p>
+        <span>lub kliknij aby wybrać z dysku</span>
+        <input type="file" id="fileInput" multiple accept=".csv,.xlsx,.xls" style="display:none">
+        <div id="loadingSpinner"><div class="spin-loader"></div> Przetwarzanie...</div>
+      </div>
+    </div>
+
+    <!-- ═══ KPI GŁÓWNE ═══ -->
+    <div class="g3">
+      <div class="card">
+        <div class="ch"><div class="ct"><i class="fas fa-wallet"></i> Suma Netto</div></div>
+        <div class="big" id="kpiNetto">0,00<sup>zł</sup></div>
+        <div class="kr">
+          <div class="ki"><div class="kv" id="kpiNettoSub1">—</div><div class="kl">Największa grupa</div></div>
+          <div class="ki r"><div class="kv" id="kpiNettoSub2">0</div><div class="kl">Pozycji</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct"><i class="fas fa-percent"></i> Podatek VAT</div></div>
+        <div class="big" id="kpiVatTotal">0,00<sup>zł</sup></div>
+        <div class="kr">
+          <div class="ki"><div class="kv" id="kpiVat23">0,00 zł</div><div class="kl">VAT 23%</div></div>
+          <div class="ki r"><div class="kv" id="kpiVat8">0,00 zł</div><div class="kl">VAT 8% / Inne</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct"><i class="fas fa-coins"></i> Suma Brutto</div></div>
+        <div class="big" id="kpiBrutto">0,00<sup>zł</sup></div>
+        <div class="kr">
+          <div class="ki"><div class="kv" id="kpiBruttoSub1">—</div><div class="kl">Lider kosztów</div></div>
+          <div class="ki r"><div class="kv" id="kpiBruttoSub2">0</div><div class="kl">Plików</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ WYKRESY KPI DLA USŁUG I MATERIAŁÓW ═══ -->
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div class="ct"><i class="fas fa-concierge-bell"></i> KPI: Usługi (Netto wg miesiąca)</div></div>
+        <div id="chartServices" class="chart-container"></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct"><i class="fas fa-boxes"></i> KPI: Materiały (Netto wg miesiąca)</div></div>
+        <div id="chartMaterials" class="chart-container"></div>
+      </div>
+    </div>
+
+    <!-- ═══ WYKRESY KPI SZCZEGÓŁOWE DLA PRODUKTÓW ═══ -->
+    <div class="sec-bar"><h2>KPI Szczegółowe Produktów</h2></div>
+    <div id="productKpiGrid" class="product-kpi-grid">
+      <!-- Generowane dynamicznie -->
+    </div>
+
+    <!-- ═══ GRUPOWANIE ═══ -->
+    <div class="card" style="margin-bottom:10px">
+      <div class="sec-bar">
+        <h2>Grupowanie</h2>
+        <button class="pill-btn on" id="groupByProduct"><i class="fas fa-boxes"></i> Produkt</button>
+        <button class="pill-btn" id="groupByRegistration"><i class="fas fa-car"></i> Rejestracja</button>
+        <button class="pill-btn" id="expandAllGroups"><i class="fas fa-expand-alt"></i> Rozwiń</button>
+        <button class="pill-btn" id="collapseAllGroups"><i class="fas fa-compress-alt"></i> Zwiń</button>
+        <div class="grp-spacer"></div>
+        <input class="grp-search" id="groupSearch" type="text" placeholder="Szukaj…">
+      </div>
+      <div class="group-list" id="productGroupsSummary"></div>
+    </div>
+
+    <!-- ═══ TABELA ═══ -->
+    <div class="card">
+      <div class="tbl-bar">
+        <div class="ct"><i class="fas fa-table"></i> Tabela danych</div>
+        <div style="display:flex;gap:8px">
+          <input class="tbl-search" id="tableSearch" type="text" placeholder="Szukaj w tabeli…">
+          <button class="fbtn" id="exportExcel"><i class="fas fa-file-excel" style="color:#22c55e"></i> Excel</button>
+          <button class="fbtn" id="printButton"><i class="fas fa-print"></i> Drukuj</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto"><table id="dataTable" style="width:100%"></table></div>
+    </div>
+
+  </div>
+</div>
+
+<button class="fs" id="fsBtn" title="Pełny ekran">
+  <svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+</button>
+
+<script>
+"use strict";
+$(document).ready(function(){
+  const GROUP_ROW_CHUNK = 250;
+  const debounce = (fn, d) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(()=>fn.apply(this,a),d); }; };
+  const fmt = amt => new Intl.NumberFormat('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2,style:'currency',currency:'PLN'}).format(parseFloat(amt)||0);
+  const fmtN = n => new Intl.NumberFormat('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2}).format(parseFloat(n)||0);
+  const fmtShort = n => {
+    n = Math.abs(parseFloat(n)||0);
+    if(n>=1e6) return (n/1e6).toFixed(1).replace('.',',')+' M';
+    if(n>=1e3) return (n/1e3).toFixed(0)+' tys.';
+    return n.toFixed(0);
+  };
+  const fmtDateYMD = date => {
+    let d = date instanceof Date ? date : new Date(date);
+    if(isNaN(d)) return date;
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  };
+
+  let state = {
+    data:[], importedFiles:[],
+    summary:{totalNetto:0,totalVAT:0,totalBrutto:0,productGroups:{}},
+    settings:{groupBy:'IMPORTKODPRODUKTU'},
+    charts:{services:null, materials:null, products:{}},
+    dataTable:null
+  };
+
+  const CONFIG = {
+    columnMapping:{
+      'NR. REJ.':['NR. REJ.','ImportNrRejestracyjny','Nr rejestracyjny'],
+      'IMPORTKODPOZYCJI':['IMPORTKODPOZYCJI','Importkodpozycji'],
+      'STAWKAVAT':['STAWKAVAT','Stawka vat'],
+      'IMPORTKODPRODUKTU':['IMPORTKODPRODUKTU','Produkt','Grupa prod'],
+      'NETTO':['NETTO','Wartość netto','Wartość netto fak'],
+      'VAT':['VAT','Wartość vat fak'],
+      'StanLicznika':['StanLicznika','Licznik'],
+      'DataTransakcji':['Data realizacji','Data transakcji','DataTransakcji'],
+      'TRESC':['TRESC','Dane kosztowe','Opis']
+    },
+    produktKody:{
+      'Obsługa techniczna':'909','Normy czasowe':'903','Usługa warsztatowa':'903',
+      'Usługa inna':'903','Usługa oponiarska':'905','Usługa kurierska':'903',
+      'Przechowanie opon':'905','Wydanie opon z przechowalni':'905',
+      'Części do obsługi technicznej':'896','Części do norm czasowych':'896',
+      'Część':'896','Opona letnia':'898','Opona zimowa':'898',
+      'Opona całoroczna':'898','Felga':'898'
+    },
+    produktKodyNames:{'896':'Części','898':'Opony/Felgi','903':'Usł. warsztatowe','905':'Usł. oponiarskie','909':'Obsługa tech.','':'Inne'},
+    produktKodyIcons:{'896':'fa-cogs','898':'fa-circle-notch','903':'fa-tools','905':'fa-car','909':'fa-wrench','':'fa-question-circle'},
+    produktKodyStyle:{
+      '896':{ accent:'#3B82F6', bg:'#EFF6FF', txt:'#1D4ED8' },
+      '898':{ accent:'#22c55e', bg:'#F0FDF4', txt:'#15803D' },
+      '903':{ accent:'#F59E0B', bg:'#FFFBEB', txt:'#B45309' },
+      '905':{ accent:'#8B5CF6', bg:'#F5F3FF', txt:'#6D28D9' },
+      '909':{ accent:'#EF4444', bg:'#FEF2F2', txt:'#B91C1C' },
+      ''   :{ accent:'#9CA3AF', bg:'#F9FAFB', txt:'#4B5563' }
+    },
+    superGroups:{
+      'Usługi':{ codes:['903','905','909'], accent:'#F59E0B' },
+      'Materiały':{ codes:['896','898'], accent:'#3B82F6' }
+    }
+  };
+
+  const detectRepairType = (text) => {
+    if(!text) return '';
+    const t = text.toLowerCase();
+    let tags = '';
+    if(t.includes('rozrząd') || t.includes('rozrzad')) tags += '<span class="tag tag-rozrzad">Rozrząd</span>';
+    if(t.includes('pasek') || t.includes('paska')) tags += '<span class="tag tag-pasek">Pasek</span>';
+    if(t.includes('olej') || t.includes('oleju') || t.includes('przegląd') || t.includes('przeglad')) tags += '<span class="tag tag-olej">Olej/Przegląd</span>';
+    if(t.includes('naprawa') || t.includes('wymiana') || t.includes('serwis')) {
+        if(!tags.includes('Rozrząd') && !tags.includes('Pasek') && !tags.includes('Olej'))
+            tags += '<span class="tag tag-naprawa">Naprawa</span>';
+    }
+    return tags;
+  };
+
+  const processData = jsonData => {
+    const maps = Object.entries(CONFIG.columnMapping);
+    return jsonData.map(row => {
+      const c={};
+      for(const [std,poss] of maps)
+        for(const col of poss){
+          const m=Object.keys(row).find(k=>k.trim().toUpperCase()===col.trim().toUpperCase());
+          if(m){c[std]=row[m];break;}
+        }
+      const netto=parseFloat(c.NETTO)||0, vat=parseFloat(c.VAT)||0;
+      c.BRUTTO=(netto+vat).toFixed(2);
+      c.PRODUKTKOD=CONFIG.produktKody[c.IMPORTKODPRODUKTU||'']||'';
+      if(c.DataTransakcji) c.DataTransakcji=fmtDateYMD(c.DataTransakcji);
+      return c;
+    });
+  };
+
+  const calcSummaries = (data, groupBy='IMPORTKODPRODUKTU') => {
+    const s={totalNetto:0,totalVAT:0,totalBrutto:0,productGroups:{}};
+    for(const row of data){
+      const netto=parseFloat(row.NETTO)||0, vat=parseFloat(row.VAT)||0, brutto=netto+vat;
+      const key=row[groupBy]||'Nieznany';
+      const code=groupBy==='IMPORTKODPRODUKTU'?(CONFIG.produktKody[key]||''):(CONFIG.produktKody[row.IMPORTKODPRODUKTU]||'');
+      s.totalNetto+=netto; s.totalVAT+=vat; s.totalBrutto+=brutto;
+      if(!s.productGroups[key]) s.productGroups[key]={netto:0,vat:0,brutto:0,count:0,details:[],code};
+      const g=s.productGroups[key];
+      g.netto+=netto; g.vat+=vat; g.brutto+=brutto; g.count++;
+      g.details.push({
+        tresc:row.TRESC||'',importNr:row['NR. REJ.']||'',
+        importKodProduktu:row.IMPORTKODPRODUKTU||'',produktKod:code,
+        netto,vat,brutto,stawkaVAT:row.STAWKAVAT||'',
+        DataTransakcji:row.DataTransakcji||'',StanLicznika:row.StanLicznika||''
+      });
+    }
+    return s;
+  };
+
+  const getMonthlyData = (data, filterFn = null) => {
+    const monthly = {};
+    data.forEach(row => {
+        if(filterFn && !filterFn(row)) return;
+        if(!row.DataTransakcji) return;
+        const date = new Date(row.DataTransakcji);
+        if(isNaN(date)) return;
+        const key = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}`;
+        monthly[key] = (monthly[key] || 0) + (parseFloat(row.NETTO) || 0);
+    });
+    const sortedKeys = Object.keys(monthly).sort();
+    return {
+        categories: sortedKeys,
+        data: sortedKeys.map(k => parseFloat(monthly[k].toFixed(2)))
+    };
+  };
+
+  const updateCharts = () => {
+    const servicesData = getMonthlyData(state.data, r => CONFIG.superGroups['Usługi'].codes.includes(r.PRODUKTKOD));
+    const materialsData = getMonthlyData(state.data, r => CONFIG.superGroups['Materiały'].codes.includes(r.PRODUKTKOD));
+
+    const chartOptions = (title, categories, data, color) => ({
+        series: [{ name: 'Netto', data: data }],
+        chart: { type: 'area', height: 250, toolbar: { show: false }, zoom: { enabled: false } },
+        colors: [color],
+        dataLabels: { enabled: false },
+        stroke: { curve: 'smooth', width: 3 },
+        xaxis: { categories: categories, labels: { style: { fontSize: '10px' } } },
+        yaxis: { labels: { formatter: v => fmtShort(v) } },
+        fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.45, opacityTo: 0.05 } },
+        tooltip: { y: { formatter: v => fmt(v) } }
+    });
+
+    if(state.charts.services) state.charts.services.destroy();
+    state.charts.services = new ApexCharts(document.querySelector("#chartServices"), chartOptions('Usługi', servicesData.categories, servicesData.data, CONFIG.superGroups['Usługi'].accent));
+    state.charts.services.render();
+
+    if(state.charts.materials) state.charts.materials.destroy();
+    state.charts.materials = new ApexCharts(document.querySelector("#chartMaterials"), chartOptions('Materiały', materialsData.categories, materialsData.data, CONFIG.superGroups['Materiały'].accent));
+    state.charts.materials.render();
+
+    // Product specific charts
+    const grid = $('#productKpiGrid').empty();
+    Object.entries(state.summary.productGroups).sort((a,b)=>b[1].netto-a[1].netto).forEach(([name, grp], idx) => {
+        const pId = `pchart-${idx}`;
+        const style = CONFIG.produktKodyStyle[grp.code] || CONFIG.produktKodyStyle[''];
+        grid.append(`
+            <div class="pkpi-card">
+                <div class="pkpi-title"><i class="fas ${CONFIG.produktKodyIcons[grp.code]||'fa-box'}" style="color:${style.accent}"></i> ${name}</div>
+                <div id="${pId}" class="pkpi-chart"></div>
+            </div>
+        `);
+        const pData = getMonthlyData(state.data, r => (state.settings.groupBy==='IMPORTKODPRODUKTU' ? r.IMPORTKODPRODUKTU===name : r['NR. REJ.']===name));
+        const pChart = new ApexCharts(document.querySelector(`#${pId}`), {
+            series: [{ name: 'Netto', data: pData.data }],
+            chart: { type: 'bar', height: 120, toolbar: { show: false } },
+            colors: [style.accent],
+            xaxis: { categories: pData.categories, labels: { show: false } },
+            yaxis: { labels: { show: false } },
+            plotOptions: { bar: { borderRadius: 4 } },
+            tooltip: { y: { formatter: v => fmt(v) } }
+        });
+        pChart.render();
+    });
+  };
+
+  const updateKPIs = summary => {
+    document.getElementById('kpiNetto').innerHTML=fmtShort(summary.totalNetto)+'<sup>zł</sup>';
+    const sorted=Object.entries(summary.productGroups).sort((a,b)=>b[1].netto-a[1].netto);
+    document.getElementById('kpiNettoSub1').textContent=sorted[0]?sorted[0][0]:'—';
+    document.getElementById('kpiNettoSub2').textContent=state.data.length;
+
+    document.getElementById('kpiVatTotal').innerHTML=fmtShort(summary.totalVAT)+'<sup>zł</sup>';
+    let v23=0, v8=0;
+    state.data.forEach(r => { const v=parseFloat(r.VAT)||0; if((parseFloat(r.STAWKAVAT)||0)>=20) v23+=v; else v8+=v; });
+    document.getElementById('kpiVat23').textContent=fmtShort(v23)+' zł';
+    document.getElementById('kpiVat8').textContent=fmtShort(v8)+' zł';
+
+    document.getElementById('kpiBrutto').innerHTML=fmtShort(summary.totalBrutto)+'<sup>zł</sup>';
+    document.getElementById('kpiBruttoSub1').textContent=sorted[0]?CONFIG.produktKodyNames[sorted[0][1].code]||'Inne':'—';
+    document.getElementById('kpiBruttoSub2').textContent=state.importedFiles.length;
+  };
+
+  const renderGroupRows = (details,start,count) =>
+    details.slice(start,start+count).map(d =>
+      `<tr>
+        <td>${d.importNr}</td>
+        <td>
+            <div style="font-weight:600;margin-bottom:4px">${(d.tresc||'').replace(/[^a-zA-Z0-9\sąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/g,'')}</div>
+            ${detectRepairType(d.tresc)}
+        </td>
+        <td>${d.stawkaVAT}%</td>
+        <td style="text-align:right">${fmtN(d.netto)}</td>
+        <td style="text-align:right;font-weight:600">${fmt(d.brutto)}</td>
+        <td>${d.DataTransakcji||''}</td>
+        <td>${d.StanLicznika||''}</td>
+      </tr>`
+    ).join('');
+
+  const updateProductGroupsUI = summary => {
+    const container=$('#productGroupsSummary').empty();
+    const search=$('#groupSearch').val().toLowerCase();
+    const sorted=Object.entries(summary.productGroups).sort((a,b)=>b[1].netto-a[1].netto);
+    
+    let globalIdx=0;
+    for(const [sgName, sgCfg] of Object.entries(CONFIG.superGroups)){
+        const items = sorted.filter(([,g]) => sgCfg.codes.includes(g.code));
+        if(!items.length) continue;
+        
+        const sgId = `sg-${globalIdx++}`;
+        const sgNetto = items.reduce((s,[,g])=>s+g.netto,0);
+        const sgBrutto = items.reduce((s,[,g])=>s+g.brutto,0);
+        
+        let html = `
+            <div class="supergroup-wrap">
+                <div class="supergroup-hdr" data-sgid="${sgId}">
+                    <div class="sg-title">${sgName} <span class="gbadge">${items.length}</span></div>
+                    <div class="gh-r">
+                        <div class="gval"><div class="gv-sub">netto</div><div class="gv-main">${fmt(sgNetto)}</div></div>
+                        <div class="expand-icon"><i class="fas fa-chevron-down"></i></div>
+                    </div>
+                </div>
+                <div class="supergroup-body" id="${sgId}">`;
+        
+        items.forEach(([name, grp], i) => {
+            if(search && !name.toLowerCase().includes(search)) return;
+            const style = CONFIG.produktKodyStyle[grp.code] || CONFIG.produktKodyStyle[''];
+            const gId = `g-${sgId}-${i}`;
+            html += `
+                <div class="group-container">
+                    <div class="group-header" data-gid="${gId}" style="border-left:3px solid ${style.accent}">
+                        <div class="gh-l">
+                            <i class="fas ${CONFIG.produktKodyIcons[grp.code]||'fa-box'}" style="color:${style.accent}"></i>
+                            <span class="gname">${name}</span>
+                            <span class="gbadge">${grp.count}</span>
+                        </div>
+                        <div class="gh-r">
+                            <div class="gval"><div class="gv-sub">netto</div><div class="gv-main" style="color:${style.txt}">${fmt(grp.netto)}</div></div>
+                            <div class="gpct">${((grp.netto/summary.totalNetto)*100).toFixed(1)}%</div>
+                            <div class="expand-icon"><i class="fas fa-chevron-down"></i></div>
+                        </div>
+                    </div>
+                    <div class="group-details" id="${gId}">
+                        <table>
+                            <thead><tr><th>Nr.Rej.</th><th>Opis / Naprawa</th><th>VAT</th><th style="text-align:right">Netto</th><th style="text-align:right">Brutto</th><th>Data</th><th>Licznik</th></tr></thead>
+                            <tbody>${renderGroupRows(grp.details, 0, 500)}</tbody>
+                        </table>
+                    </div>
+                </div>`;
+        });
+        html += `</div></div>`;
+        container.append(html);
+    }
+  };
+
+  const displayDataTable = data => {
+    if(state.dataTable) state.dataTable.destroy();
+    state.dataTable=$('#dataTable').DataTable({
+      data,
+      columns:[
+        {title:'Nr. Rej.', data:'NR. REJ.'},
+        {title:'Opis', data:'TRESC', render: d => `<div>${d}</div>${detectRepairType(d)}`},
+        {title:'Produkt', data:'IMPORTKODPRODUKTU'},
+        {title:'Netto', data:'NETTO', render: d => fmtN(d), className:'dt-right'},
+        {title:'VAT', data:'VAT', render: d => fmtN(d), className:'dt-right'},
+        {title:'Brutto', data:'BRUTTO', render: d => fmt(d), className:'dt-right'},
+        {title:'Data', data:'DataTransakcji'}
+      ],
+      pageLength:25,
+      language:{url:'//cdn.datatables.net/plug-ins/1.13.7/i18n/pl.json'}
+    });
+  };
+
+  const handleFiles = async files => {
+    $('#loadingSpinner').show();
+    for(const file of files){
+        const ft=file.name.split('.').pop().toLowerCase();
+        const reader=new FileReader();
+        const p = new Promise(res => {
+            reader.onload=e=>{
+                let j=[];
+                if(ft==='csv') j=Papa.parse(e.target.result,{header:true,skipEmptyLines:true}).data;
+                else{const wb=XLSX.read(e.target.result,{type:'binary',cellDates:true});j=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{raw:false});}
+                res(processData(j));
+            };
+            if(ft==='csv') reader.readAsText(file); else reader.readAsBinaryString(file);
+        });
+        const data = await p;
+        state.data = [...state.data, ...data];
+        state.importedFiles.push(file.name);
+    }
+    state.summary = calcSummaries(state.data, state.settings.groupBy);
+    updateKPIs(state.summary);
+    updateCharts();
+    updateProductGroupsUI(state.summary);
+    displayDataTable(state.data);
+    $('#fileCountBadge').text(state.importedFiles.length).show();
+    $('#loadingSpinner').hide();
+  };
+
+  $('#fileInput').on('change', e => handleFiles(e.target.files));
+  $('#dropzone').on('click', () => $('#fileInput').click());
+  $('#btn-import-nav').on('click', () => $('#fileInput').click());
+  $('#clearDataButton').on('click', () => { if(confirm('Wyczyścić dane?')) location.reload(); });
+  $('#expandAllGroups').on('click', () => $('.group-details, .supergroup-body').show());
+  $('#collapseAllGroups').on('click', () => $('.group-details, .supergroup-body').hide());
+  $('#groupSearch').on('input', debounce(() => updateProductGroupsUI(state.summary), 300));
+  $('#tableSearch').on('keyup', function(){ state.dataTable.search(this.value).draw(); });
+  $('#exportExcel').on('click', () => $('.buttons-excel').click());
+  $('#printButton').on('click', () => window.print());
+
+  $(document).on('click', '.supergroup-hdr', function(){ $(this).next().toggle(); });
+  $(document).on('click', '.group-header', function(){ $(this).next().toggle(); });
+
+  const fsBtn=document.getElementById('fsBtn');
+  fsBtn.addEventListener('click',()=>{
+    if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+    else document.exitFullscreen();
+  });
+});
+</script>
+</body>
+</html>
